@@ -1,11 +1,6 @@
 <?php 
 
 require('controller/Frontend.php');
-require('controller/Backend.php');
-require('controller/UserCRUD.php');
-require('controller/ArticleCRUD.php');
-require('controller/CommentCRUD.php');
-
 
 
 try {
@@ -13,7 +8,7 @@ try {
         $index = new Action($_GET['action']);
     } else {
         $frontend = new Frontend();
-        $frontend->articlesListView();
+        $frontend->mainPage();
     }  
 }
 
@@ -21,6 +16,43 @@ catch(Exception $e) {
     echo 'Erreur : ' . $e->getMessage();
 }
 
+
+
+class Action
+{
+    
+    function __construct(argument)
+    {
+        $this->go($action); 
+    }
+
+
+public function go($action) {
+        switch ($action) {
+
+            case 'mainPage':
+                $frontend = new Frontend();
+                $frontend->mainPage();
+                break;
+
+            default:
+                $frontend = new Frontend();
+                $frontend->mainPage();
+                break;
+
+}
+
+
+
+
+
+
+
+
+
+
+
+/*
 
 class Action {  
 
