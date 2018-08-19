@@ -6,8 +6,8 @@
 				<a class="navbar-link" href="#"><div class="navbloc">Espace personnel</div></a>
 				<a class="navbar-link" href="#"><div class="navbloc">Déconnexion</div></a>
 			<?php } else {?>
-				<a class="navbar-link" href="#"><div class="navbloc">Connexion</div></a>
-				<a class="navbar-link" href="#"><div class="navbloc">Inscription</div></a>
+				<a class="navbar-link" href="index.php?action=login"><div class="navbloc">Connexion</div></a>
+				<a class="navbar-link" href="index.php?action=inscription"><div class="navbloc">Inscription</div></a>
 			<?php } ?>
 		</div>
 	</nav>

@@ -1,14 +1,13 @@
 <?php 
 
 require('controller/Frontend.php');
-
+require('controller/Backend.php');
 
 try {
     if (isset($_GET['action'])) {
         $index = new Action($_GET['action']);
     } else {
-        $frontend = new Frontend();
-        $frontend->mainPageView();
+        $frontend = new Frontend('mainPageView');
     }  
 }
 
@@ -31,13 +30,18 @@ public function go($action) {
         switch ($action) {
 
             case 'mainPage':
-                $frontend = new Frontend();
-                $frontend->mainPageView();
+                $frontend = new Frontend('mainPageView');
+                break;
+
+            case 'login':
+                $frontend = new Backend('loginView');
+                break;
+            case 'inscription':
+                $frontend = new Backend('inscriptionView');
                 break;
 
             default:
-                $frontend = new Frontend();
-                $frontend->mainPageView();
+                $frontend = new Frontend('mainPageView');
                 break;
 
 }
