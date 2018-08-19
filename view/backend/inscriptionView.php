@@ -4,6 +4,8 @@ ob_start(); ?>
 
 	<p><a class="indexLink" href="index.php">-> Retour à l'acceuil du site</a></p>
 
+    <p><?php  if ($this->message != NULL) {echo $this->message;} ?></p>
+
 	<h2>Création d'un nouveau compte</h2>
 
 	<div class="col-lg-8 col-md-10 col-sm-12 col-xs-12 jumbotron">

@@ -3,7 +3,7 @@
 class Post extends TextContent {
 
 	protected $title,
-  $groupId
+  $groupId,
   $updateDate,
   $nbComment;
 

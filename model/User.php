@@ -5,8 +5,7 @@ class User {
 	$pseudo,
 	$mdp,
   $creationProfil,
-	$status
-  ;
+	$status;
 
 
 	public function __construct(array $data)
@@ -68,7 +67,7 @@ class User {
  	  }
   }
 
-  public function setMdp($creationProfil) 
+  public function setCreationProfil($creationProfil) 
   {
     if (is_string($creationProfil) && strlen($creationProfil) < 26) 
     {

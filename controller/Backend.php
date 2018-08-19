@@ -2,13 +2,16 @@
 
 class Backend {
 
-	function __construct($view)
+	protected $message;
+
+	function __construct($view, $message = '')
     {
+    	$this->message = $message;
         $this->$view(); 
     }
     
 	public function loginView() {
-		$message='';
+
 		require('view/backend/loginView.php');
 
 	}

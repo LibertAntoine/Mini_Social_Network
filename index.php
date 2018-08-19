@@ -2,6 +2,7 @@
 
 require('controller/Frontend.php');
 require('controller/Backend.php');
+require('controller/CRUD/UserCRUD.php');
 
 try {
     if (isset($_GET['action'])) {
@@ -34,11 +35,72 @@ public function go($action) {
                 break;
 
             case 'login':
-                $frontend = new Backend('loginView');
+                $backend = new Backend('loginView');
                 break;
             case 'inscription':
-                $frontend = new Backend('inscriptionView');
+                $backend = new Backend('inscriptionView');
                 break;
+
+            case 'backOffice':
+                $backend = new Backend('backOfficeView');
+                break;
+
+
+
+            case 'addUser':
+                if (isset($_POST['pseudo']) && isset($_POST['mdp'])) {    
+                    if (strlen($_POST['pseudo']) < 26 && strlen($_POST['pseudo']) > 7 ) {
+                        if (strlen($_POST['mdp']) < 26 && strlen($_POST['mdp']) > 7 ) {
+                            $userCRUD = new UserCRUD();
+                            $user = $userCRUD->add(htmlspecialchars($_POST['pseudo']), htmlspecialchars($_POST['mdp']));
+                            if ($user === 'exist') {
+                                $backend = new Backend('inscriptionView', 'Le nom d\'utilisateur existe déjà, merci d\'en choisir un autre');
+                            } elseif ($user) {
+                                $_SESSION['pseudo'] = $user->getPseudo();
+                                $_SESSION['id'] = $user->getId();
+                                $frontend = new Frontend('mainPageView');
+                            } else {
+                                throw new Exception('Impossible d\'enregister l\'utilisateur');
+                            }
+                        } else {
+                            $backend = new Backend('inscriptionView', 'Le mot de passe renseigné n\'est pas valide.');
+                        }
+                    } else {
+                        $backend = new Backend('inscriptionView', 'Le nom d\'utilisateur renseigné n\'est pas valide.');
+                    }
+                } else {
+                    $backend = new Backend('inscriptionView', 'Merci de renseigner tous les champs.');
+                }
+            break;
+            case 'verifUser':
+                if (isset($_POST['pseudo']) && isset($_POST['mdp'])) {    
+                    if (strlen($_POST['pseudo']) < 26 && strlen($_POST['pseudo']) > 0 ) {
+                        if (strlen($_POST['mdp']) < 26 && strlen($_POST['mdp']) > 0 ) {
+                            $userCRUD = new UserCRUD();
+                            $user = $userCRUD->exist(htmlspecialchars($_POST['pseudo']), htmlspecialchars($_POST['mdp']));
+                            if ($user) {
+                                $_SESSION['pseudo'] = $user->getPseudo();
+                                $_SESSION['id'] = $user->getId();
+                                $frontend = new Frontend('mainPageView');
+                            } else {
+                                $backend = new Backend('loginView', 'Les identifiants fournis ne correspondent à aucun compte existant.');
+                            }
+                        } else {
+                            $backend = new Backend('loginView', 'Le mot de passe renseigné n\'est pas valide.');
+                        }
+                    } else {
+                        $backend = new Backend('loginView', 'Le nom d\'utilisateur renseigné n\'est pas valide.');
+                    }
+                } else {
+                    $backend = new Backend('loginView', 'Merci de renseigner tous les champs.');
+                }
+            break;
+            case 'logOut':
+                $userCRUD = new UserCRUD();
+                $userCRUD->logOut();
+                $frontend = new Frontend('mainPageView');
+            break;
+
 
             default:
                 $frontend = new Frontend('mainPageView');

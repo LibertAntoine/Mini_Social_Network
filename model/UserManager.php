@@ -6,8 +6,8 @@ class UserManager extends DBAccess
 
 	public function add(User $user) 
   {
-		$q = $this->db->prepare("INSERT INTO `projet5_users` (`pseudo`, `mdp`, `status`, `creationProfil`) VALUES (:pseudo, :mdp, 'visitor', NOW());");
-
+		$q = $this->db->prepare("INSERT INTO `projet5_users` (`pseudo`, `mdp`, `creationProfil`, `nbGroup`, `status`, `lastLogin`, `nbPublication`, `nbComment`) VALUES (:pseudo, :mdp, NOW(), '0', 'member', NOW(), '0', '0');");
+      
 		$q->bindValue(':pseudo', $user->getPseudo());
     $q->bindValue(':mdp', $user->getMdp());
 
@@ -15,6 +15,8 @@ class UserManager extends DBAccess
 
     $user->hydrate([
       'id' => $this->db->lastInsertId()]);
+    
+    return $user;
   }
 
   public function count()
@@ -22,9 +24,9 @@ class UserManager extends DBAccess
     return $this->db->query('SELECT COUNT(*) FROM projet5_users')->fetchColumn();
   }
 
-  public function delete(User $user)
+  public function delete($userId)
   {
-    $this->db->exec('DELETE FROM projet5_users WHERE id = '.$user->getId());
+    $this->db->exec('DELETE FROM projet5_users WHERE id = '. $userId);
   }
 
  	public function exists($info)
