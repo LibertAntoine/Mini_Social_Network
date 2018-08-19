@@ -3,7 +3,7 @@
 /**
  * 
  */
-class GroupeContent
+class Group
 {
 
 	protected $id,

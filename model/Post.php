@@ -3,6 +3,7 @@
 class Post extends TextContent {
 
 	protected $title,
+  $groupId
   $updateDate,
   $nbComment;
 
@@ -14,6 +15,11 @@ class Post extends TextContent {
   public function getUpdateDate() 
   {
  	  return $this->updateDate;
+  }
+
+  public function getGroupId() 
+  {
+    return $this->groupId;
   }
 
   public function getNbComment() 
@@ -43,6 +49,15 @@ class Post extends TextContent {
     if ($nbComment >= 0) 
     {
       $this->nbComment = $nbComment;
+    }
+  }
+
+  public function setGroupId($groupId) 
+  {
+    $groupId = (int) $groupId;
+    if ($groupId >= 0) 
+    {
+      $this->groupId = $groupId;
     }
   }
 

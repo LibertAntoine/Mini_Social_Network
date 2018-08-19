@@ -1,6 +1,6 @@
 <?php
 
-class Comment extends BlogContent {
+class Comment extends TextContent {
 
 	protected $articleId,
 	$reporting;

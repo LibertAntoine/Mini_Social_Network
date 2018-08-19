@@ -3,38 +3,39 @@
 
 class PostManager extends DBAccess {
 
-	public function add(Article $article) 
+	public function add(Post $post) 
   {
-		$q = $this->db->prepare("INSERT INTO `roche_articles` (`title`, `userId`, `content`, `creationDate`, `updateDate`, `nbComment`) VALUES (:title , :userId, :content, NOW(), NOW(), :nbComment)");
+		$q = $this->db->prepare("INSERT INTO `projet5_posts` (`title`, `userId`, `content`, `creationDate`, `updateDate`, `nbComment`, `groupId`) VALUES (:title , :userId, :content, NOW(), NOW(), :nbComment, :groupId)");
 
-		$q->bindValue(':userId', $article->getUserId());
-    $q->bindValue(':title', $article->getTitle());
-    $q->bindValue(':content', $article->getContent());
+		$q->bindValue(':userId', $post->getUserId());
+    $q->bindValue(':title', $post->getTitle());
+    $q->bindValue(':content', $post->getContent());
+    $q->bindValue(':groupId', $post->getGroupId());
     $q->bindValue(':nbComment', 0);
 		$q->execute();
 
-    $article->hydrate([
+    $post->hydrate([
       'id' => $this->db->lastInsertId()]);
   }
 
   public function count()
   {
-    return $this->db->query('SELECT COUNT(*) FROM roche_articles')->fetchColumn();
+    return $this->db->query('SELECT COUNT(*) FROM projet5_posts')->fetchColumn();
   }
 
-  public function delete($articleId)
+  public function delete($postId)
   {
-    $this->db->exec('DELETE FROM roche_articles WHERE id = '.$articleId);
+    $this->db->exec('DELETE FROM projet5_posts WHERE id = '.$postId);
   }
 
  	public function exists($info)
  	{
    	if (is_int($info)) 
     {
-      return (bool) $this->db->query('SELECT COUNT(*) FROM roche_articles WHERE id = '.$info)->fetchColumn();
+      return (bool) $this->db->query('SELECT COUNT(*) FROM projet5_posts WHERE id = '.$info)->fetchColumn();
     } else 
     {
-    	$q = $this->db->prepare('SELECT COUNT(*) FROM roche_articles WHERE title = :title');
+    	$q = $this->db->prepare('SELECT COUNT(*) FROM projet5_posts WHERE title = :title');
     	$q->execute([':title' => $info]);
     	return (bool) $q->fetchColumn();
     }
@@ -44,20 +45,20 @@ class PostManager extends DBAccess {
   {
     if (is_int($info))
     {
-      $q = $this->db->query('SELECT id, userId, title, content, DATE_FORMAT(creationDate, \'%d/%m/%Y à %Hh%i\') AS creationDate, DATE_FORMAT(updateDate, \'%d/%m/%Y à %Hh%i\') AS updateDate, nbComment FROM roche_articles WHERE id = '.$info);
-      $article = $q->fetch(PDO::FETCH_ASSOC);
+      $q = $this->db->query('SELECT id, userId, title, content, DATE_FORMAT(creationDate, \'%d/%m/%Y à %Hh%i\') AS creationDate, DATE_FORMAT(updateDate, \'%d/%m/%Y à %Hh%i\') AS updateDate, nbComment, groupId FROM projet5_posts WHERE id = '.$info);
+      $post = $q->fetch(PDO::FETCH_ASSOC);
     } else 
     {
-     	$q = $this->db->prepare('SELECT id, userId, title, content, DATE_FORMAT(creationDate, \'%d/%m/%Y à %Hh%i\') AS creationDate, DATE_FORMAT(updateDate, \'%d/%m/%Y à %Hh%i\') AS updateDate, nbComment FROM roche_articles WHERE title = :title');
+     	$q = $this->db->prepare('SELECT id, userId, title, content, DATE_FORMAT(creationDate, \'%d/%m/%Y à %Hh%i\') AS creationDate, DATE_FORMAT(updateDate, \'%d/%m/%Y à %Hh%i\') AS updateDate, nbComment, groupId FROM projet5_posts WHERE title = :title');
       $q->execute([':title' => $info]);
-      $article = $q->fetch(PDO::FETCH_ASSOC);
+      $post = $q->fetch(PDO::FETCH_ASSOC);
     }
-    return new Article($article);
+    return new post($post);
   }
 
-  public function getTitle($articleId)
+  public function getTitle($postId)
   {
-    $q = $this->db->query('SELECT title FROM roche_articles WHERE id = '. $articleId);
+    $q = $this->db->query('SELECT title FROM projet5_posts WHERE id = '. $postId);
     $info = $q->fetch(PDO::FETCH_ASSOC);
 
     return $info['title'];
@@ -66,64 +67,64 @@ class PostManager extends DBAccess {
 
   public function getAllList()
   {
-    $articles = [];
+    $posts = [];
     
-    $q = $this->db->query('SELECT id, userId, title, content, DATE_FORMAT(creationDate, \'%d/%m/%Y à %Hh%i\') AS creationDate, DATE_FORMAT(updateDate, \'%d/%m/%Y à %Hh%i\') AS updateDate, nbComment FROM roche_articles ORDER BY updateDate DESC');
+    $q = $this->db->query('SELECT id, userId, title, content, DATE_FORMAT(creationDate, \'%d/%m/%Y à %Hh%i\') AS creationDate, DATE_FORMAT(updateDate, \'%d/%m/%Y à %Hh%i\') AS updateDate, nbComment, groupId FROM projet5_posts ORDER BY updateDate DESC');
 
     while ($data = $q->fetch(PDO::FETCH_ASSOC))
     {
-      $articles[] = new Article($data);
+      $posts[] = new Post($data);
     }
-    return $articles;
+    return $posts;
   }
 
   public function getRecentList()
   {
-    $articles = [];
+    $posts = [];
     
-    $q = $this->db->query('SELECT id, userId, title, content, DATE_FORMAT(creationDate, \'%d/%m/%Y à %Hh%i\') AS creationDate, DATE_FORMAT(updateDate, \'%d/%m/%Y à %Hh%i\') AS updateDate, nbComment FROM roche_articles ORDER BY updateDate DESC LIMIT 0, 5');
+    $q = $this->db->query('SELECT id, userId, title, content, DATE_FORMAT(creationDate, \'%d/%m/%Y à %Hh%i\') AS creationDate, DATE_FORMAT(updateDate, \'%d/%m/%Y à %Hh%i\') AS updateDate, nbComment, groupId FROM projet5_posts ORDER BY updateDate DESC LIMIT 0, 5');
 
     while ($data = $q->fetch(PDO::FETCH_ASSOC))
     {
-      $articles[] = new Article($data);
+      $posts[] = new Post($data);
     }
-    return $articles;
+    return $posts;
   }
 
   public function getBestList()
   {
-    $articles = [];
+    $posts = [];
     
-    $q = $this->db->query('SELECT id, userId, title, content, DATE_FORMAT(creationDate, \'%d/%m/%Y à %Hh%i\') AS creationDate, DATE_FORMAT(updateDate, \'%d/%m/%Y à %Hh%i\') AS updateDate, nbComment FROM roche_articles ORDER BY nbComment DESC LIMIT 0, 5');
+    $q = $this->db->query('SELECT id, userId, title, content, DATE_FORMAT(creationDate, \'%d/%m/%Y à %Hh%i\') AS creationDate, DATE_FORMAT(updateDate, \'%d/%m/%Y à %Hh%i\') AS updateDate, nbComment, groupId FROM projet5_posts ORDER BY nbComment DESC LIMIT 0, 5');
 
     while ($data = $q->fetch(PDO::FETCH_ASSOC))
     {
-      $articles[] = new Article($data);
+      $posts[] = new Post($data);
     }
-    return $articles;
+    return $posts;
   }
   
-  public function updateNbComment($articleId, $action)
+  public function updateNbComment($postId, $action)
   {
     if ($action === "add") {
-    $q = $this->db->prepare('UPDATE roche_articles SET nbComment = nbComment + 1 WHERE id = :id');
+    $q = $this->db->prepare('UPDATE projet5_posts SET nbComment = nbComment + 1 WHERE id = :id');
 
     } elseif ($action === "remove") {
-    $q = $this->db->prepare('UPDATE roche_articles SET nbComment = nbComment - 1 WHERE id = :id');
+    $q = $this->db->prepare('UPDATE projet5_posts SET nbComment = nbComment - 1 WHERE id = :id');
     }
-    $q->bindValue(':id', $articleId);
+    $q->bindValue(':id', $postId);
     $q->execute();
   }
 
-  public function update(Article $article)
+  public function update(Post $post)
   {
-    $q = $this->db->prepare('UPDATE roche_articles SET userId = :userId, title = :title, content = :content, updateDate = NOW(), nbComment = :nbComment WHERE id = :id');
+    $q = $this->db->prepare('UPDATE projet5_posts SET userId = :userId, title = :title, content = :content, updateDate = NOW(), nbComment = :nbComment WHERE id = :id');
     
-    $q->bindValue(':userId', $article->getUserId());
-    $q->bindValue(':title', $article->getTitle());
-    $q->bindValue(':content', $article->getContent());
-    $q->bindValue(':nbComment', $article->getNbComment());
-    $q->bindValue(':id', $article->getId());
+    $q->bindValue(':userId', $post->getUserId());
+    $q->bindValue(':title', $post->getTitle());
+    $q->bindValue(':content', $post->getContent());
+    $q->bindValue(':nbComment', $post->getNbComment());
+    $q->bindValue(':id', $post->getId());
     $q->execute();
   }
 }

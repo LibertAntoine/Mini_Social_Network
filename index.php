@@ -8,7 +8,7 @@ try {
         $index = new Action($_GET['action']);
     } else {
         $frontend = new Frontend();
-        $frontend->mainPage();
+        $frontend->mainPageView();
     }  
 }
 
@@ -21,7 +21,7 @@ catch(Exception $e) {
 class Action
 {
     
-    function __construct(argument)
+    function __construct($action)
     {
         $this->go($action); 
     }
@@ -32,16 +32,18 @@ public function go($action) {
 
             case 'mainPage':
                 $frontend = new Frontend();
-                $frontend->mainPage();
+                $frontend->mainPageView();
                 break;
 
             default:
                 $frontend = new Frontend();
-                $frontend->mainPage();
+                $frontend->mainPageView();
                 break;
 
 }
 
+}
+}
 
 
 
@@ -195,3 +197,7 @@ class Action {
         }
     }
 }
+
+*/
+
+?>
