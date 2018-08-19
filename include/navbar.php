@@ -3,7 +3,7 @@
 		<a href="index.php"><h1 class="navbar-text">VOus voilà sur mon site</h1></a>
 		<div class="loger">
 			<?php if (isset($_SESSION['pseudo'])) { ?> 
-				<a class="navbar-link" href="#"><div class="navbloc">Espace personnel</div></a>
+				<a class="navbar-link" href="index.php?action=backOffice"><div class="navbloc">Espace personnel</div></a>
 				<a class="navbar-link" href="index.php?action=logOut"><div class="navbloc">Déconnexion</div></a>
 			<?php } else {?>
 				<a class="navbar-link" href="index.php?action=login"><div class="navbloc">Connexion</div></a>

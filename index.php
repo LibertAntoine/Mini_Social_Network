@@ -3,6 +3,7 @@
 require('controller/Frontend.php');
 require('controller/Backend.php');
 require('controller/CRUD/UserCRUD.php');
+require('controller/CRUD/GroupCRUD.php');
 
 try {
     if (isset($_GET['action'])) {
@@ -40,10 +41,49 @@ public function go($action) {
             case 'inscription':
                 $backend = new Backend('inscriptionView');
                 break;
-
             case 'backOffice':
-                $backend = new Backend('backOfficeView');
+                if (isset($_SESSION['id'])) {
+                    $backend = new Backend('backOfficeView');
+                } else {
+                    throw new Exception('Absence de donnée de session.');
+                }
                 break;
+            case 'newGroup':
+                if (isset($_SESSION['id'])) {
+                    $backend = new Backend('newGroupView');
+                } else {
+                    throw new Exception('Absence de donnée de session.');
+                }
+                break;
+            case 'createGroup':
+                if (isset($_SESSION['id'], $_POST['titleGroup'], $_POST['status'], $_POST['listFriend'])) {
+                    if(strlen($_POST['titleGroup']) < 240 && strlen($_POST['titleGroup']) > 0) {
+                        if(isset($_FILES['couvPicture'])) {
+                            if ($_FILES['couvPicture'] > 4000000) {
+                               $backend = new Backend('newGroupView', 'La taille du fichier dépasse 4Mo');
+                                exit;
+                            } else {
+                                move_uploaded_file()
+                            }   
+                        }
+                            $groupCRUD = new GroupCRUD();
+                            $memberArray = [$_SESSION['id'] => 'admin'];
+                            $memberArray[$_POST['listFriend']] = 'member';
+                            $group = $groupCRUD->add($_POST['titleGroup'], $_POST['status'], $_FILES['couvPicture']['name'], $memberArray);
+                            if($group === 'exist') {
+                                $backend = new Backend('newGroupView', 'Ce nom de groupe existe déjà');
+                            } elseif ($group) {
+                                $frontend = new Frontend('groupView');
+                            } else {
+                                throw new Exception('Impossible d\'enregister le groupe');
+                            }
+                        }
+                    }
+                } else {
+                   $backend = new Backend('newGroupView', 'Merci de reseigner tous les champs obligatoires.');
+                }
+                break;
+            
 
 
 

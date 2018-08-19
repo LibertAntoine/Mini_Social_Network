@@ -10,7 +10,10 @@ class Group
 	$title,
 	$status,
 	$creationDate,
-	$lastUpdate;
+	$lastUpdate,
+	$nbPost,
+	$nbMember, 
+	$linkCouvPicture;
 
 
 	public function __construct(array $data)
@@ -55,6 +58,21 @@ class Group
  	  	return $this->lastUpdate;
   	}
 
+  	public function getLinkCouvPicture() 
+  	{
+ 	  	return $this->linkCouvPicture;
+  	}
+
+  	  	public function getNbPost() 
+  	{
+ 	  	return $this->nbPost;
+  	}
+
+  	  	public function getNbMember() 
+  	{
+ 	  	return $this->nbMember;
+  	}
+
 
 	public function setId($id) 
 	{
@@ -97,5 +115,29 @@ class Group
 	    }
 	}
 
+	public function setLinkCouvPicture($linkCouvPicture) 
+	{
+	    if (is_string($linkCouvPicture)) 
+	    {
+	      $this->linkCouvPicture = $linkCouvPicture;
+	    }
+	}
 
+	public function setNbPost($nbPost) 
+	{
+	    $nbPost = (int) $nbPost;
+	    if ($nbPost >= 0) 
+	    {
+	      $this->nbPost = $nbPost;
+	    }
+	}
+
+	public function setNbMember($nbMember) 
+	{
+	    $nbMember = (int) $nbMember;
+	    if ($nbMember >= 0) 
+	    {
+	      $this->nbMember = $nbMember;
+	    }
+	}
 }

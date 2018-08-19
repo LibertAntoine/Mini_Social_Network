@@ -15,7 +15,7 @@ class UserManager extends DBAccess
 
     $user->hydrate([
       'id' => $this->db->lastInsertId()]);
-    
+
     return $user;
   }
 
@@ -57,6 +57,18 @@ class UserManager extends DBAccess
     return new User($user);
   }
 
+  public function getAll()
+  {
+    $users = [];
+    
+    $q = $this->db->prepare("SELECT id, pseudo, mdp FROM projet5_users ORDER BY pseudo");
+    $q->execute();
+    while ($data = $q->fetch(PDO::FETCH_ASSOC))
+    {
+     $users[] = new User($data);
+    }
+    return $users;
+  }
 
   public function getList()
   {

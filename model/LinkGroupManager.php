@@ -5,7 +5,7 @@ class LinkGroupManager extends DBAccess
 
 	public function add(LinkGroup $linkGroup) 
   {
-		$q = $this->db->prepare("INSERT INTO `projet5_linkgroupuser` (`groupId`, `userId`, `status`, `linkDate`) VALUES (:groupId, :userId, 'status', NOW());");
+		$q = $this->db->prepare("INSERT INTO `projet5_linkgroupuser` (`groupId`, `userId`, `status`, `linkDate`) VALUES (:groupId, :userId, :status, NOW());");
 
 		$q->bindValue(':groupId', $linkGroup->getGroupId());
     $q->bindValue(':userId', $linkGroup->getUserId());

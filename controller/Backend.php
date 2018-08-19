@@ -28,6 +28,15 @@ class Backend {
 
 	}
 
+	public function newGroupView() {
+
+		$userManager = new UserManager();
+		$users = $userManager->getAll();
+
+		require('view/backend/newGroupView.php');
+	}
+
+
 	public function myGroupView() {
 
 		require('view/backend/myGroupView.php');
