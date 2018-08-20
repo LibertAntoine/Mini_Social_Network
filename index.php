@@ -26,38 +26,38 @@ class Action
     
     function __construct($action)
     {
-        $this->go($action); 
+        $this->$action(); 
     }
 
 
-    public function go($action) {
-            switch ($action) {
-
-                case 'mainPage':
+                public function mainPage() {
                     $frontend = new Frontend('mainPageView');
-                    break;
+                }
+                public function groupView() {
+                    $frontend = new Frontend('groupView', intval(htmlspecialchars($_GET['id'])));
+                }    
 
-                case 'login':
-                    $backend = new Backend('loginView');
-                    break;
-                case 'inscription':
-                    $backend = new Backend('inscriptionView');
-                    break;
-                case 'backOffice':
+                public function login($message = NULL) {
+                    $backend = new Backend('loginView', $message);
+                }
+                public function inscription($message = NULL) {
+                    $backend = new Backend('inscriptionView', $message);
+                }
+                public function backOffice() {
                     if (isset($_SESSION['id'])) {
                         $backend = new Backend('backOfficeView');
                     } else {
                         throw new Exception('Absence de donnée de session.');
                     }
-                    break;
-                case 'newGroup':
+                }
+                public function newGroup($message = NULL) {
                     if (isset($_SESSION['id'])) {
-                        $backend = new Backend('newGroupView');
+                        $backend = new Backend('newGroupView', $message);
                     } else {
                         throw new Exception('Absence de donnée de session.');
                     }
-                    break;
-                case 'createGroup':
+                }
+                public function createGroup() {
                     if (isset($_SESSION['id'], $_POST['titleGroup'], $_POST['status'], $_POST['listFriend'])) {
                         if(strlen($_POST['titleGroup']) <= 240 && strlen($_POST['titleGroup']) >= 4) {
                             $groupCRUD = new GroupCRUD();
@@ -75,27 +75,27 @@ class Action
                                     move_uploaded_file($_FILES['couvPicture']['tmp_name'], 'public/pictures/couv/'. $group->getId(). '.' . substr($_FILES['couvPicture']['type'], 6));
                                 }
                                 if ($group) {
-                                    $frontend = new Frontend('groupView', $group->getId());
+                                    header('Location: index.php?action=groupView&id=' . $group->getId());
                                 } else {
                                     throw new Exception('Impossible d\'enregister le groupe');
                                 } 
                             } else {
-                                $backend = new Backend('newGroupView', 'Le nom de groupe existe déjà, merci d\'en choisir un autre');
+                                $this->newGroup('Le nom de groupe existe déjà, merci d\'en choisir un autre');
                             }
                         } else {
-                            $backend = new Backend('newGroupView', 'Merci de renseigner un titre entre 5 et 240 caractères');
+                            $this->newGroup('newGroupView', 'Merci de renseigner un titre entre 5 et 240 caractères');
                         }
                     } else {
-                       $backend = new Backend('newGroupView', 'Merci de reseigner tous les champs obligatoires.');
+                       $this->newGroup('newGroupView', 'Merci de renseigner tous les champs obligatoires.');
                     }
-                    break;
+                }
 
-                case 'addUser':
+                public function addUser() {
                     if (isset($_POST['pseudo']) && isset($_POST['mdp'])) {    
                         if (strlen($_POST['pseudo']) < 26 && strlen($_POST['pseudo']) > 7 ) {
                             if (strlen($_POST['mdp']) < 26 && strlen($_POST['mdp']) > 7 ) {
                                 $userCRUD = new UserCRUD();
-                                if ($userCRUD->read(htmlspecialchars($_POST['pseudo']))) {
+                                if (!$userCRUD->read(htmlspecialchars($_POST['pseudo']))) {
                                     $user = $userCRUD->add(htmlspecialchars($_POST['pseudo']), htmlspecialchars($_POST['mdp']));
                                     if ($user) {
                                     $_SESSION['pseudo'] = $user->getPseudo();
@@ -105,19 +105,19 @@ class Action
                                         throw new Exception('Impossible d\'enregister l\'utilisateur');
                                     }
                                 } else {
-                                   $backend = new Backend('inscriptionView', 'Le nom d\'utilisateur existe déjà, merci d\'en choisir un autre');
+                                   $this->inscription('Le nom d\'utilisateur existe déjà, merci d\'en choisir un autre');
                                 }
                             } else {
-                                $backend = new Backend('inscriptionView', 'Le mot de passe renseigné n\'est pas valide.');
+                                $this->inscription('Le mot de passe renseigné n\'est pas valide.');
                             }
                         } else {
-                            $backend = new Backend('inscriptionView', 'Le nom d\'utilisateur renseigné n\'est pas valide.');
+                            $this->inscription('Le nom d\'utilisateur renseigné n\'est pas valide.');
                         }
                     } else {
-                        $backend = new Backend('inscriptionView', 'Merci de renseigner tous les champs.');
+                        $this->inscription('Merci de renseigner tous les champs.');
                     }
-                break;
-                case 'verifUser':
+                }
+                public function verifUser() {
                     if (isset($_POST['pseudo']) && isset($_POST['mdp'])) {    
                         if (strlen($_POST['pseudo']) < 26 && strlen($_POST['pseudo']) > 0 ) {
                             if (strlen($_POST['mdp']) < 26 && strlen($_POST['mdp']) > 0 ) {
@@ -128,32 +128,23 @@ class Action
                                     $_SESSION['id'] = $user->getId();
                                     $frontend = new Frontend('mainPageView');
                                 } else {
-                                    $backend = new Backend('loginView', 'Les identifiants fournis ne correspondent à aucun compte existant.');
+                                    $this->login('Les identifiants fournis ne correspondent à aucun compte existant.');
                                 }
                             } else {
-                                $backend = new Backend('loginView', 'Le mot de passe renseigné n\'est pas valide.');
+                                $this->login('loginView', 'Le mot de passe renseigné n\'est pas valide.');
                             }
                         } else {
-                            $backend = new Backend('loginView', 'Le nom d\'utilisateur renseigné n\'est pas valide.');
+                            $this->login('loginView', 'Le nom d\'utilisateur renseigné n\'est pas valide.');
                         }
                     } else {
-                        $backend = new Backend('loginView', 'Merci de renseigner tous les champs.');
+                        $this->login('loginView', 'Merci de renseigner tous les champs.');
                     }
-                break;
-                case 'logOut':
+                }
+                public function logOut() {
                     $userCRUD = new UserCRUD();
                     $userCRUD->logOut();
                     $frontend = new Frontend('mainPageView');
-                break;
-
-
-                default:
-                    $frontend = new Frontend('mainPageView');
-                    break;
-
-            }
-    }
+                }
 }
-
 
 ?>
