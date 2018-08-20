@@ -55,13 +55,18 @@ class UserCRUD {
 	    require('view/backend/backOffice.php');
 	}
 
-	public function exist($pseudo, $mdp) {
+	public function read($pseudo, $mdp = NULL) {
 		$userManager = new UserManager();
 		if ($userManager->exists($pseudo)) {
 			$user = $userManager->get($pseudo);
-			if ($user->getMdp() == $mdp) {
+			if ($mdp !== NULL) {
+				if ($user->getMdp() == $mdp) {
+					return $user;
+				}
+			} else {
 				return $user;
 			}
+			
 		}
 	}
 

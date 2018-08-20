@@ -26,6 +26,13 @@ class LinkGroupManager extends DBAccess
     $this->db->exec('DELETE FROM projet5_linkgroupuser WHERE id = '.$linkGroup->getId());
   }
 
+  public function access($groupId, $userId)
+  {
+    $q = $this->db->query('SELECT `id`, `groupId`, `userId`, `status`, DATE_FORMAT(linkDate, \'%d/%m/%Y à %Hh%imin%ss\') AS linkDate FROM `projet5_linkgroupuser` WHERE `groupId` = '. $groupId);
+      $linkGroup = $q->fetch(PDO::FETCH_ASSOC);
+      return new LinkGroup($linkGroup);
+  }
+
 
   public function get($info)
   {

@@ -19,6 +19,8 @@ class GroupManager extends DBAccess {
     return $group;
   }
 
+
+
   public function count()
   {
     return $this->db->query('SELECT COUNT(*) FROM projet5_groups')->fetchColumn();
@@ -115,6 +117,16 @@ class GroupManager extends DBAccess {
     }
     $q->bindValue(':id', $groupId);
     $q->execute();
+  }
+
+  public function addPost($groupId)
+  {
+    $q = $this->db->query('UPDATE projet5_groups SET nbPost = nbPost + 1  WHERE id ='. $groupId);
+  }
+
+  public function addMember($groupId)
+  {
+    $q = $this->db->query('UPDATE projet5_groups SET nbMember = nbMember + 1  WHERE id ='. $groupId);
   }
 
   public function update(Group $group)

@@ -41,6 +41,21 @@ class PostManager extends DBAccess {
     }
   }
 
+
+public function getGroup($groupId)
+  {
+
+    $posts = [];
+
+    $q = $this->db->query('SELECT id, userId, title, content, DATE_FORMAT(creationDate, \'%d/%m/%Y à %Hh%i\') AS creationDate, DATE_FORMAT(updateDate, \'%d/%m/%Y à %Hh%i\') AS updateDate, nbComment FROM projet5_posts WHERE groupId = '.$groupId);
+  
+    while ($data = $q->fetch(PDO::FETCH_ASSOC))
+    {
+      $posts[] = new Post($data);
+    }
+    return $posts;
+  }
+
   public function get($info)
   {
     if (is_int($info))
@@ -115,6 +130,13 @@ class PostManager extends DBAccess {
     $q->bindValue(':id', $postId);
     $q->execute();
   }
+
+
+  public function addComment($postId)
+  {
+    $q = $this->db->query('UPDATE projet5_posts SET nbComment = nbComment + 1 WHERE id ='. $postId);
+  }
+
 
   public function update(Post $post)
   {

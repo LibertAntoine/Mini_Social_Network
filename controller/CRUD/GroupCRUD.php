@@ -21,26 +21,22 @@ class GroupCRUD {
 	    $newGroup = new Group(['title' => $title, 'status' => $status, 'linkCouvPicture' => $linkCouvPicture, 'nbMember' => count($memberArray)]);	
 
 	    $groupManager = new GroupManager();
-	    if ($groupManager->exists($title)){
-	    	return 'exist';
-	    } else { 
-	    	$group = $groupManager->add($newGroup);
-	    	if ($group) {
-		    	$groupId = $group->getId();
-		    	$linkGroupManager = new LinkGroupManager();
-		    	foreach ($memberArray as $member => $status) {
-		    		echo $status;
-		    		$linkGroup = new LinkGroup(['groupId' => $groupId, 'userId' => $member, 'status' => $status]);
-		    		$linkGroupManager->add($linkGroup);
-		    	}
-		    	return $group;
-	    	} else {
-	    		throw new Exception('Impossible d\'enregister le groupe');
-	    	}
-		}
+	    $group = $groupManager->add($newGroup);
+	    if ($group) {
+		    $groupId = $group->getId();
+		    $linkGroupManager = new LinkGroupManager();
+		    foreach ($memberArray as $member => $status) {
+		    	$linkGroup = new LinkGroup(['groupId' => $groupId, 'userId' => $member, 'status' => $status]);
+		    	$linkGroupManager->add($linkGroup);
+		    }
+		    return $group;
+	    } else {
+	    	throw new Exception('Impossible d\'enregister le groupe');
+	    }
 	}
 
-	public function exist($title) {
+
+	public function read($title) {
 		$groupManager = new GroupManager();
 		if ($groupManager->exists($title)) {
 			$group = $groupManager->get($title);
