@@ -1,8 +1,8 @@
-<?php $title = 'Page d\acceuil';
+<?php $title = $group->getTitle();
 
 ob_start(); ?>
 
-  <h2>Bienvenue sur la page du groupe</h2>
+  <h2>Bienvenue sur la page du groupe <?= $group->getTitle()?></h2>
 
   	<div class="row">
         <div class="col-lg-8 col-md-7">

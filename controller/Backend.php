@@ -27,6 +27,15 @@ class Backend extends View {
 
 	}
 
+	public function myGroupView() {
+
+		$groupCRUD = new GroupCRUD;
+		$groups = $groupCRUD->readMine($_SESSION['id']);
+
+		require('view/backend/myGroupView.php');
+
+	}
+
 	public function newGroupView() {
 
 		$userManager = new UserManager();
@@ -34,12 +43,4 @@ class Backend extends View {
 
 		require('view/backend/newGroupView.php');
 	}
-
-
-	public function myGroupView() {
-
-		require('view/backend/myGroupView.php');
-
-	}
-
 }

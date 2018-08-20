@@ -52,21 +52,11 @@ class GroupManager extends DBAccess {
       $group = $q->fetch(PDO::FETCH_ASSOC);
     } else 
     {
-     	$q = $this->db->prepare('SELECT id, title, status, DATE_FORMAT(creationDate, \'%d/%m/%Y à %Hh%i\') AS creationDate, DATE_FORMAT(lastUpdate, \'%d/%m/%Y à %Hh%i\') AS lastUpdate, nbPost, nbMember, linkCouvPicture FROM projet5_groups WHERE title = :title');
-      $q->execute([':title' => $info]);
+      $q = $this->db->query('SELECT id, title, status, DATE_FORMAT(creationDate, \'%d/%m/%Y à %Hh%i\') AS creationDate, DATE_FORMAT(lastUpdate, \'%d/%m/%Y à %Hh%i\') AS lastUpdate, nbPost, nbMember, linkCouvPicture FROM projet5_groups WHERE title ='. $info);
       $group = $q->fetch(PDO::FETCH_ASSOC);
     }
     return new Group($group);
   }
-
-  public function getTitle($groupId)
-  {
-    $q = $this->db->query('SELECT title FROM projet5_groups WHERE id = '. $groupId);
-    $info = $q->fetch(PDO::FETCH_ASSOC);
-
-    return $info['title'];
-  }
-
 
   public function getAllList()
   {
