@@ -16,6 +16,7 @@ class PostManager extends DBAccess {
 
     $post->hydrate([
       'id' => $this->db->lastInsertId()]);
+    return $post;
   }
 
   public function count()
@@ -46,7 +47,6 @@ public function getGroup($groupId)
   {
 
     $posts = [];
-
     $q = $this->db->query('SELECT id, userId, title, content, DATE_FORMAT(creationDate, \'%d/%m/%Y à %Hh%i\') AS creationDate, DATE_FORMAT(updateDate, \'%d/%m/%Y à %Hh%i\') AS updateDate, nbComment FROM projet5_posts WHERE groupId = '.$groupId);
   
     while ($data = $q->fetch(PDO::FETCH_ASSOC))

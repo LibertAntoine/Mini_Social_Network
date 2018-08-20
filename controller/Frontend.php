@@ -1,7 +1,8 @@
 <?php session_start();
 
+require_once('controller/View.php');
 
-class Frontend {
+class Frontend extends View {
 
 	function __construct($view, $param = NULL)
     {

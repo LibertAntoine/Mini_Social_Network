@@ -1,13 +1,11 @@
 <?php
 
+require_once('controller/View.php');
 
-class Backend {
+class Backend extends View {
 
-	protected $message;
-
-	function __construct($view, $message = '')
+	function __construct($view)
     {
-    	$this->message = $message;
         $this->$view(); 
     }
     

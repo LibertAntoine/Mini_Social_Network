@@ -49,6 +49,22 @@ class CommentManager extends DBAccess
     return new Comment($comment);
   }
 
+
+  public function getPost($postId)
+  {
+    $comments = [];
+    
+    $q = $this->db->query('SELECT id, userId, articleId, content, DATE_FORMAT(creationDate, \'%d/%m/%Y à %Hh%imin%ss\') AS creationDate, reporting FROM projet5_comments WHERE articleId ='. $postId);
+    
+    while ($data = $q->fetch(PDO::FETCH_ASSOC))
+    {
+      $comments[] = new Comment($data);
+    }
+    
+    return $comments;
+  }
+
+
   public function getList($articleId)
   {
     $comments = [];

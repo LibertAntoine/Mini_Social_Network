@@ -8,8 +8,8 @@ ob_start(); ?>
 
 	<div class="row">
 		<div class="col-md-12 col-sm-12 jumbotron">
-		<p><?php  if ($this->message != NULL) {echo $this->message;} ?></p>	
-			<form action="index.php?action=createGroup" method="post" enctype="multipart/form-data">
+		<p><?php  if ($this->getMessage() != NULL) {echo $this->getMessage();} ?></p>	
+			<form action="index.php?action=addGroup" method="post" enctype="multipart/form-data">
 				<h3>Informations sur le groupe</h3>
 				<label for="titleGroup">Nom du groupe :  </label>
 				<input type="text" id="titleGroup" name="titleGroup" required>

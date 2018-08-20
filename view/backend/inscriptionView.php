@@ -4,7 +4,7 @@ ob_start(); ?>
 
 	<p><a class="indexLink" href="index.php">-> Retour à l'acceuil du site</a></p>
 
-    <p><?php  if ($this->message != NULL) {echo $this->message;} ?></p>
+    <p><?php  if ($this->getMessage() != NULL) {echo $this->getMessage();} ?></p>
 
 	<h2>Création d'un nouveau compte</h2>
 

@@ -30,34 +30,53 @@ class Action
     }
 
 
-                public function mainPage() {
+                public function mainPage($message = NULL) {
                     $frontend = new Frontend('mainPageView');
+                    $frontend->setMessage($message);
                 }
-                public function groupView() {
-                    $frontend = new Frontend('groupView', intval(htmlspecialchars($_GET['id'])));
+                public function group($message = NULL) {
+                    if (isset($_GET['id'])) {
+                        $frontend = new Frontend('groupView', intval(htmlspecialchars($_GET['id'])));
+                        $frontend->setMessage($message);
+
+                    } else {
+                        throw new Exception('Mauvaise référence au groupe.');
+                    }
                 }    
 
                 public function login($message = NULL) {
-                    $backend = new Backend('loginView', $message);
+                    if (!isset($_SESSION['id'])) {
+                        $backend = new Backend('loginView');
+                        $backend->setMessage($message);
+                    } else {
+                        header('Location: index.php?action=mainPage');
+                    }
                 }
                 public function inscription($message = NULL) {
-                    $backend = new Backend('inscriptionView', $message);
+                    if (!isset($_SESSION['id'])) {
+                        $backend = new Backend('inscriptionView');
+                        $backend->setMessage($message);
+                    } else {
+                        header('Location: index.php?action=mainPage');
+                    }
                 }
-                public function backOffice() {
+                public function backOffice($message = NULL) {
                     if (isset($_SESSION['id'])) {
                         $backend = new Backend('backOfficeView');
+                        $backend->setMessage($message);
                     } else {
                         throw new Exception('Absence de donnée de session.');
                     }
                 }
                 public function newGroup($message = NULL) {
                     if (isset($_SESSION['id'])) {
-                        $backend = new Backend('newGroupView', $message);
+                        $backend = new Backend('newGroupView');
+                        $backend->setMessage($message);
                     } else {
                         throw new Exception('Absence de donnée de session.');
                     }
                 }
-                public function createGroup() {
+                public function addGroup() {
                     if (isset($_SESSION['id'], $_POST['titleGroup'], $_POST['status'], $_POST['listFriend'])) {
                         if(strlen($_POST['titleGroup']) <= 240 && strlen($_POST['titleGroup']) >= 4) {
                             $groupCRUD = new GroupCRUD();
@@ -75,7 +94,7 @@ class Action
                                     move_uploaded_file($_FILES['couvPicture']['tmp_name'], 'public/pictures/couv/'. $group->getId(). '.' . substr($_FILES['couvPicture']['type'], 6));
                                 }
                                 if ($group) {
-                                    header('Location: index.php?action=groupView&id=' . $group->getId());
+                                    header('Location: index.php?action=group&id=' . $group->getId());
                                 } else {
                                     throw new Exception('Impossible d\'enregister le groupe');
                                 } 
@@ -90,6 +109,28 @@ class Action
                     }
                 }
 
+                public function addPost() {
+                    if (isset($_SESSION['id'], $_POST['title'], $_POST['content'], $_POST['groupId'])) {
+                        if(strlen($_POST['title']) <= 240 && strlen($_POST['title']) >= 4) {
+                            $postCRUD = new PostCRUD();
+                            if(!$postCRUD->read($_POST['title'])) { 
+                                $post = $postCRUD->add($_POST['title'], $_POST['content'], $_POST['groupId'], $_SESSION['id']);
+                                if ($post) {
+                                    header('Location: index.php?action=group&id=' . intval($_POST['groupId']));
+                                } else {
+                                    throw new Exception('Impossible d\'enregister le post');
+                                } 
+                            } else {
+                                $this->group('Le nom de post existe déjà, merci d\'en choisir un autre');
+                            }
+                        } else {
+                            $this->group('Merci de renseigner un titre entre 5 et 240 caractères');
+                        }
+                    } else {
+                       $this->group('Merci de renseigner tous les champs obligatoires.');
+                    }
+                }
+
                 public function addUser() {
                     if (isset($_POST['pseudo']) && isset($_POST['mdp'])) {    
                         if (strlen($_POST['pseudo']) < 26 && strlen($_POST['pseudo']) > 7 ) {
@@ -100,7 +141,7 @@ class Action
                                     if ($user) {
                                     $_SESSION['pseudo'] = $user->getPseudo();
                                     $_SESSION['id'] = $user->getId();
-                                    $frontend = new Frontend('mainPageView');
+                                    header('Location: index.php?action=mainPage');
                                     } else {
                                         throw new Exception('Impossible d\'enregister l\'utilisateur');
                                     }
@@ -126,7 +167,7 @@ class Action
                                 if ($user) {
                                     $_SESSION['pseudo'] = $user->getPseudo();
                                     $_SESSION['id'] = $user->getId();
-                                    $frontend = new Frontend('mainPageView');
+                                    header('Location: index.php?action=mainPage');
                                 } else {
                                     $this->login('Les identifiants fournis ne correspondent à aucun compte existant.');
                                 }
@@ -143,7 +184,7 @@ class Action
                 public function logOut() {
                     $userCRUD = new UserCRUD();
                     $userCRUD->logOut();
-                    $frontend = new Frontend('mainPageView');
+                    header('Location: index.php?action=mainPage');
                 }
 }
 

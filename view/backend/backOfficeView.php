@@ -13,9 +13,7 @@ ob_start(); ?>
 	<h3>Gestion du compte utilisateur.</h3>
 	<div class="row">
 		<div class="col-md-6 col-sm-12 jumbotron">
-			<?php if (isset($message)) { ?>	
-				<p><?= $message ?></p>
-			<?php } ?>	
+			<p><?php  if ($this->getMessage() != NULL) {echo $this->getMessage();} ?></p>
 			<form action="index.php?action=editPseudo" method="post">
 				<h3>Modification du nom utilisateur</h3>
 				<p>Votre nom actuelle est <strong><?= $_SESSION['pseudo'] ?></strong></p>
