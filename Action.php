@@ -7,6 +7,7 @@ require_once('controller/CRUD/GroupCRUD.php');
 require_once('controller/CRUD/PostCRUD.php');
 require_once('controller/CRUD/CommentCRUD.php');
 require_once('controller/CRUD/LinkFriendCRUD.php');
+require_once('controller/CRUD/LinkGroupCRUD.php');
 
 class Action
 {
@@ -162,6 +163,18 @@ class Action
                     }
                 }
 
+                public function deleteUser() {
+                    if (isset($_SESSION['id'])) {    
+                    	$userCRUD = new UserCRUD();
+                    	$delete = $userCRUD->delete($_SESSION['id']);
+                    	if ($delete === 'ok') {
+                    		header('Location: index.php?action=MainPage');
+                    	}	
+                    } else {
+                        throw new Exception('Absence de donnée de session.');
+                    }
+                }
+
                 public function addFriend() {
                     if (isset($_GET['id']) && isset($_SESSION['id'])) {    
                         if ($_GET['id'] != $_SESSION['id']) {
@@ -207,6 +220,24 @@ class Action
                     }
                 }
 
+                public function deleteLinkGroup() {
+                    if (isset($_GET['id']) && isset($_SESSION['id'])) {    
+                            $linkGroupCRUD = new LinkGroupCRUD();
+                            if ($linkGroupCRUD->readLink(intval($_SESSION['id']), intval($_GET['id']))) {
+                                $link = $linkGroupCRUD->delete(intval($_GET['id']));
+                                if ($link) {
+                                 	header('Location: index.php?action=MyGroup');
+                                } else {
+                                    throw new Exception('Impossible de supprimer l\'affiliation au groupe');
+                                }
+                            } else {
+                               	throw new Exception('L\'utilisateur n\'a pas de lien avec ce groupe');
+                            }
+                    } else {
+                        throw new Exception('Absence de donnée de session.');
+                    }
+                }
+
                 public function verifUser() {
                     if (isset($_POST['pseudo']) && isset($_POST['mdp'])) {    
                         if (strlen($_POST['pseudo']) < 26 && strlen($_POST['pseudo']) > 0 ) {
@@ -214,9 +245,13 @@ class Action
                                 $userCRUD = new UserCRUD();
                                 $user = $userCRUD->read(htmlspecialchars($_POST['pseudo']), htmlspecialchars($_POST['mdp']));
                                 if ($user) {
-                                    $_SESSION['pseudo'] = $user->getPseudo();
-                                    $_SESSION['id'] = $user->getId();
-                                    header('Location: index.php?action=mainPage');
+                                	if ($user->getAcompte() === 'on') {
+                                    	$_SESSION['pseudo'] = $user->getPseudo();
+                                    	$_SESSION['id'] = $user->getId();
+                                    	header('Location: index.php?action=mainPage');
+                                	} else {
+                                		$this->login('Le compte a été désactivé');
+                                	}                               
                                 } else {
                                     $this->login('Les identifiants fournis ne correspondent à aucun compte existant.');
                                 }

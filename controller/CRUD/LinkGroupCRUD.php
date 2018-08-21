@@ -16,7 +16,7 @@
 	require_once('model/User.php');
 
 
-class LinkFriendCRUD {
+class LinkGroupCRUD {
 	
 	public function add($userApplicant, $newFriend)
 	{
@@ -45,41 +45,45 @@ class LinkFriendCRUD {
 	    }
 	}
 
-
-
-	public function readFriends() {
-		$linkFriendManager = new LinkFriendManager();
-		$linkFriends = $linkFriendManager->getFriends($_SESSION['id']);
-		if (isset($linkFriends)) {
-		    return $linkFriends;
+	public function readGroups($userId) {
+		$linkGroupManager = new LinkGroupManager();
+		$listGroups = $linkGroupManager->getGroups($userId);
+		if (isset($listGroups)) {
+			foreach ($listGroups as $group) {
+				
+				$linkGroups[$group->getGroupId()] = $group;
+			}
+		    return $linkGroups;
 	    } else {
 	    	return 'none';
 	    }
 	}
 
-	public function readLink($userApplicant, $newFriend) {
-		$linkFriendManager = new LinkFriendManager();
-		return $linkFriendManager->existLink($userApplicant, $newFriend);
+	public function readLink($userId, $groupId) {
+		$linkGroupManager = new LinkGroupManager();
+		$link = $linkGroupManager->existLink($userId, $groupId);
+		if (isset($link)) {
+			return $link->getStatus();
+		}
 	}
 
-	public function delete($idFriend) {	
-		$linkFriendManager = new LinkFriendManager();
-		$delete1 = $linkFriendManager->delete($_SESSION['id'], $idFriend);
-		$delete2 = $linkFriendManager->delete($idFriend, $_SESSION['id']);
-		if ($delete1 === 'ok' AND $delete2 === 'ok') {
+	public function delete($groupId) {	
+		$linkGroupManager = new LinkGroupManager();
+		$delete = $linkGroupManager->delete($_SESSION['id'], $groupId);
+		if ($delete === 'ok') {
 			return 'ok';
 		} else {
-	    	throw new Exception('Demander invalide : lien déjà présent');
+	    	throw new Exception('Erreur : impossible de supprimer le lien');
 	    }
 	}
 
 	public function deleteAll() {	
-		$linkFriendManager = new LinkFriendManager();
-		$delete1 = $linkFriendManager->deleteAll($_SESSION['id']);
-		if ($delete1 === 'ok') {
+		$linkGroupManager = new LinkGroupManager();
+		$delete = $linkGroupManager->deleteAll($_SESSION['id']);
+		if ($delete === 'ok') {
 			return 'ok';
 		} else {
-	    	throw new Exception('Demander invalide : lien déjà présent');
+	    	throw new Exception('Erreur : impossible de supprimer le lien');
 	    }
 	}
 }

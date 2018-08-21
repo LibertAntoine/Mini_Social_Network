@@ -35,24 +35,6 @@ class GroupCRUD {
 	    }
 	}
 
-	public function readMine($userId) {
-		$linkGroupManager = new LinkGroupManager();
-		$linkGroups = $linkGroupManager->getGroups($userId);
-		if (isset($linkGroups)) {
-			foreach ($linkGroups as $linkGroup) {
-				$groups[$linkGroup->getGroupId()] = [$this->read($linkGroup->getGroupId()), $linkGroup->getStatus()];
-			}
-			if (isset($groups)) {
-				return $groups;
-			} else {
-				throw new Exception('Impossible de récupérer les informations de groupe');
-			}
-		} else {
-			return 'none';
-		}
-
-
-	}
 
 	public function read($info) {
 		$groupManager = new GroupManager();

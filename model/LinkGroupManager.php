@@ -21,9 +21,32 @@ class LinkGroupManager extends DBAccess
     return $this->db->query('SELECT COUNT(*) FROM projet5_linkgroupuser')->fetchColumn();
   }
 
-  public function delete(LinkGroup $linkGroup)
+  public function existLink($userId, $groupId)
   {
-    $this->db->exec('DELETE FROM projet5_linkgroupuser WHERE id = '.$linkGroup->getId());
+    $q = $this->db->prepare('SELECT `id`, `groupId`, `userId`, `status`, DATE_FORMAT(linkDate, \'%d/%m/%Y à %Hh%imin%ss\') AS linkDate FROM projet5_linkgroupuser WHERE userId = :userId AND groupId = :groupId');
+    $q->bindValue(':userId', $userId);
+    $q->bindValue(':groupId', $groupId);
+    $q->execute();
+
+    $linkGroup = $q->fetch(PDO::FETCH_ASSOC);
+    return new LinkGroup($linkGroup);
+  }
+
+  public function delete($userId, $groupId)
+  {
+    $q = $this->db->prepare('DELETE FROM projet5_linkgroupuser WHERE userId = :userId AND groupId = :groupId');
+    $q->bindValue(':userId', $userId);
+    $q->bindValue(':groupId', $groupId);
+    $q->execute();
+    return 'ok';
+  }
+
+  public function deleteAll($userId)
+  {
+    $q = $this->db->prepare('DELETE FROM projet5_linkgroupuser WHERE userId = :userId');
+    $q->bindValue(':userId', $userId);
+    $q->execute();
+    return 'ok';
   }
 
   public function access($groupId, $userId)

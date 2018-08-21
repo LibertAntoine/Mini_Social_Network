@@ -74,11 +74,29 @@ class UserCRUD {
 		$userManager = new UserManager();
 		$usersList = $userManager->getAll();
 		foreach ($usersList as $user) {
-			$allUsers[$user->getId()] = $user;
+			if ($user->getAcompte() == 'on') {
+				$allUsers[$user->getId()] = $user;
+			}
 		}
 		return $allUsers;
 	}
 
+	public function delete() {
+		$userManager = new UserManager();
+		$delete1 = $userManager->delete($_SESSION['id']);
+		if ($delete1) {
+			$linkGroupCRUD = new LinkGroupCRUD();
+			$delete2 = $linkGroupCRUD->deleteAll();
+			if ($delete2) {
+				$linkFriendCRUD = new LinkFriendCRUD();
+				$delete3 = $linkFriendCRUD->deleteAll();
+				if ($delete3) {	
+					$this->logOut();
+					return 'ok';
+				}
+			}
+		}
+	}
 
 
 	public function logOut() {	

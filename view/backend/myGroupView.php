@@ -17,9 +17,10 @@ ob_start(); ?>
                             </tr>
                             <?php foreach ($groups as $groupId => $group) { ?>   
                                 <tr>
-                                    <td><a href="index.php?action=group&amp;id=<?= $groupId ?>"><h3><?= htmlspecialchars($group[0]->getTitle()) ?></h3></a></td>
-                                    <td><?= htmlspecialchars($group[0]->getStatus()) ?></td>
-                                    <td><?= $group[1] ?></td>
+                                    <td><a href="index.php?action=group&amp;id=<?= $groupId ?>"><h3><?= htmlspecialchars($group->getTitle()) ?></h3></a></td>
+                                    <td><?= htmlspecialchars($group->getStatus()) ?></td>
+                                    <td><?= $linkGroups[$groupId]->getStatus() ?></td>
+                                    <td><a href="index.php?action=deleteLinkGroup&amp;id=<?= $groupId ?>">Quitter le groupe</a></td>
                                 </tr>
                             <?php } ?>
                         </table>

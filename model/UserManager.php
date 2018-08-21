@@ -6,7 +6,7 @@ class UserManager extends DBAccess
 
 	public function add(User $user) 
   {
-		$q = $this->db->prepare("INSERT INTO `projet5_users` (`pseudo`, `mdp`, `creationProfil`, `nbGroup`, `status`, `lastLogin`, `nbPublication`, `nbComment`) VALUES (:pseudo, :mdp, NOW(), '0', 'member', NOW(), '0', '0');");
+		$q = $this->db->prepare("INSERT INTO `projet5_users` (`pseudo`, `mdp`, `creationProfil`, `nbGroup`, `status`, `lastLogin`, `nbPublication`, `nbComment`, `acompte`) VALUES (:pseudo, :mdp, NOW(), '0', 'member', NOW(), '0', '0', 'on');");
       
 		$q->bindValue(':pseudo', $user->getPseudo());
     $q->bindValue(':mdp', $user->getMdp());
@@ -26,7 +26,8 @@ class UserManager extends DBAccess
 
   public function delete($userId)
   {
-    $this->db->exec('DELETE FROM projet5_users WHERE id = '. $userId);
+    $this->db->exec('UPDATE projet5_users SET acompte = "off" WHERE id = '. $userId);
+    return 'ok';
   }
 
  	public function exists($info)
@@ -45,11 +46,11 @@ class UserManager extends DBAccess
   {
     if (is_int($info))
     {
-      $q = $this->db->query('SELECT id, pseudo, mdp, DATE_FORMAT(creationProfil, \'%d/%m/%Y à %Hh%imin%ss\') AS creationProfil, nbGroup, status, DATE_FORMAT(lastLogin, \'%d/%m/%Y à %Hh%imin%ss\') AS lastLogin, nbPublication, nbComment FROM projet5_users WHERE id = '.$info);
+      $q = $this->db->query('SELECT id, pseudo, mdp, DATE_FORMAT(creationProfil, \'%d/%m/%Y à %Hh%imin%ss\') AS creationProfil, nbGroup, status, DATE_FORMAT(lastLogin, \'%d/%m/%Y à %Hh%imin%ss\') AS lastLogin, nbPublication, nbComment, acompte FROM projet5_users WHERE id = '.$info);
       $user = $q->fetch(PDO::FETCH_ASSOC);
     } else 
     {
-      $q = $this->db->prepare('SELECT id, pseudo, mdp, DATE_FORMAT(creationProfil, \'%d/%m/%Y à %Hh%imin%ss\') AS creationProfil, nbGroup, status, DATE_FORMAT(lastLogin, \'%d/%m/%Y à %Hh%imin%ss\') AS lastLogin, nbPublication, nbComment FROM projet5_users WHERE pseudo = :pseudo');
+      $q = $this->db->prepare('SELECT id, pseudo, mdp, DATE_FORMAT(creationProfil, \'%d/%m/%Y à %Hh%imin%ss\') AS creationProfil, nbGroup, status, DATE_FORMAT(lastLogin, \'%d/%m/%Y à %Hh%imin%ss\') AS lastLogin, nbPublication, nbComment, acompte FROM projet5_users WHERE pseudo = :pseudo');
       $q->execute([':pseudo' => $info]);
       
       $user = $q->fetch(PDO::FETCH_ASSOC);
@@ -61,7 +62,7 @@ class UserManager extends DBAccess
   {
     $allUsers = [];
     
-    $q = $this->db->query('SELECT id, pseudo, mdp, DATE_FORMAT(creationProfil, \'%d/%m/%Y à %Hh%imin%ss\') AS creationProfil, nbGroup, status, DATE_FORMAT(lastLogin, \'%d/%m/%Y à %Hh%imin%ss\') AS lastLogin, nbPublication, nbComment FROM projet5_users');
+    $q = $this->db->query('SELECT id, pseudo, mdp, DATE_FORMAT(creationProfil, \'%d/%m/%Y à %Hh%imin%ss\') AS creationProfil, nbGroup, status, DATE_FORMAT(lastLogin, \'%d/%m/%Y à %Hh%imin%ss\') AS lastLogin, nbPublication, nbComment, acompte FROM projet5_users');
     while ($data = $q->fetch(PDO::FETCH_ASSOC))
     {
      $allUsers[$data['id']] = new User($data);
@@ -73,7 +74,7 @@ class UserManager extends DBAccess
   {
     $users = [];
     
-    $q = $this->db->prepare('SELECT id, pseudo, mdp, DATE_FORMAT(creationProfil, \'%d/%m/%Y à %Hh%imin%ss\') AS creationProfil, nbGroup, status, DATE_FORMAT(lastLogin, \'%d/%m/%Y à %Hh%imin%ss\') AS lastLogin, nbPublication, nbComment FROM projet5_users WHERE status = "visitor" ORDER BY pseudo');
+    $q = $this->db->prepare('SELECT id, pseudo, mdp, DATE_FORMAT(creationProfil, \'%d/%m/%Y à %Hh%imin%ss\') AS creationProfil, nbGroup, status, DATE_FORMAT(lastLogin, \'%d/%m/%Y à %Hh%imin%ss\') AS lastLogin, nbPublication, nbComment, acompte FROM projet5_users WHERE status = "visitor" ORDER BY pseudo');
     $q->execute();
     while ($data = $q->fetch(PDO::FETCH_ASSOC))
     {

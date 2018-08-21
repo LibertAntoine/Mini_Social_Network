@@ -23,11 +23,19 @@ class LinkFriendManager extends DBAccess
     return $this->db->query('SELECT COUNT(*) FROM projet5_linkfriend')->fetchColumn();    
   }
 
-  public function delete($userApplicant, $newFriend)
+  public function delete($userApplicant, $Friend)
   {
     $q = $this->db->prepare('DELETE FROM projet5_linkfriend WHERE userId1 = :userId1 AND userId2 = :userId2');
     $q->bindValue(':userId2', $userApplicant);
-    $q->bindValue(':userId1', $newFriend);
+    $q->bindValue(':userId1', $Friend);
+    $q->execute();
+    return 'ok';
+  }
+
+  public function deleteAll($userId)
+  {
+    $q = $this->db->prepare('DELETE FROM projet5_linkfriend WHERE userId1 = :userId OR userId2 = :userId');
+    $q->bindValue(':userId', $userId);
     $q->execute();
     return 'ok';
   }

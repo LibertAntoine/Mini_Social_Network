@@ -7,7 +7,8 @@ class User {
   $creationProfil,
 	$status,
   $nbPublication,
-  $nbComment;
+  $nbComment,
+  $acompte;
 
 
 	public function __construct(array $data)
@@ -60,6 +61,11 @@ class User {
   public function getNbComment() 
   {
     return $this->nbComment;
+  }
+
+  public function getAcompte() 
+  {
+    return $this->acompte;
   }
 
 	public function setId($id) 
@@ -121,6 +127,14 @@ class User {
     if ($nbComment >= 0) 
     {
      $this->nbComment = $nbComment;
+    }
+  }
+
+  public function setAcompte($acompte) 
+  {
+    if (is_string($acompte) && strlen($acompte) < 26) 
+    {
+     $this->acompte = $acompte;
     }
   }
 

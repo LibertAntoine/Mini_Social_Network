@@ -33,6 +33,11 @@ ob_start(); ?>
 			</form>
 		</div>
 	</div>
+	<a href="index.php?action=deleteUser"><div id="newGroup" class="btn btn-alert btn-lg">
+	<p>Supprimer le compte</p></div></a>
+
+
+
 
 <?php $content = ob_get_clean(); ?>
 

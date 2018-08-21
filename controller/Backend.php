@@ -29,12 +29,16 @@ class Backend extends View {
 
 	public function myGroupView() {
 
+		$linkGroupCRUD = new LinkGroupCRUD();
+		$linkGroups = $linkGroupCRUD->readGroups($_SESSION['id']);
 
-		$groupCRUD = new GroupCRUD();
-		$groups = $groupCRUD->readMine($_SESSION['id']);
-
+		if ($linkGroups) {
+			$groupCRUD = new GroupCRUD();
+			foreach ($linkGroups as $groupId => $link) {
+				$groups[$groupId] = $groupCRUD->read($groupId);
+			}
+		}
 		require('view/backend/myGroupView.php');
-
 	}
 
 	public function myFriendView() {
@@ -57,7 +61,7 @@ class Backend extends View {
 				}	
 			}
 		} else {
-			$this->setMessage('Vous n\'avez pas encore d\ami, dépéchez vous d\'en ajouter');
+			$this->setMessage('Vous n\'avez pas encore d\'ami, dépéchez vous d\'en ajouter');
 		}
 		$userCRUD = new UserCRUD();
 		$allUsers = $userCRUD->readAll();
