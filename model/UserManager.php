@@ -45,11 +45,11 @@ class UserManager extends DBAccess
   {
     if (is_int($info))
     {
-      $q = $this->db->query('SELECT id, pseudo, mdp, creationProfil, status FROM projet5_users WHERE id = '.$info);
+      $q = $this->db->query('SELECT id, pseudo, mdp, DATE_FORMAT(creationProfil, \'%d/%m/%Y à %Hh%imin%ss\') AS creationProfil, nbGroup, status, DATE_FORMAT(lastLogin, \'%d/%m/%Y à %Hh%imin%ss\') AS lastLogin, nbPublication, nbComment FROM projet5_users WHERE id = '.$info);
       $user = $q->fetch(PDO::FETCH_ASSOC);
     } else 
     {
-      $q = $this->db->prepare('SELECT id, pseudo, mdp, creationProfil, status FROM projet5_users WHERE pseudo = :pseudo');
+      $q = $this->db->prepare('SELECT id, pseudo, mdp, DATE_FORMAT(creationProfil, \'%d/%m/%Y à %Hh%imin%ss\') AS creationProfil, nbGroup, status, DATE_FORMAT(lastLogin, \'%d/%m/%Y à %Hh%imin%ss\') AS lastLogin, nbPublication, nbComment FROM projet5_users WHERE pseudo = :pseudo');
       $q->execute([':pseudo' => $info]);
       
       $user = $q->fetch(PDO::FETCH_ASSOC);
@@ -59,22 +59,21 @@ class UserManager extends DBAccess
 
   public function getAll()
   {
-    $users = [];
+    $allUsers = [];
     
-    $q = $this->db->prepare("SELECT id, pseudo, mdp FROM projet5_users ORDER BY pseudo");
-    $q->execute();
+    $q = $this->db->query('SELECT id, pseudo, mdp, DATE_FORMAT(creationProfil, \'%d/%m/%Y à %Hh%imin%ss\') AS creationProfil, nbGroup, status, DATE_FORMAT(lastLogin, \'%d/%m/%Y à %Hh%imin%ss\') AS lastLogin, nbPublication, nbComment FROM projet5_users');
     while ($data = $q->fetch(PDO::FETCH_ASSOC))
     {
-     $users[] = new User($data);
+     $allUsers[$data['id']] = new User($data);
     }
-    return $users;
+    return $allUsers;
   }
 
   public function getList()
   {
     $users = [];
     
-    $q = $this->db->prepare("SELECT id, pseudo, mdp, creationProfil, status FROM projet5_users WHERE status = 'visitor' ORDER BY pseudo");
+    $q = $this->db->prepare('SELECT id, pseudo, mdp, DATE_FORMAT(creationProfil, \'%d/%m/%Y à %Hh%imin%ss\') AS creationProfil, nbGroup, status, DATE_FORMAT(lastLogin, \'%d/%m/%Y à %Hh%imin%ss\') AS lastLogin, nbPublication, nbComment FROM projet5_users WHERE status = "visitor" ORDER BY pseudo');
     $q->execute();
     while ($data = $q->fetch(PDO::FETCH_ASSOC))
     {

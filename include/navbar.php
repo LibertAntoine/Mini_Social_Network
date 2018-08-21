@@ -5,6 +5,7 @@
 			<?php if (isset($_SESSION['pseudo'])) { ?> 
 				<a class="navbar-link" href="index.php?action=backOffice"><div class="navbloc">Espace personnel</div></a>
 				<a class="navbar-link" href="index.php?action=myGroup"><div class="navbloc">Mes groupes</div></a>
+				<a class="navbar-link" href="index.php?action=myFriend"><div class="navbloc">Mes amis</div></a>
 				<a class="navbar-link" href="index.php?action=logOut"><div class="navbloc">Déconnexion</div></a>
 			<?php } else {?>
 				<a class="navbar-link" href="index.php?action=login"><div class="navbloc">Connexion</div></a>

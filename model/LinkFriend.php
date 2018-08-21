@@ -3,7 +3,7 @@
 /**
  * 
  */
-class LinkGroup
+class LinkFriend
 {
 
 	protected $id,
@@ -12,23 +12,6 @@ class LinkGroup
 	$status,
 	$linkDate;
 
-
-	public function __construct(array $data)
-  {
-   	 $this->hydrate($data);
-  }
-
-	public function hydrate(array $data)
-  {
-    	foreach ($data as $key => $value)
-    	{
-     	 	$method = 'set'.ucfirst($key);
-      		if (method_exists($this, $method))
-      		{
-        		$this->$method($value);
-      		}
-      	}
-  }
 
   public function __construct(array $data)
   {
@@ -81,7 +64,7 @@ class LinkGroup
       }
   }
 
-  public function setUserId($userId1) 
+  public function setUserId1($userId1) 
   {
       $userId1 = (int) $userId1;
       if ($userId1 >= 0) 
@@ -90,7 +73,7 @@ class LinkGroup
       }
   }
 
-  public function setUserId($userId2) 
+  public function setUserId2($userId2) 
   {
       $userId2 = (int) $userId2;
       if ($userId2 >= 0) 

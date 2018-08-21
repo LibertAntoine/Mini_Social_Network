@@ -55,10 +55,10 @@ class UserCRUD {
 	    require('view/backend/backOffice.php');
 	}
 
-	public function read($pseudo, $mdp = NULL) {
+	public function read($info, $mdp = NULL) {
 		$userManager = new UserManager();
-		if ($userManager->exists($pseudo)) {
-			$user = $userManager->get($pseudo);
+		if ($userManager->exists($info)) {
+			$user = $userManager->get($info);
 			if ($mdp !== NULL) {
 				if ($user->getMdp() == $mdp) {
 					return $user;
@@ -69,6 +69,17 @@ class UserCRUD {
 			
 		}
 	}
+
+	public function readAll() {
+		$userManager = new UserManager();
+		$usersList = $userManager->getAll();
+		foreach ($usersList as $user) {
+			$allUsers[$user->getId()] = $user;
+		}
+		return $allUsers;
+	}
+
+
 
 	public function logOut() {	
 		session_destroy();

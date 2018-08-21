@@ -5,7 +5,9 @@ class User {
 	$pseudo,
 	$mdp,
   $creationProfil,
-	$status;
+	$status,
+  $nbPublication,
+  $nbComment;
 
 
 	public function __construct(array $data)
@@ -50,6 +52,16 @@ class User {
     return $this->status;
   }
 
+  public function getNbPublication() 
+  {
+    return $this->nbPublication;
+  }
+
+  public function getNbComment() 
+  {
+    return $this->nbComment;
+  }
+
 	public function setId($id) 
   {
  	  $id = (int) $id;
@@ -58,6 +70,8 @@ class User {
  		 $this->id = $id;
  	  }
   }
+
+
 
  	public function setPseudo($pseudo) 
   {
@@ -90,10 +104,25 @@ class User {
  		 $this->status = $status;
  	  }
   }
+
+
+  public function setNbPublication($nbPublication) 
+  {
+    $nbPublication = (int) $nbPublication;
+    if ($nbPublication >= 0) 
+    {
+     $this->nbPublication = $nbPublication;
+    }
+  }
+
+  public function setNbComment($nbComment) 
+  {
+    $nbComment = (int) $nbComment;
+    if ($nbComment >= 0) 
+    {
+     $this->nbComment = $nbComment;
+    }
+  }
+
 }
-
-
-
-
-
 

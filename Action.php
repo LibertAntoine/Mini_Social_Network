@@ -6,6 +6,7 @@ require_once('controller/CRUD/UserCRUD.php');
 require_once('controller/CRUD/GroupCRUD.php');
 require_once('controller/CRUD/PostCRUD.php');
 require_once('controller/CRUD/CommentCRUD.php');
+require_once('controller/CRUD/LinkFriendCRUD.php');
 
 class Action
 {
@@ -57,6 +58,14 @@ class Action
                 public function myGroup($message = NULL) {
                     if (isset($_SESSION['id'])) {
                         $backend = new Backend('myGroupView');
+                        $backend->setMessage($message);
+                    } else {
+                        throw new Exception('Absence de donnée de session.');
+                    }
+                }
+                public function myFriend($message = NULL) {
+                    if (isset($_SESSION['id'])) {
+                        $backend = new Backend('myFriendView');
                         $backend->setMessage($message);
                     } else {
                         throw new Exception('Absence de donnée de session.');
@@ -152,6 +161,52 @@ class Action
                         $this->inscription('Merci de renseigner tous les champs.');
                     }
                 }
+
+                public function addFriend() {
+                    if (isset($_GET['id']) && isset($_SESSION['id'])) {    
+                        if ($_GET['id'] != $_SESSION['id']) {
+                                $userCRUD = new UserCRUD();
+                                if (!$userCRUD->read(htmlspecialchars($_GET['id']))) {
+                                	$linkFriendCRUD = new LinkFriendCRUD();
+                                    $friend = $linkFriendCRUD->add(intval($_SESSION['id']), intval($_GET['id']));
+                                    if ($friend) {
+                                    header('Location: index.php?action=myFriend');
+                                    } else {
+                                        throw new Exception('Impossible d\'enregister l\'utilisateur');
+                                    }
+                                } else {
+                                   $this->inscription('Le nom d\'utilisateur existe déjà, merci d\'en choisir un autre');
+                                }
+                        } else {
+                            throw new Exception('Mauvaise donnée de session.');
+                        }
+                    } else {
+                        throw new Exception('Absence de donnée de session.');
+                    }
+                }
+
+                public function deleteFriend() {
+                    if (isset($_GET['id']) && isset($_SESSION['id'])) {    
+                        if ($_GET['id'] != $_SESSION['id']) {
+                                $linkFriendCRUD = new LinkFriendCRUD();
+                                if ($linkFriendCRUD->readLink(intval($_SESSION['id']), intval($_GET['id']))) {
+                                   	$friend = $linkFriendCRUD->delete(intval($_GET['id']));
+                                    if ($friend) {
+                                    header('Location: index.php?action=MyFriend');
+                                    } else {
+                                        throw new Exception('Impossible d\'enregister l\'utilisateur');
+                                    }
+                                } else {
+                                   throw new Exception('L\'utilisateur n\'a pas de lien avec cet id');
+                                }
+                        } else {
+                            throw new Exception('Mauvaise donnée de session.');
+                        }
+                    } else {
+                        throw new Exception('Absence de donnée de session.');
+                    }
+                }
+
                 public function verifUser() {
                     if (isset($_POST['pseudo']) && isset($_POST['mdp'])) {    
                         if (strlen($_POST['pseudo']) < 26 && strlen($_POST['pseudo']) > 0 ) {
