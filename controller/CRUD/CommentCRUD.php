@@ -51,13 +51,19 @@ class CommentCRUD {
 		}
 	}
 
-	public function delete($commentId, $postId, $userId) {	
-		$commentManager = new CommentManager();
-		$commentManager->delete($commentId);
-		$postManager = new PostManager();
-		$postManager->removeComment($postId);
-		$userManager = new UserManager();
-		$userManager->removeComment($userId);
+	public function delete($commentId) {
+		$comment = $this->read($commentId);
+		if ($comment) {
+			$commentManager = new CommentManager();
+			$commentManager->delete($commentId);
+			$postManager = new PostManager();
+			$postManager->removeComment($comment->getArticleId());
+			$userManager = new UserManager();
+			$userManager->removeComment($comment->getUserId());
+		}
+		
+		
+
 		return 'ok';
 	}
 }

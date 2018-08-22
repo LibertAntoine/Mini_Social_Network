@@ -60,11 +60,13 @@ public function getGroup($groupId)
   {
     if (is_int($info))
     {
-      $q = $this->db->query('SELECT id, userId,, groupId title, content, DATE_FORMAT(creationDate, \'%d/%m/%Y à %Hh%i\') AS creationDate, DATE_FORMAT(updateDate, \'%d/%m/%Y à %Hh%i\') AS updateDate, nbComment, groupId FROM projet5_posts WHERE id = '.$info);
+
+      $q = $this->db->query('SELECT id, userId, groupId, title, content, DATE_FORMAT(creationDate, \'%d/%m/%Y à %Hh%i\') AS creationDate, DATE_FORMAT(updateDate, \'%d/%m/%Y à %Hh%i\') AS updateDate, nbComment, groupId FROM projet5_posts WHERE id = '.$info);
+
       $post = $q->fetch(PDO::FETCH_ASSOC);
     } else 
     {
-     	$q = $this->db->prepare('SELECT id, userId,, groupId title, content, DATE_FORMAT(creationDate, \'%d/%m/%Y à %Hh%i\') AS creationDate, DATE_FORMAT(updateDate, \'%d/%m/%Y à %Hh%i\') AS updateDate, nbComment, groupId FROM projet5_posts WHERE title = :title');
+     	$q = $this->db->prepare('SELECT id, userId, groupId, title, content, DATE_FORMAT(creationDate, \'%d/%m/%Y à %Hh%i\') AS creationDate, DATE_FORMAT(updateDate, \'%d/%m/%Y à %Hh%i\') AS updateDate, nbComment, groupId FROM projet5_posts WHERE title = :title');
       $q->execute([':title' => $info]);
       $post = $q->fetch(PDO::FETCH_ASSOC);
     }

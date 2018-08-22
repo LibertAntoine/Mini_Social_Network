@@ -12,6 +12,9 @@ ob_start(); ?>
                         <h3><?= htmlspecialchars($data->getTitle()) ?></h3><br/>
                         <em class="creationDate">ajouté le <?= $data->getCreationDate() ?></em><br/>
                         <p><?= nl2br($data->getContent()) ?></p>
+                        <?php if ($_SESSION['id'] === $data->getUserId()) { ?>
+                                    <a href="index.php?action=deletePost&amp;postId=<?= $data->getId() ?>">Supprimer</a>
+                        <?php } ?>
                     </div>
                     <?php if ($comments[$data->getId()] !== 'none') {
                         foreach ($comments[$data->getId()] as $comment) { ?>

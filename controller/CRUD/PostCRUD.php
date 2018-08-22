@@ -25,11 +25,12 @@ class PostCRUD {
 		if ($post) {
 			$groupManager = new GroupManager();
 			$groupManager->addPost($groupId);
-
+			$userManager = new UserManager();
+			$userManager->addPost($userId);
+			return $post;
 		} else {
 			throw new Exception('Impossible d\'ajouter un post');
 		}
-		return $post;
 	}
 
 	public function readGroup($groupId) {
@@ -42,16 +43,33 @@ class PostCRUD {
 		}	
 	}
 
-	public function read($title) {
+	public function read($info) {
 		$postManager = new PostManager();
-		if ($postManager->exists($title)) {
-			$post = $postManager->get($title);
+		if ($postManager->exists($info)) {
+			$post = $postManager->get($info);
+
 			return $post;
 		}
 	}
 
-	public function delete($id) {	
-		$postManager = new PostManager();
-		$postManager->delete($id);
+	public function delete($postId) {
+		$post = $this->read($postId);
+		if ($post) {
+
+			$groupManager = new GroupManager();
+			$groupManager->removePost($post->getGroupId());
+			$commentCRUD = new CommentCRUD();
+			$comments = $commentCRUD->readPost($postId);
+			if ($comments != 'none') {
+				foreach ($comments as $comment) {
+					$commentCRUD->delete($comment->getId());
+				}
+			}
+			$userManager = new UserManager();
+			$userManager->removePost($post->getUserId());
+			$postManager = new PostManager();
+			$postManager->delete($postId);
+			return $post->getGroupId();
+		}
 	}
 }

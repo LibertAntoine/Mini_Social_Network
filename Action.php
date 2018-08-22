@@ -135,6 +135,24 @@ class Action
                     }
                 }
 
+				public function deletePost() {
+                    if (isset($_GET['postId'])) {
+                    	$postCRUD = new PostCRUD();
+                        if($postCRUD->read(intval($_GET['postId']))) {                  
+                            $delete = $postCRUD->delete(intval($_GET['postId']));
+                            if ($delete) {
+                                header('Location: index.php?action=group&id=' . $delete);
+                            } else {
+                                throw new Exception('Impossible de supprimer la publication');
+                            } 
+                        } else {
+                            $this->group('La publication n\'existe pas');
+                        }
+                    } else {
+                       throw new Exception('Aucune publication assignée');
+                    }
+                }
+
                 public function addComment() {
                     if (isset($_SESSION['id'], $_POST['content'], $_POST['postId'], $_POST['groupId'])) {
 
@@ -161,12 +179,9 @@ class Action
                     if (isset($_GET['commentId'], $_GET['groupId'])) {
 
                     	$commentCRUD = new CommentCRUD();
-                    	$comment = $commentCRUD->read(intval($_GET['commentId']));
-                        if($comment) {
-                            $postId = $comment->getArticleId();
-                            $userId = $comment->getUserId();                    
-                            $delete = $commentCRUD->delete($_GET['commentId'], $postId, $userId);
-                            if ($comment) {
+                        if($commentCRUD->read(intval($_GET['commentId']))) {                   
+                            $delete = $commentCRUD->delete($_GET['commentId']);
+                            if ($delete) {
                                 header('Location: index.php?action=group&id=' . intval($_GET['groupId']));
                             } else {
                                 throw new Exception('Impossible d\'enregister le commentaire');
