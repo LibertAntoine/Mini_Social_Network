@@ -6,7 +6,7 @@ ob_start(); ?>
 
   	<div class="row">
         <div class="col-lg-8 col-md-7">
-            <?php if ($groups !== 'none') { ?>
+            <?php if (isset($groups)) { ?>
                 <div class="row">
                     <div class="col-lg-8 col-md-7">
                          <table class="table">
@@ -33,10 +33,11 @@ ob_start(); ?>
                         </table>
                     </div>
                 </div>
+            <?php } else { ?>
+                <p>Vous ne faites encore partie d'aucun groupe <a href="index.php?action=newGroup">créez en un !</a></p>
             <?php } ?>
         </div>
     </div>
-
 
 <?php $content = ob_get_clean(); ?>
 

@@ -9,7 +9,7 @@ ob_start(); ?>
 	<div class="row">
 		<div class="col-md-12 col-sm-12 jumbotron">
 		<p><?php  if ($this->getMessage() != NULL) {echo $this->getMessage();} ?></p>	
-			<form action="index.php?action=addGroup" method="post" enctype="multipart/form-data">
+			<form action="index.php?action=newGroupMember" method="post" enctype="multipart/form-data">
 				<h3>Informations sur le groupe</h3>
 				<label for="titleGroup">Nom du groupe :  </label>
 				<input type="text" id="titleGroup" name="titleGroup" required>
@@ -22,13 +22,6 @@ ob_start(); ?>
 				<br/>
 				<label for="status">Ajouter une image de couverture :  </label>
 				<input type="file" id="couvPicture" name="couvPicture" accept=".png, .jpg, .jpeg">
-
-				<h3>Ajouter d'autres membres.</h3>
-				<select name="listFriend">
-					<?php foreach ($users as $member) { ?>
-						<option value="<?= $member->getId()?>"><?= $member->getPseudo()?></option>
-					<?php } ?>
-				</select>
 				<br/>
 				<input class="btn btn-success" type="submit" value="Valider la modification"/>
 			</form>

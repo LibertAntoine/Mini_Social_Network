@@ -3,7 +3,7 @@
 ob_start(); ?>
 
   <h2>Bienvenue sur la page du groupe <?= $group->getTitle()?></h2>
-  <a href="index.php?action=deleteGroup&amp;groupId=<?= $group->getId() ?>">Supprimer le groupe</a>
+  <p><a href="index.php?action=deleteGroup&amp;groupId=<?= $group->getId() ?>">Supprimer le groupe</a> | <a href="index.php?action=deleteLinkGroup&amp;id=<?= $groupId ?> ?>">Quitter le groupe</a></p>
   	<div class="row">
         <div class="col-lg-8 col-md-7">
             <?php if ($posts !== 'none') { 

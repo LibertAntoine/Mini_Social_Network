@@ -32,7 +32,7 @@ class Backend extends View {
 		$linkGroupCRUD = new LinkGroupCRUD();
 		$linkGroups = $linkGroupCRUD->readGroups($_SESSION['id']);
 
-		if ($linkGroups) {
+		if ($linkGroups != 'none') {
 			$groupCRUD = new GroupCRUD();
 			foreach ($linkGroups as $groupId => $link) {
 				$groups[$groupId] = $groupCRUD->read($groupId);
@@ -60,8 +60,6 @@ class Backend extends View {
 					throw new Exception('Erreur dans la lecture de la liste d\'amis');
 				}	
 			}
-		} else {
-			$this->setMessage('Vous n\'avez pas encore d\'ami, dépéchez vous d\'en ajouter');
 		}
 		$userCRUD = new UserCRUD();
 		$allUsers = $userCRUD->readAll();
@@ -77,11 +75,87 @@ class Backend extends View {
 		}	
 	}
 
+
 	public function newGroupView() {
 
-		$userManager = new UserManager();
-		$users = $userManager->getAll();
-
 		require('view/backend/newGroupView.php');
+
+	}
+
+	public function newGroupMemberView() {
+
+
+		
+		$friendCRUD = new LinkFriendCRUD();
+		$linkFriends = $friendCRUD->readFriends();
+		if ($linkFriends != 'none') {
+			$userCRUD = new UserCRUD();
+			foreach ($linkFriends as $friend) {
+				if ($friend->getStatus() === "yes") {
+					if ($friendCRUD->readLink($_SESSION['id'], $friend->getUserId2())) {
+						$friends[$friend->getUserId2()] = $userCRUD->read($friend->getUserId2());
+					}
+				}
+			}
+		}
+		if (!isset($_SESSION['author'])) {
+			$_SESSION['author'] = [];
+		}
+		if (!isset($_SESSION['viewer'])) {
+			$_SESSION['viewer'] = [];
+		}
+		if (!isset($_SESSION['commenter'])) {
+			$_SESSION['commenter'] = [];
+		}
+
+
+		if (isset($_POST['commenter'])) {
+			array_push($_SESSION['commenter'], serialize($userCRUD->read(intval($_POST['commenter']))));
+		}
+		if (isset($_POST['author'])) {
+			array_push($_SESSION['author'], serialize($userCRUD->read(intval($_POST['author']))));
+		}
+		if (isset($_POST['viewer'])) {
+			array_push($_SESSION['viewer'], serialize($userCRUD->read(intval($_POST['viewer']))));
+		}
+		
+		$listAuthors = $friends;
+		if ($_SESSION['author'] != NULL) {
+			for ($i=0; $i < count($_SESSION['author']); $i++) {
+				$author = unserialize($_SESSION['author'][$i]);
+				if (isset($listAuthors[$author->getId()])) {
+					unset($listAuthors[$author->getId()]);
+				} else {
+					unset($_SESSION['author'][$i]);
+				}
+			}
+		}
+
+		$listCommenters = $listAuthors;
+		if ($_SESSION['commenter'] != NULL) {
+			for ($i=0; $i < count($_SESSION['commenter']); $i++) {
+				$commenter = unserialize($_SESSION['commenter'][$i]);
+				if (isset($listCommenters[$commenter->getId()])) {
+					unset($listCommenters[$commenter->getId()]);
+				} else {
+					unset($_SESSION['commenter'][$i]);
+				}	
+			}
+		}
+
+		$listViewers = $listCommenters;
+		if ($_SESSION['viewer'] != NULL) {
+
+			for ($i=0; $i < count($_SESSION['viewer']); $i++) {
+				$viewer = unserialize($_SESSION['viewer'][$i]);
+				if (isset($listViewers[$viewer->getId()])) {
+					unset($listViewers[$viewer->getId()]);
+				} else {
+					unset($_SESSION['viewer'][$i]);
+				}	
+			}
+		}
+
+		require('view/backend/newGroupMemberView.php');
 	}
 }

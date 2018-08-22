@@ -16,25 +16,33 @@
 
 class GroupCRUD {
 	
-	public function add($title, $status, $linkCouvPicture = '', $memberArray)
+	public function add($title, $status, $linkCouvPicture = '', $adminId, $memberArray)
 	{
-	    $newGroup = new Group(['title' => $title, 'status' => $status, 'linkCouvPicture' => $linkCouvPicture, 'nbMember' => count($memberArray)]);	
+	    $newGroup = new Group(['title' => $title, 'status' => $status, 'linkCouvPicture' => $linkCouvPicture, 'nbMember' => 1]);	
 
 	    $groupManager = new GroupManager();
 	    $group = $groupManager->add($newGroup);
 	    if ($group) {
-		    $groupId = $group->getId();
 		    $linkGroupManager = new LinkGroupManager();
 		    $userManager = new UserManager();
-		    foreach ($memberArray as $member => $status) {
-		    	$linkGroup = new LinkGroup(['groupId' => $groupId, 'userId' => $member, 'status' => $status]);
-		    	$linkGroupManager->add($linkGroup);
-		    	$userManager->addGroup($member);
-		    }
+		    if ($memberArray != NULL) {
+			    foreach ($memberArray as $fonction => $list) {
+			    	foreach ($list as $data) {
+			    	$member = unserialize($data);
+			    	$linkGroup = new LinkGroup(['groupId' => $group->getId(), 'userId' => $member->getId(), 'status' => $fonction]);
+			    	$linkGroupManager->add($linkGroup);
+			    	$userManager->addGroup($member->getId());
+			    	$groupManager->addMember($group->getId());
+			    }
+			}
+		    $linkGroup = new LinkGroup(['groupId' => $group->getId(), 'userId' => $adminId, 'status' => 'admin']);
+		    $linkGroupManager->add($linkGroup);
+		    $userManager->addGroup($adminId);
 		    return $group;
-	    } else {
-	    	throw new Exception('Impossible d\'enregister le groupe');
-	    }
+	    	} else {
+	    		throw new Exception('Impossible d\'enregister le groupe');
+	    	}
+		}	
 	}
 
 	public function read($info) {

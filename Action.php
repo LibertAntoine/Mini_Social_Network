@@ -14,6 +14,19 @@ class Action
     
     function __construct($action)
     {
+
+        if ($action != 'addGroup' AND $action != 'newGroupMember') {
+            $_SESSION['author'] = NULL;
+            $_SESSION['commenter'] = NULL;
+            $_SESSION['viewer'] = NULL;
+            $_SESSION['titleGroup'] = NULL;
+            $_SESSION['status'] = NULL;
+            if (isset($_SESSION['couvPicture'])) { 
+                unlink($_SESSION['couvPicture']);
+                $_SESSION['couvPicture'] = NULL;
+            }
+        }
+
         $this->$action(); 
     }
 
@@ -72,6 +85,27 @@ class Action
                         throw new Exception('Absence de donnée de session.');
                     }
                 }
+                public function newGroupMember($message = NULL) {
+                    if (isset($_POST['titleGroup'], $_POST['status'])) {
+                        $_SESSION['titleGroup'] = $_POST['titleGroup'];
+                        $_SESSION['status'] = $_POST['status'];
+                    }
+                    if (isset($_FILES['couvPicture'])) {
+                        if ($_FILES['couvPicture']['size'] > 4000000) {
+                            $backend = new Backend('newGroupView', 'La taille du fichier dépasse 4Mo');
+                            exit;
+                        }
+                        $_SESSION['couvPicture'] = 'public/pictures/couv/'. str_replace(' ', '_', $_POST['titleGroup']) . '.' . substr($_FILES['couvPicture']['type'], 6);
+                        move_uploaded_file($_FILES['couvPicture']['tmp_name'], $_SESSION['couvPicture']);
+                    }
+                    if (isset($_SESSION['id'])) {
+                        $backend = new Backend('newGroupMemberView');
+                        $backend->setMessage($message);
+                    } else {
+                        throw new Exception('Absence de donnée de session.');
+                    }
+                }
+
                 public function newGroup($message = NULL) {
                     if (isset($_SESSION['id'])) {
                         $backend = new Backend('newGroupView');
@@ -80,36 +114,39 @@ class Action
                         throw new Exception('Absence de donnée de session.');
                     }
                 }
+
                 public function addGroup() {
-                    if (isset($_SESSION['id'], $_POST['titleGroup'], $_POST['status'], $_POST['listFriend'])) {
-                        if(strlen($_POST['titleGroup']) <= 240 && strlen($_POST['titleGroup']) >= 4) {
+                    echo $_SESSION['titleGroup'];
+                    echo $_SESSION['status'];
+                    if (isset($_SESSION['id'], $_SESSION['titleGroup'], $_SESSION['status'])) {
+                        if(strlen($_SESSION['titleGroup']) <= 240 && strlen($_SESSION['titleGroup']) >= 4) {
                             $groupCRUD = new GroupCRUD();
-                            if(!$groupCRUD->read($_POST['titleGroup'])) { 
-                                if(isset($_FILES['couvPicture'])) {
-                                    if ($_FILES['couvPicture']['size'] > 4000000) {
-                                        $backend = new Backend('newGroupView', 'La taille du fichier dépasse 4Mo');
-                                        exit;
-                                    } 
-                                }
-                                $memberArray = [$_SESSION['id'] => 'admin'];
-                                $memberArray[$_POST['listFriend']] = 'member';
-                                $group = $groupCRUD->add($_POST['titleGroup'], $_POST['status'], $_FILES['couvPicture']['type'], $memberArray);
-                                if (isset($_FILES['couvPicture'])) {
-                                    move_uploaded_file($_FILES['couvPicture']['tmp_name'], 'public/pictures/couv/'. $group->getId(). '.' . substr($_FILES['couvPicture']['type'], 6));
-                                }
+                            $memberArray = [];
+                            if ($_SESSION['author'] != NULL) {
+                                $memberArray['author'] = $_SESSION['author'];
+                            }
+                            if ($_SESSION['commenter'] != NULL) {
+                                $memberArray['commenter'] = $_SESSION['commenter'];
+                            }
+                            if ($_SESSION['viewer'] != NULL) {
+                                $memberArray['viewer'] = $_SESSION['viewer'];
+                            }
+                            if(!$groupCRUD->read($_SESSION['titleGroup'])) { 
+                                $group = $groupCRUD->add($_SESSION['titleGroup'], $_SESSION['status'], $_SESSION['couvPicture'], $_SESSION['id'], $memberArray);
                                 if ($group) {
-                                    header('Location: index.php?action=group&id=' . $group->getId());
+                                  $_SESSION['couvPicture'] = NULL;  
+                                  header('Location: index.php?action=group&id=' . $group->getId());
                                 } else {
                                     throw new Exception('Impossible d\'enregister le groupe');
                                 } 
                             } else {
-                                $this->newGroup('Le nom de groupe existe déjà, merci d\'en choisir un autre');
+                                throw new Exception('Impossible d\'enregister le groupe2');
                             }
                         } else {
-                            $this->newGroup('newGroupView', 'Merci de renseigner un titre entre 5 et 240 caractères');
+                            throw new Exception('Impossible d\'enregister le groupe3');
                         }
                     } else {
-                       $this->newGroup('newGroupView', 'Merci de renseigner tous les champs obligatoires.');
+                       throw new Exception('Impossible d\'enregister le groupe4');
                     }
                 }
 
