@@ -18,6 +18,11 @@ ob_start(); ?>
                             <div class="postBox jumbotron">
                                 <em class="creationDate">ajouté le <?= $comment->getCreationDate() ?></em><br/>
                                 <p><?= nl2br($comment->getContent()) ?></p>
+                                <?php if ($_SESSION['id'] === $comment->getUserId()) { ?>
+                                    <a href="index.php?action=deleteComment&amp;commentId=<?= $comment->getId() ?>&amp;groupId=<?= $data->getGroupId() ?>">Supprimer</a>
+                                <?php } else { ?>
+                                    <a href="#">Signaler</a>
+                                <?php } ?>
                             </div>
                         <?php }
 
@@ -32,6 +37,7 @@ ob_start(); ?>
                             <textarea id="content" name="content"></textarea>
                             <input class="btn btn-success" type="submit" value="Publier"/>
                             <input type="hidden" name="postId" value=<?= $data->getId() ?> />
+                            <input type="hidden" name="groupId" value=<?= $data->getGroupId() ?> />
                         </form>
                     </div>
                 <?php }

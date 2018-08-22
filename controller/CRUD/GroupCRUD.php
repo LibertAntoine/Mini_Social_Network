@@ -25,9 +25,11 @@ class GroupCRUD {
 	    if ($group) {
 		    $groupId = $group->getId();
 		    $linkGroupManager = new LinkGroupManager();
+		    $userManager = new UserManager();
 		    foreach ($memberArray as $member => $status) {
 		    	$linkGroup = new LinkGroup(['groupId' => $groupId, 'userId' => $member, 'status' => $status]);
 		    	$linkGroupManager->add($linkGroup);
+		    	$userManager->addGroup($member);
 		    }
 		    return $group;
 	    } else {

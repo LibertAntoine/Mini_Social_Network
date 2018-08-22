@@ -28,7 +28,7 @@ class Action
                         $frontend->setMessage($message);
 
                     } else {
-                        throw new Exception('Mauvaise référence au groupe.');
+                        throw new Exception('Mauvaise référence au groupe lol.');
                     }
                 }    
 
@@ -132,6 +132,50 @@ class Action
                         }
                     } else {
                        $this->group('Merci de renseigner tous les champs obligatoires.');
+                    }
+                }
+
+                public function addComment() {
+                    if (isset($_SESSION['id'], $_POST['content'], $_POST['postId'], $_POST['groupId'])) {
+
+                        if(strlen($_POST['content']) >= 1) {
+
+                            $commentCRUD = new CommentCRUD();                          
+                            $comment = $commentCRUD->add($_SESSION['id'], $_POST['postId'], $_POST['content']);
+                            if ($comment) {
+								echo $_POST['groupId'];
+                                header('Location: index.php?action=group&id=' . intval($_POST['groupId']));
+                            } else {
+                                throw new Exception('Impossible d\'enregister le commentaire');
+                            } 
+                        } else {
+                            $this->group('Le commentaire est vide');
+                        }
+                    } else {
+                       $this->group('Merci de renseigner tous les champs obligatoires.');
+                    }
+                }
+
+                public function deleteComment() {
+
+                    if (isset($_GET['commentId'], $_GET['groupId'])) {
+
+                    	$commentCRUD = new CommentCRUD();
+                    	$comment = $commentCRUD->read(intval($_GET['commentId']));
+                        if($comment) {
+                            $postId = $comment->getArticleId();
+                            $userId = $comment->getUserId();                    
+                            $delete = $commentCRUD->delete($_GET['commentId'], $postId, $userId);
+                            if ($comment) {
+                                header('Location: index.php?action=group&id=' . intval($_GET['groupId']));
+                            } else {
+                                throw new Exception('Impossible d\'enregister le commentaire');
+                            } 
+                        } else {
+                            $this->group('Le commentaire n\'existe pas');
+                        }
+                    } else {
+                       throw new Exception('Aucun commentaire assigné');
                     }
                 }
 

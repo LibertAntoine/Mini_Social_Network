@@ -47,7 +47,7 @@ public function getGroup($groupId)
   {
 
     $posts = [];
-    $q = $this->db->query('SELECT id, userId, title, content, DATE_FORMAT(creationDate, \'%d/%m/%Y à %Hh%i\') AS creationDate, DATE_FORMAT(updateDate, \'%d/%m/%Y à %Hh%i\') AS updateDate, nbComment FROM projet5_posts WHERE groupId = '.$groupId);
+    $q = $this->db->query('SELECT id, userId, groupId, title, content, DATE_FORMAT(creationDate, \'%d/%m/%Y à %Hh%i\') AS creationDate, DATE_FORMAT(updateDate, \'%d/%m/%Y à %Hh%i\') AS updateDate, nbComment FROM projet5_posts WHERE groupId = '.$groupId);
   
     while ($data = $q->fetch(PDO::FETCH_ASSOC))
     {
@@ -60,11 +60,11 @@ public function getGroup($groupId)
   {
     if (is_int($info))
     {
-      $q = $this->db->query('SELECT id, userId, title, content, DATE_FORMAT(creationDate, \'%d/%m/%Y à %Hh%i\') AS creationDate, DATE_FORMAT(updateDate, \'%d/%m/%Y à %Hh%i\') AS updateDate, nbComment, groupId FROM projet5_posts WHERE id = '.$info);
+      $q = $this->db->query('SELECT id, userId,, groupId title, content, DATE_FORMAT(creationDate, \'%d/%m/%Y à %Hh%i\') AS creationDate, DATE_FORMAT(updateDate, \'%d/%m/%Y à %Hh%i\') AS updateDate, nbComment, groupId FROM projet5_posts WHERE id = '.$info);
       $post = $q->fetch(PDO::FETCH_ASSOC);
     } else 
     {
-     	$q = $this->db->prepare('SELECT id, userId, title, content, DATE_FORMAT(creationDate, \'%d/%m/%Y à %Hh%i\') AS creationDate, DATE_FORMAT(updateDate, \'%d/%m/%Y à %Hh%i\') AS updateDate, nbComment, groupId FROM projet5_posts WHERE title = :title');
+     	$q = $this->db->prepare('SELECT id, userId,, groupId title, content, DATE_FORMAT(creationDate, \'%d/%m/%Y à %Hh%i\') AS creationDate, DATE_FORMAT(updateDate, \'%d/%m/%Y à %Hh%i\') AS updateDate, nbComment, groupId FROM projet5_posts WHERE title = :title');
       $q->execute([':title' => $info]);
       $post = $q->fetch(PDO::FETCH_ASSOC);
     }
@@ -137,6 +137,10 @@ public function getGroup($groupId)
     $q = $this->db->query('UPDATE projet5_posts SET nbComment = nbComment + 1 WHERE id ='. $postId);
   }
 
+    public function removeComment($postId)
+  {
+    $q = $this->db->query('UPDATE projet5_posts SET nbComment = nbComment - 1 WHERE id ='. $postId);
+  }
 
   public function update(Post $post)
   {

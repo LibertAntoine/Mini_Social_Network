@@ -119,6 +119,16 @@ class GroupManager extends DBAccess {
     $q = $this->db->query('UPDATE projet5_groups SET nbMember = nbMember + 1  WHERE id ='. $groupId);
   }
 
+  public function removePost($groupId)
+  {
+    $q = $this->db->query('UPDATE projet5_groups SET nbPost = nbPost - 1  WHERE id ='. $groupId);
+  }
+
+  public function removeMember($groupId)
+  {
+    $q = $this->db->query('UPDATE projet5_groups SET nbMember = nbMember - 1  WHERE id ='. $groupId);
+  }
+
   public function update(Group $group)
   {
     $q = $this->db->prepare('UPDATE projet5_groups SET title = :title, status = :status, lastUpdate = NOW(), nbPost = :nbPost, nbMember = :nbMember, linkCouvPicture = :linkCouvPicture WHERE id = :id');

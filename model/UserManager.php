@@ -94,7 +94,38 @@ class UserManager extends DBAccess
      $pseudo = $pseudo[0];
     return $pseudo;
   }
-  
+
+  public function addPost($userId)
+  {
+    $q = $this->db->query('UPDATE projet5_users SET nbPublication = nbPublication + 1  WHERE id ='. $userId);
+  }
+
+  public function addComment($userId)
+  {
+    $q = $this->db->query('UPDATE projet5_users SET nbComment = nbComment + 1  WHERE id ='. $userId);
+  }
+
+  public function addGroup($userId)
+  {
+    $q = $this->db->query('UPDATE projet5_users SET nbGroup = nbGroup + 1  WHERE id ='. $userId);
+  }
+
+    public function removePost($userId)
+  {
+    $q = $this->db->query('UPDATE projet5_users SET nbPublication = nbPublication - 1  WHERE id ='. $userId);
+  }
+
+  public function removeComment($userId)
+  {
+    $q = $this->db->query('UPDATE projet5_users SET nbComment = nbComment - 1  WHERE id ='. $userId);
+  }
+
+  public function removeGroup($userId)
+  {
+    $q = $this->db->query('UPDATE projet5_users SET nbGroup = nbGroup - 1  WHERE id ='. $userId);
+  }
+
+
   public function update(User $user)
   {
     $q = $this->db->prepare('UPDATE projet5_users SET pseudo = :pseudo, mdp = :mdp, status = :status WHERE id = :id');

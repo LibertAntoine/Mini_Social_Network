@@ -84,18 +84,12 @@ class UserCRUD {
 	public function delete() {
 		$userManager = new UserManager();
 		$delete1 = $userManager->delete($_SESSION['id']);
-		if ($delete1) {
-			$linkGroupCRUD = new LinkGroupCRUD();
-			$delete2 = $linkGroupCRUD->deleteAll();
-			if ($delete2) {
-				$linkFriendCRUD = new LinkFriendCRUD();
-				$delete3 = $linkFriendCRUD->deleteAll();
-				if ($delete3) {	
-					$this->logOut();
-					return 'ok';
-				}
-			}
-		}
+		$linkGroupCRUD = new LinkGroupCRUD();
+		$delete2 = $linkGroupCRUD->deleteAll();
+		$linkFriendCRUD = new LinkFriendCRUD();
+		$delete3 = $linkFriendCRUD->deleteAll();
+		$this->logOut();
+		return 'ok';
 	}
 
 

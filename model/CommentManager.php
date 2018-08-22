@@ -14,6 +14,7 @@ class CommentManager extends DBAccess
 
     $comment->hydrate([
       'id' => $this->db->lastInsertId()]);
+    return $comment;
   }
 
   public function count()

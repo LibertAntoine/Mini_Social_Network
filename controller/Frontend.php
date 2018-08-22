@@ -29,7 +29,7 @@ class Frontend extends View {
 					if ($posts !== 'none') {
 						$commentCRUD = new CommentCRUD();
 						foreach ($posts as $data) {
-							$comments[$data->getId()] = $commentCRUD->readPost($groupId);					
+							$comments[$data->getId()] = $commentCRUD->readPost($data->getId());					
 						};
 						if (!$comments) {
 						throw new Exception('Problème d\'accès aux commentaires');	

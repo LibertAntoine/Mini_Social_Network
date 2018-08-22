@@ -48,7 +48,7 @@ class LinkGroupCRUD {
 	public function readGroups($userId) {
 		$linkGroupManager = new LinkGroupManager();
 		$listGroups = $linkGroupManager->getGroups($userId);
-		if (isset($listGroups)) {
+		if ($listGroups != NULL) {
 			foreach ($listGroups as $group) {
 				
 				$linkGroups[$group->getGroupId()] = $group;
@@ -71,19 +71,20 @@ class LinkGroupCRUD {
 		$linkGroupManager = new LinkGroupManager();
 		$delete = $linkGroupManager->delete($_SESSION['id'], $groupId);
 		if ($delete === 'ok') {
+			$groupManager = new GroupManager();
+			$groupManager->removeMember($groupId);
 			return 'ok';
 		} else {
 	    	throw new Exception('Erreur : impossible de supprimer le lien');
 	    }
 	}
 
-	public function deleteAll() {	
-		$linkGroupManager = new LinkGroupManager();
-		$delete = $linkGroupManager->deleteAll($_SESSION['id']);
-		if ($delete === 'ok') {
-			return 'ok';
-		} else {
-	    	throw new Exception('Erreur : impossible de supprimer le lien');
-	    }
+	public function deleteAll() {
+		$groups = $this->readGroups($_SESSION['id']);
+		if ($groups != 'none') {
+			foreach ($groups as $groupId => $group) {
+				$this->delete($groupId);
+			}
+		}
 	}
 }

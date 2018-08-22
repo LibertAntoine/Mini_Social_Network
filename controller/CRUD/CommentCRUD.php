@@ -25,7 +25,9 @@ class CommentCRUD {
 		if ($comment) {
 			$postManager = new PostManager();
 			$postManager->addComment($postId);
-			return $post;
+			$userManager = new UserManager();
+			$userManager->addComment($userId);
+			return $comment;
 		} else {
 			throw new Exception('Impossible d\'ajouter un post');
 		}
@@ -49,8 +51,13 @@ class CommentCRUD {
 		}
 	}
 
-	public function delete($id) {	
-		$commentManager = new COmmentManager();
-		$commentManager->delete($id);
+	public function delete($commentId, $postId, $userId) {	
+		$commentManager = new CommentManager();
+		$commentManager->delete($commentId);
+		$postManager = new PostManager();
+		$postManager->removeComment($postId);
+		$userManager = new UserManager();
+		$userManager->removeComment($userId);
+		return 'ok';
 	}
 }
