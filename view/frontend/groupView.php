@@ -21,10 +21,13 @@ ob_start(); ?>
                             <div class="postBox jumbotron">
                                 <em class="creationDate">ajouté le <?= $comment->getCreationDate() ?></em><br/>
                                 <p><?= nl2br($comment->getContent()) ?></p>
+
                                 <?php if ($_SESSION['id'] === $comment->getUserId()) { ?>
-                                    <a href="index.php?action=deleteComment&amp;commentId=<?= $comment->getId() ?>&amp;groupId=<?= $group->getId() ?>">Supprimer</a>
+                                    <a href="index.php?action=deleteComment&amp;commentId=<?= $comment->getId() ?>">Supprimer</a>
+                                <?php } elseif ($report[$comment->getId()] != 'none' AND in_array($_SESSION['id'], $report[$comment->getId()])) { ?>
+                                        <a href="index.php?action=deleteReport&amp;id=<?= $comment->getId()?>">Ne plus signaler</a>
                                 <?php } else { ?>
-                                    <a href="#">Signaler</a>
+                                        <a href="index.php?action=addReport&amp;id=<?= $comment->getId()?>">Signaler</a>
                                 <?php } ?>
                             </div>
                         <?php }

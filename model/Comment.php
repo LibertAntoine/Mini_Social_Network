@@ -3,12 +3,23 @@
 class Comment extends TextContent {
 
 	protected $articleId,
+  $groupId,
 	$reporting;
 
 	public function getArticleId() 
   {
  	  return $this->articleId;
  	}
+
+    public function getGroupId() 
+  {
+    return $this->groupId;
+  }
+
+    public function getReporting() 
+  {
+    return $this->reporting;
+  }
 
  	public function setArticleId($articleId) {
  	  $articleId = (int) $articleId;
@@ -18,10 +29,14 @@ class Comment extends TextContent {
  	  }
   }
 
- 	public function getReporting() 
-  {
- 	  return $this->reporting;
- 	}
+    public function setGroupId($groupId) {
+    $groupId = (int) $groupId;
+    if ($groupId > 0) 
+    {
+     $this->groupId = $groupId;
+    }
+  }
+
 
  	public function setReporting($reporting) 
   {

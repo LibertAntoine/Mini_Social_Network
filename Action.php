@@ -8,6 +8,7 @@ require_once('controller/CRUD/PostCRUD.php');
 require_once('controller/CRUD/CommentCRUD.php');
 require_once('controller/CRUD/LinkFriendCRUD.php');
 require_once('controller/CRUD/LinkGroupCRUD.php');
+require_once('controller/CRUD/LinkReportingCRUD.php');
 
 class Action
 {
@@ -210,13 +211,10 @@ class Action
 
                 public function addComment() {
                     if (isset($_SESSION['id'], $_POST['content'], $_POST['postId'], $_POST['groupId'])) {
-
                         if(strlen($_POST['content']) >= 1) {
-
                             $commentCRUD = new CommentCRUD();                          
-                            $comment = $commentCRUD->add($_SESSION['id'], $_POST['postId'], $_POST['content']);
+                            $comment = $commentCRUD->add($_SESSION['id'], $_POST['postId'], $_POST['groupId'], $_POST['content']);
                             if ($comment) {
-								echo $_POST['groupId'];
                                 header('Location: index.php?action=group&id=' . intval($_POST['groupId']));
                             } else {
                                 throw new Exception('Impossible d\'enregister le commentaire');
@@ -231,13 +229,14 @@ class Action
 
                 public function deleteComment() {
 
-                    if (isset($_GET['commentId'], $_GET['groupId'])) {
+                    if (isset($_GET['commentId'])) {
 
                     	$commentCRUD = new CommentCRUD();
-                        if($commentCRUD->read(intval($_GET['commentId']))) {                   
+                        $comment = $commentCRUD->read(intval($_GET['commentId']));
+                        if($comment) {                   
                             $delete = $commentCRUD->delete($_GET['commentId']);
                             if ($delete) {
-                                header('Location: index.php?action=group&id=' . intval($_GET['groupId']));
+                                header('Location: index.php?action=group&id=' . $comment->getGroupId());
                             } else {
                                 throw new Exception('Impossible d\'enregister le commentaire');
                             } 
@@ -293,7 +292,7 @@ class Action
                     if (isset($_GET['id']) && isset($_SESSION['id'])) {    
                         if ($_GET['id'] != $_SESSION['id']) {
                                 $userCRUD = new UserCRUD();
-                                if (!$userCRUD->read(htmlspecialchars($_GET['id']))) {
+                                if ($userCRUD->read(intval($_GET['id']))) {
                                 	$linkFriendCRUD = new LinkFriendCRUD();
                                     $friend = $linkFriendCRUD->add(intval($_SESSION['id']), intval($_GET['id']));
                                     if ($friend) {
@@ -335,7 +334,7 @@ class Action
                 }
 
                 public function deleteLinkGroup() {
-                    if (isset($_GET['id']) && isset($_SESSION['id'])) {    
+                    if (isset($_GET['id'], $_SESSION['id'])) {    
                             $linkGroupCRUD = new LinkGroupCRUD();
                             if ($linkGroupCRUD->readLink(intval($_SESSION['id']), intval($_GET['id']))) {
                                 $link = $linkGroupCRUD->delete(intval($_SESSION['id']), intval($_GET['id']));
@@ -348,6 +347,46 @@ class Action
                             } else {
                                	throw new Exception('L\'utilisateur n\'a pas de lien avec ce groupe');
                             }
+                    } else {
+                        throw new Exception('Absence de donnée de session.');
+                    }
+                }
+
+                public function addReport() {
+                    if (isset($_GET['id'], $_SESSION['id'])) {    
+                                $commentCRUD = new CommentCRUD();
+                                $comment = $commentCRUD->read(intval($_GET['id']));
+                                if ($comment) {
+                                    $linkReportingCRUD = new LinkReportingCRUD();
+                                    $report = $linkReportingCRUD->add(intval($_SESSION['id']), intval($_GET['id']));
+                                    if ($report) {
+                                    header('Location: index.php?action=group&id=' . $comment->getGroupId());
+                                    } else {
+                                        throw new Exception('Impossible d\'enregister le signalement');
+                                    }
+                                } else {
+                                    Exception('Le commentaire n\'existe pas');
+                                }
+                    } else {
+                        throw new Exception('Absence de donnée de session.');
+                    }
+                }
+
+                public function deleteReport() {
+                    if (isset($_GET['id'], $_SESSION['id'])) {    
+                                $commentCRUD = new CommentCRUD();
+                                $comment = $commentCRUD->read(intval($_GET['id']));
+                                if ($comment) {
+                                    $linkReportingCRUD = new LinkReportingCRUD();
+                                    $delete = $linkReportingCRUD->delete(intval($_GET['id']));
+                                    if ($delete) {
+                                            header('Location: index.php?action=group&id=' . $comment->getGroupId());
+                                    } else {
+                                        throw new Exception('Impossible d\'enregister le signalement');
+                                    }
+                                } else {
+                                    Exception('Le commentaire n\'existe pas');
+                                }
                     } else {
                         throw new Exception('Absence de donnée de session.');
                     }

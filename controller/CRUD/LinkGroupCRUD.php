@@ -2,47 +2,37 @@
 
 	require_once('model/TextContent.php');
 	require_once('model/DBAccess.php');
+	require_once('model/Post.php');
 	require_once('model/PostManager.php');
+	require_once('model/Comment.php');
 	require_once('model/CommentManager.php');
+	require_once('model/Group.php');
 	require_once('model/GroupManager.php');	
-	require_once('model/Group.php');		
+	require_once('model/User.php');
 	require_once('model/UserManager.php');
 	require_once('model/LinkGroupManager.php');
 	require_once('model/LinkGroup.php');
 	require_once('model/LinkFriendManager.php');
 	require_once('model/LinkFriend.php');
-	require_once('model/Post.php');
-	require_once('model/Comment.php');
-	require_once('model/User.php');
+	require_once('model/LinkReportingManager.php');
+	require_once('model/LinkReporting.php');
 
 
 class LinkGroupCRUD {
 	
-	public function add($userApplicant, $newFriend)
+	public function add($userId, $groupId, $status)
 	{
-		$linkFriendManager = new LinkFriendManager();
 
-		if (!$linkFriendManager->existLink($newFriend, $userApplicant)) {
-
-			if (!$linkFriendManager->existLink($userApplicant, $newFriend)) {
-			    $Applicant = new LinkFriend(['userId1' => $userApplicant, 'userId2' => $newFriend, 'status' => "yes"]);	
-				$Friend = new LinkFriend(['userId1' => $newFriend, 'userId2' => $userApplicant, 'status' => "no"]);	
-			    
-			    $user1 = $linkFriendManager->add($Applicant);
-			    $user2 = $linkFriendManager->add($Friend);
-			    if (isset($user1, $user2)) {
-				    return $user1;
-				}
-			} else {
-	    		$Applicant = new LinkFriend(['userId1' => $userApplicant, 'userId2' => $newFriend, 'status' => "yes"]);	
-	    		$user1 = $linkFriendManager->update($Applicant);
-	    		if ($user1 === 'ok') {
-	    			return $user1;
-	    		}	
-	    	}
-	    } else {
-	    	throw new Exception('Demander invalide : lien déjà présent');
-	    }
+		$linkGroup = new LinkGroup(['groupId' => $groupId, 'userId' => $userId, 'status' => $status]);
+		$linkGroupManager = new LinkGroupManager();	
+		
+		$link = $linkGroupManager->add($linkGroup);
+		if ($link) {
+			$groupManager = new GroupManager();
+			$groupManager->addMember($groupId);
+			$userManager = new UserManager();
+			$userManager->addGroup($userId);
+		}
 	}
 
 	public function readGroups($userId) {

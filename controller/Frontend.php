@@ -17,6 +17,7 @@ class Frontend extends View {
 
 	public function groupView($groupId) {
 
+
 		$linkGroupManager = new LinkGroupManager();
 		$link = $linkGroupManager->access($groupId, $_SESSION['id']);
 		if ($link) {
@@ -28,11 +29,14 @@ class Frontend extends View {
 				if ($posts) {
 					if ($posts !== 'none') {
 						$commentCRUD = new CommentCRUD();
+						$linkReportingCRUD = new LinkReportingCRUD();
 						foreach ($posts as $data) {
-							$comments[$data->getId()] = $commentCRUD->readPost($data->getId());					
-						};
-						if (!$comments) {
-						throw new Exception('Problème d\'accès aux commentaires');	
+							$comments[$data->getId()] = $commentCRUD->readPost($data->getId());
+							if ($comments[$data->getId()] != 'none') {
+								foreach ($comments[$data->getId()] as $comment) {
+									$report[$comment->getId()] = $linkReportingCRUD->readReporters($comment->getId());
+								}	
+							}					
 						}
 					}
 					require('view/frontend/GroupView.php');

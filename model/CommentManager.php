@@ -4,10 +4,11 @@ class CommentManager extends DBAccess
 {
   public function add(Comment $comment) 
   {	
-		$q = $this->db->prepare("INSERT INTO `projet5_comments` (`articleId`, `userId`, `content`, `creationDate`, `reporting`) VALUES (:articleId, :userId, :content, NOW(), '0');");
+		$q = $this->db->prepare("INSERT INTO `projet5_comments` (`articleId`, `userId`, `groupId`, `content`, `creationDate`, `reporting`) VALUES (:articleId, :userId, :groupId, :content, NOW(), '0');");
 
 		$q->bindValue(':userId', $comment->getUserId());
     $q->bindValue(':articleId', $comment->getArticleId());
+    $q->bindValue(':groupId', $comment->getGroupId());
     $q->bindValue(':content', $comment->getContent());
 
 		$q->execute();
@@ -44,7 +45,7 @@ class CommentManager extends DBAccess
   {
     if (is_int($info))
     {
-      $q = $this->db->query('SELECT id, userId, articleId, content, DATE_FORMAT(creationDate, \'%d/%m/%Y à %Hh%imin%ss\') AS creationDate, reporting FROM projet5_comments WHERE id = '.$info);
+      $q = $this->db->query('SELECT id, userId, groupId, articleId, content, DATE_FORMAT(creationDate, \'%d/%m/%Y à %Hh%imin%ss\') AS creationDate, reporting FROM projet5_comments WHERE id = '.$info);
       $comment = $q->fetch(PDO::FETCH_ASSOC);
     }
     return new Comment($comment);
@@ -55,7 +56,7 @@ class CommentManager extends DBAccess
   {
     $comments = [];
     
-    $q = $this->db->query('SELECT id, userId, articleId, content, DATE_FORMAT(creationDate, \'%d/%m/%Y à %Hh%imin%ss\') AS creationDate, reporting FROM projet5_comments WHERE articleId ='. $postId);
+    $q = $this->db->query('SELECT id, userId, groupId, articleId, content, DATE_FORMAT(creationDate, \'%d/%m/%Y à %Hh%imin%ss\') AS creationDate, reporting FROM projet5_comments WHERE articleId ='. $postId);
     
     while ($data = $q->fetch(PDO::FETCH_ASSOC))
     {
@@ -70,7 +71,7 @@ class CommentManager extends DBAccess
   {
     $comments = [];
     
-    $q = $this->db->prepare('SELECT id, userId, articleId, content, DATE_FORMAT(creationDate, \'%d/%m/%Y à %Hh%imin%ss\') AS creationDate, reporting FROM projet5_comments WHERE articleId = :articleId ORDER BY creationDate');
+    $q = $this->db->prepare('SELECT id, userId, groupId, articleId, content, DATE_FORMAT(creationDate, \'%d/%m/%Y à %Hh%imin%ss\') AS creationDate, reporting FROM projet5_comments WHERE articleId = :articleId ORDER BY creationDate');
     $q->execute([':articleId' => $articleId]);
     
     while ($data = $q->fetch(PDO::FETCH_ASSOC))
@@ -84,7 +85,7 @@ class CommentManager extends DBAccess
   {
     $comments = [];
     
-    $q = $this->db->prepare('SELECT id, userId, articleId, content, DATE_FORMAT(creationDate, \'%d/%m/%Y à %Hh%imin%ss\') AS creationDate, reporting FROM projet5_comments WHERE reporting > 0 ORDER BY creationDate DESC');
+    $q = $this->db->prepare('SELECT id, userId, groupId, articleId, content, DATE_FORMAT(creationDate, \'%d/%m/%Y à %Hh%imin%ss\') AS creationDate, reporting FROM projet5_comments WHERE reporting > 0 ORDER BY creationDate DESC');
     $q->execute();
     
     while ($data = $q->fetch(PDO::FETCH_ASSOC))

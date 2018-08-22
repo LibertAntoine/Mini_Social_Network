@@ -2,18 +2,21 @@
 
 	require_once('model/TextContent.php');
 	require_once('model/DBAccess.php');
+	require_once('model/Post.php');
 	require_once('model/PostManager.php');
+	require_once('model/Comment.php');
 	require_once('model/CommentManager.php');
+	require_once('model/Group.php');
 	require_once('model/GroupManager.php');	
-	require_once('model/Group.php');		
+	require_once('model/User.php');
 	require_once('model/UserManager.php');
 	require_once('model/LinkGroupManager.php');
 	require_once('model/LinkGroup.php');
 	require_once('model/LinkFriendManager.php');
 	require_once('model/LinkFriend.php');
-	require_once('model/Post.php');
-	require_once('model/Comment.php');
-	require_once('model/User.php');
+	require_once('model/LinkReportingManager.php');
+	require_once('model/LinkReporting.php');
+
 
 
 class LinkFriendCRUD {
