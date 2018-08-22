@@ -3,7 +3,7 @@
 ob_start(); ?>
 
   <h2>Bienvenue sur la page du groupe <?= $group->getTitle()?></h2>
-
+  <a href="index.php?action=deleteGroup&amp;groupId=<?= $group->getId() ?>">Supprimer le groupe</a>
   	<div class="row">
         <div class="col-lg-8 col-md-7">
             <?php if ($posts !== 'none') { 
@@ -22,7 +22,7 @@ ob_start(); ?>
                                 <em class="creationDate">ajouté le <?= $comment->getCreationDate() ?></em><br/>
                                 <p><?= nl2br($comment->getContent()) ?></p>
                                 <?php if ($_SESSION['id'] === $comment->getUserId()) { ?>
-                                    <a href="index.php?action=deleteComment&amp;commentId=<?= $comment->getId() ?>&amp;groupId=<?= $data->getGroupId() ?>">Supprimer</a>
+                                    <a href="index.php?action=deleteComment&amp;commentId=<?= $comment->getId() ?>&amp;groupId=<?= $group->getId() ?>">Supprimer</a>
                                 <?php } else { ?>
                                     <a href="#">Signaler</a>
                                 <?php } ?>

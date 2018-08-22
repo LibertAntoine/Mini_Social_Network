@@ -37,7 +37,6 @@ class GroupCRUD {
 	    }
 	}
 
-
 	public function read($info) {
 		$groupManager = new GroupManager();
 		if ($groupManager->exists($info)) {
@@ -46,8 +45,21 @@ class GroupCRUD {
 		}
 	}
 
-	public function delete($id) {	
-		$groupManager = new GroupManager();
-		$groupManager->delete($id);
+	public function delete($groupId) {
+		$group = $this->read($groupId);
+		if ($group)	{
+			$linkGroupCRUD = new LinkGroupCRUD();
+			$linkGroupCRUD->deleteAllMembers($groupId);
+			$postCRUD = new PostCRUD();
+			$posts = $postCRUD->readGroup($groupId);
+			if ($posts != 'none') {
+				foreach ($posts as $post) {
+					$postCRUD->delete($post->getId());
+				}
+			}
+			$groupManager = new GroupManager();
+			$groupManager->delete($groupId);
+			return 'ok';
+		}
 	}
 }

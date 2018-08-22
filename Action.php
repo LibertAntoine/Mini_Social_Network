@@ -113,6 +113,24 @@ class Action
                     }
                 }
 
+                public function deleteGroup() {
+                    if (isset($_GET['groupId'])) {
+                        $groupCRUD = new GroupCRUD();
+                        if($groupCRUD->read(intval($_GET['groupId']))) {                  
+                            $delete = $groupCRUD->delete(intval($_GET['groupId']));
+                            if ($delete) {
+                                header('Location: index.php?action=myGroup');
+                            } else {
+                                throw new Exception('Impossible de supprimer le groupe');
+                            } 
+                        } else {
+                            $this->group('Le groupe n\'existe pas');
+                        }
+                    } else {
+                       throw new Exception('Aucune groupe assignée');
+                    }
+                }
+
                 public function addPost() {
                     if (isset($_SESSION['id'], $_POST['title'], $_POST['content'], $_POST['groupId'])) {
                         if(strlen($_POST['title']) <= 240 && strlen($_POST['title']) >= 4) {
@@ -283,7 +301,8 @@ class Action
                     if (isset($_GET['id']) && isset($_SESSION['id'])) {    
                             $linkGroupCRUD = new LinkGroupCRUD();
                             if ($linkGroupCRUD->readLink(intval($_SESSION['id']), intval($_GET['id']))) {
-                                $link = $linkGroupCRUD->delete(intval($_GET['id']));
+                                $link = $linkGroupCRUD->delete(intval($_SESSION['id']), intval($_GET['id']));
+
                                 if ($link) {
                                  	header('Location: index.php?action=MyGroup');
                                 } else {

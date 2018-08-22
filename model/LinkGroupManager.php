@@ -71,6 +71,25 @@ class LinkGroupManager extends DBAccess
     return $linkGroups;
   }
 
+  public function getMembers($groupId)
+  {
+    $linkUsers = [];
+
+    $q = $this->db->prepare('SELECT groupId, userId, status, DATE_FORMAT(linkDate, \'%d/%m/%Y à %Hh%imin%ss\') AS linkDate FROM projet5_linkgroupuser WHERE groupId = :groupId ORDER BY linkDate');
+    $q->bindValue(':groupId', $groupId);
+    $q->execute();
+
+    while ($data = $q->fetch(PDO::FETCH_ASSOC))
+    {
+     $linkUsers[] = new LinkGroup($data);
+    }
+    return $linkUsers;
+  }
+
+
+
+
+
   public function get($info)
   {
     if (is_int($info))
