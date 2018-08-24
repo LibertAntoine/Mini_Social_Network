@@ -17,6 +17,7 @@ class Action
     {
 
         if ($action != 'addGroup' AND $action != 'newGroupMember') {
+            $_SESSION['admin'] = NULL;
             $_SESSION['author'] = NULL;
             $_SESSION['commenter'] = NULL;
             $_SESSION['viewer'] = NULL;
@@ -115,14 +116,29 @@ class Action
                         throw new Exception('Absence de donnée de session.');
                     }
                 }
+                public function adminGroup($message = NULL) {
+                    echo $_GET['id'];
+                    if (isset($_SESSION['id'], $_GET['id'])) {
+                        $linkGroupCRUD = new LinkGroupCRUD();
+                        if ($linkGroupCRUD->readLink($_SESSION['id'], $_GET['id']) === 'admin') {
+                            $backend = new Backend('adminGroupView', intval($_GET['id']));
+                            $backend->setMessage($message); 
+                        } else {
+                            throw new Exception('Accès non authorisé');
+                        }                                                                           
+                    } else {
+                        throw new Exception('Absence de donnée de session.');
+                    }
+                }
 
                 public function addGroup() {
-                    echo $_SESSION['titleGroup'];
-                    echo $_SESSION['status'];
                     if (isset($_SESSION['id'], $_SESSION['titleGroup'], $_SESSION['status'])) {
                         if(strlen($_SESSION['titleGroup']) <= 240 && strlen($_SESSION['titleGroup']) >= 4) {
                             $groupCRUD = new GroupCRUD();
                             $memberArray = [];
+                            if ($_SESSION['admin'] != NULL) {
+                                $memberArray['admin'] = $_SESSION['admin'];
+                            }
                             if ($_SESSION['author'] != NULL) {
                                 $memberArray['author'] = $_SESSION['author'];
                             }
@@ -333,14 +349,48 @@ class Action
                     }
                 }
 
+
+                public function addLinkGroup() {
+                    if (isset($_SESSION['id'], $_POST['friend'], $_POST['groupId'], $_POST['status'])) {
+                        $linkGroupCRUD = new LinkGroupCRUD();
+                        if ($linkGroupCRUD->readLink(intval($_SESSION['id']), intval($_POST['groupId'])) === 'admin') {
+                            $linkGroupCRUD->add(intval($_POST['friend']), intval($_POST['groupId']), $_POST['status']);
+                            header('Location: '. $_SESSION['page']);
+                        } else {
+                            throw new Exception('Accès non authorisé');
+                        }                                                                           
+                    } else {
+                        throw new Exception('Absence de donnée de session.');
+                    }
+                }
+
+                public function updateLinkGroup() {
+                    if (isset($_SESSION['id'], $_GET['id'])) {
+                        $linkGroupCRUD = new LinkGroupCRUD();
+                        if ($linkGroupCRUD->readLink(intval($_SESSION['id']), intval($_GET['id'])) === 'admin') {
+                            $members = $linkGroupCRUD->readMembers(intval($_GET['id']));
+                            foreach ($members as $memberId => $member) {
+                                $newMember = $_POST[$memberId];
+                                if ($newMember != $member->getStatus()) {
+                                    $linkGroupCRUD->update($member, $newMember);
+                                }
+                                header('Location: index.php?action=group&id='. $_GET['id']);
+                            } 
+                        } else {
+                            throw new Exception('Accès non authorisé');
+                        }                                                                           
+                    } else {
+                        throw new Exception('Absence de donnée de session.');
+                    }
+                }
+
                 public function deleteLinkGroup() {
-                    if (isset($_GET['id'], $_SESSION['id'])) {    
+                    if (isset( $_SESSION['id'], $_GET['id'], $_GET['userId'])) {    
                             $linkGroupCRUD = new LinkGroupCRUD();
                             if ($linkGroupCRUD->readLink(intval($_SESSION['id']), intval($_GET['id']))) {
-                                $link = $linkGroupCRUD->delete(intval($_SESSION['id']), intval($_GET['id']));
-
+                                $link = $linkGroupCRUD->delete(intval($_GET['userId']), intval($_GET['id']));
                                 if ($link) {
-                                 	header('Location: index.php?action=MyGroup');
+                                 	header('Location: ' . $_SESSION['page']);
                                 } else {
                                     throw new Exception('Impossible de supprimer l\'affiliation au groupe');
                                 }

@@ -1,5 +1,7 @@
 <?php $title = 'Mes groupes';
 
+$_SESSION['page'] = "index.php?action=myGroup";
+
 ob_start(); ?>
 
   <h2>Retrouvez sur cette page mes groupes</h2>
@@ -14,6 +16,7 @@ ob_start(); ?>
                                 <th>Titre</th>
                                 <th>Status</th>
                                 <th>Fonction</th>
+                                <th>Quitter</th>
                                 <th>Suppression</th>
                             </tr>
                             <?php foreach ($groups as $groupId => $group) { ?>   
@@ -21,7 +24,7 @@ ob_start(); ?>
                                     <td><a href="index.php?action=group&amp;id=<?= $groupId ?>"><h3><?= htmlspecialchars($group->getTitle()) ?></h3></a></td>
                                     <td><?= htmlspecialchars($group->getStatus()) ?></td>
                                     <td><?= $linkGroups[$groupId]->getStatus() ?></td>
-                                    <td><a href="index.php?action=deleteLinkGroup&amp;id=<?= $groupId ?>">Quitter le groupe</a></td>
+                                    <td><a href="index.php?action=deleteLinkGroup&amp;userId=<?= $_SESSION['id'] ?>&amp;id=<?= $group->getId() ?>">Quitter le groupe</a></td>
                                     <td>
                                         <?php if ($linkGroups[$groupId]->getStatus() === "admin") { ?>
                                         <a href="index.php?action=deleteGroup&amp;groupId=<?= $groupId ?>">Supprimer le groupe</a>

@@ -4,9 +4,9 @@ require_once('controller/View.php');
 
 class Backend extends View {
 
-	function __construct($view)
+	function __construct($view, $param = NULL)
     {
-        $this->$view(); 
+        	$this->$view($param); 
     }
     
 	public function loginView() {
@@ -98,6 +98,9 @@ class Backend extends View {
 				}
 			}
 		}
+		if (!isset($_SESSION['admin'])) {
+			$_SESSION['admin'] = [];
+		}
 		if (!isset($_SESSION['author'])) {
 			$_SESSION['author'] = [];
 		}
@@ -108,7 +111,9 @@ class Backend extends View {
 			$_SESSION['commenter'] = [];
 		}
 
-
+		if (isset($_POST['admin'])) {
+			array_push($_SESSION['admin'], serialize($userCRUD->read(intval($_POST['admin']))));
+		}
 		if (isset($_POST['commenter'])) {
 			array_push($_SESSION['commenter'], serialize($userCRUD->read(intval($_POST['commenter']))));
 		}
@@ -119,7 +124,20 @@ class Backend extends View {
 			array_push($_SESSION['viewer'], serialize($userCRUD->read(intval($_POST['viewer']))));
 		}
 		
-		$listAuthors = $friends;
+
+		$listAdmins = $friends;
+		if ($_SESSION['admin'] != NULL) {
+			for ($i=0; $i < count($_SESSION['admin']); $i++) {
+				$admin = unserialize($_SESSION['admin'][$i]);
+				if (isset($listAdmins[$admin->getId()])) {
+					unset($listAdmins[$admin->getId()]);
+				} else {
+					unset($_SESSION['admin'][$i]);
+				}
+			}
+		}		
+
+		$listAuthors = $listAdmins;
 		if ($_SESSION['author'] != NULL) {
 			for ($i=0; $i < count($_SESSION['author']); $i++) {
 				$author = unserialize($_SESSION['author'][$i]);
@@ -158,4 +176,52 @@ class Backend extends View {
 
 		require('view/backend/newGroupMemberView.php');
 	}
+
+
+
+	public function adminGroupView($groupId) { 
+		$groupCRUD = new GroupCRUD();
+		$group = $groupCRUD->read($groupId);
+
+		$linkGroupCRUD = new LinkGroupCRUD();
+		$members = $linkGroupCRUD->readMembers($groupId);
+		
+		$userCRUD = new UserCRUD();
+
+		foreach ($members as $memberId => $member) {
+			$profils[$memberId] = $userCRUD->read($memberId);
+			if ($member->getStatus() === 'admin') {
+				$admins[$memberId] = $member;
+			} elseif ($member->getStatus() === 'author') {
+				$authors[$memberId] = $member;
+			} elseif ($member->getStatus() === 'commenter') {
+				$commenters[$memberId] = $member;
+			} elseif ($member->getStatus() === 'viewer') {
+				$viewers[$memberId] = $member;
+			} else {
+				throw new Exception('Erreur de profil utilisateur');
+			}
+		}
+
+
+		$friendCRUD = new LinkFriendCRUD();
+		$linkFriends = $friendCRUD->readFriends();
+		if ($linkFriends != 'none') {
+			$userCRUD = new UserCRUD();
+			foreach ($linkFriends as $friend) {
+				if ($friend->getStatus() === "yes") {
+					if ($friendCRUD->readLink($_SESSION['id'], $friend->getUserId2())) {
+						$friendId = $friend->getUserId2();
+						if (!isset($members[$friendId])) {
+							$friends[$friend->getUserId2()] = $userCRUD->read($friend->getUserId2());
+						} 
+					}
+				}
+			}
+		}
+
+		require('view/backend/adminGroupView.php');
+	} 
+
+
 }

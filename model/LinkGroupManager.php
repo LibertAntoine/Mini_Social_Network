@@ -21,6 +21,19 @@ class LinkGroupManager extends DBAccess
     return $this->db->query('SELECT COUNT(*) FROM projet5_linkgroupuser')->fetchColumn();
   }
 
+
+  public function exists($linkId)
+  {
+    $q = $this->db->prepare('SELECT `id`, `groupId`, `userId`, `status`, DATE_FORMAT(linkDate, \'%d/%m/%Y à %Hh%imin%ss\') AS linkDate FROM projet5_linkgroupuser WHERE id = :id');
+    $q->bindValue(':id', $linkId);
+    $q->execute();
+
+    $linkGroup = $q->fetch(PDO::FETCH_ASSOC);
+    return new LinkGroup($linkGroup);
+  }
+
+
+
   public function existLink($userId, $groupId)
   {
     $q = $this->db->prepare('SELECT `id`, `groupId`, `userId`, `status`, DATE_FORMAT(linkDate, \'%d/%m/%Y à %Hh%imin%ss\') AS linkDate FROM projet5_linkgroupuser WHERE userId = :userId AND groupId = :groupId');
@@ -51,7 +64,10 @@ class LinkGroupManager extends DBAccess
 
   public function access($groupId, $userId)
   {
-    $q = $this->db->query('SELECT `id`, `groupId`, `userId`, `status`, DATE_FORMAT(linkDate, \'%d/%m/%Y à %Hh%imin%ss\') AS linkDate FROM `projet5_linkgroupuser` WHERE `groupId` = '. $groupId);
+    $q = $this->db->prepare('SELECT `id`, `groupId`, `userId`, `status`, DATE_FORMAT(linkDate, \'%d/%m/%Y à %Hh%imin%ss\') AS linkDate FROM `projet5_linkgroupuser` WHERE `groupId` = :groupId AND `userId` = :userId');
+    $q->bindValue(':userId', $userId);
+    $q->bindValue(':groupId', $groupId);
+    $q->execute();
       $linkGroup = $q->fetch(PDO::FETCH_ASSOC);
       return new LinkGroup($linkGroup);
   }
@@ -60,7 +76,7 @@ class LinkGroupManager extends DBAccess
   {
     $linkGroups = [];
 
-    $q = $this->db->prepare('SELECT groupId, userId, status, DATE_FORMAT(linkDate, \'%d/%m/%Y à %Hh%imin%ss\') AS linkDate FROM projet5_linkgroupuser WHERE userId = :userId ORDER BY linkDate');
+    $q = $this->db->prepare('SELECT id, groupId, userId, status, DATE_FORMAT(linkDate, \'%d/%m/%Y à %Hh%imin%ss\') AS linkDate FROM projet5_linkgroupuser WHERE userId = :userId ORDER BY linkDate');
     $q->bindValue(':userId', $userId);
     $q->execute();
 
@@ -75,7 +91,7 @@ class LinkGroupManager extends DBAccess
   {
     $linkUsers = [];
 
-    $q = $this->db->prepare('SELECT groupId, userId, status, DATE_FORMAT(linkDate, \'%d/%m/%Y à %Hh%imin%ss\') AS linkDate FROM projet5_linkgroupuser WHERE groupId = :groupId ORDER BY linkDate');
+    $q = $this->db->prepare('SELECT id, groupId, userId, status, DATE_FORMAT(linkDate, \'%d/%m/%Y à %Hh%imin%ss\') AS linkDate FROM projet5_linkgroupuser WHERE groupId = :groupId ORDER BY linkDate');
     $q->bindValue(':groupId', $groupId);
     $q->execute();
 

@@ -10,6 +10,21 @@ ob_start(); ?>
 		<div class="col-md-12 col-sm-12 jumbotron">
 					<h3>Ajoutez d'autres membres.</h3>
 					<?php if (isset($friends)) { ?>
+						<h4>Ajoutez des administrateurs.</h4>
+						<form action="index.php?action=newGroupMember" method="post">
+							<select name="admin">
+								<option value=""></option>
+								<?php foreach ($listAdmins as $admin) { ?>
+									<option value="<?= $admin->getId()?>"><?= $admin->getPseudo()?></option>
+								<?php } ?>
+							</select>
+							<input class="btn btn-success" type="submit" value="Ajouter"/>
+							<?php if ($_SESSION['admin'] != NULL) {
+								foreach ($_SESSION['admin'] as $admin) { $user = unserialize($admin) ?>
+									<p><?= $user->getPseudo()  ?></p>
+								<?php } 
+							} ?>
+						</form>
 						<h4>Ajoutez des auteurs.</h4>
 						<form action="index.php?action=newGroupMember" method="post">
 							<select name="author">

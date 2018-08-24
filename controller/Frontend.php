@@ -17,7 +17,7 @@ class Frontend extends View {
 
 	public function groupView($groupId) {
 
-
+		
 		$linkGroupManager = new LinkGroupManager();
 		$link = $linkGroupManager->access($groupId, $_SESSION['id']);
 		if ($link) {

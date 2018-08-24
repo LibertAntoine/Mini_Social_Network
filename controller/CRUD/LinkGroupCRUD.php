@@ -70,6 +70,17 @@ class LinkGroupCRUD {
 		}
 	}
 
+	public function update($linkGroup, $status) {
+		$linkGroupManager = new LinkgroupManager();
+		echo $linkGroup->getId();
+		if ($linkGroupManager->exists($linkGroup->getId())) {
+			$linkGroup->setStatus($status);
+			$linkGroupManager->update($linkGroup);
+			return 'ok';
+		}
+	}
+
+
 	public function delete($userId ,$groupId) {	
 		$linkGroupManager = new LinkGroupManager();
 		$delete = $linkGroupManager->delete($userId, $groupId);

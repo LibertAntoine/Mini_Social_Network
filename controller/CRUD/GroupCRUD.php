@@ -51,9 +51,15 @@ class GroupCRUD {
 		}
 	}
 
+
+
+
+
 	public function delete($groupId) {
 		$group = $this->read($groupId);
 		if ($group)	{
+			$link = $group->getLinkCouvPicture();
+			unlink($link);
 			$linkGroupCRUD = new LinkGroupCRUD();
 			$linkGroupCRUD->deleteAllMembers($groupId);
 			$postCRUD = new PostCRUD();
