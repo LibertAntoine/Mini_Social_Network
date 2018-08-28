@@ -66,9 +66,6 @@ class CommentCRUD {
 			$userManager = new UserManager();
 			$userManager->removeComment($comment->getUserId());
 		}
-		
-		
-
 		return 'ok';
 	}
 }

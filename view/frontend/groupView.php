@@ -4,17 +4,20 @@ $_SESSION['page'] = 'index.php?action=group&id='. $group->getId();
 
 ob_start(); ?>
 
-  <h2>Bienvenue sur la page du groupe <?= $group->getTitle()?></h2>
-  <p>
+    <div id="couv-picture-block">
+        <img id="couv-picture" src="<?= $group->getLinkCouvPicture() ?>" alt="image de couverture de <?= $group->getTitle()?>">
+    </div>
+  <h2><?= $group->getTitle()?></h2>
+  <p id="nav-option">
     <a href="index.php?action=deleteGroup&amp;groupId=<?= $group->getId() ?>">Supprimer le groupe</a> | 
     <a href="index.php?action=deleteLinkGroup&amp;userId=<?= $_SESSION['id'] ?>&amp;id=<?= $group->getId() ?>">Quitter le groupe</a> | 
     <a href="index.php?action=myStatus&amp;id=<?= $groupId ?> ?>">Changer de statut</a>
         <?php if ($link->getStatus() === 'admin') { ?>
-            | <a href="index.php?action=adminGroup&amp;id=<?= $group->getId() ?>">Gerer le groupe</a>  
+            | <a href="index.php?action=adminGroup&amp;id=<?= $group->getId() ?>">Gerer le groupe</a> 
         <?php } ?>
   </p>
   	<div class="row">
-        <div class="col-lg-8 col-md-7">
+        <div class="hidecol-lg-8 col-md-7">
             <?php if ($posts !== 'none') { 
                 foreach ($posts as $data) { ?>
                     <div class="postBox jumbotron">
@@ -31,7 +34,7 @@ ob_start(); ?>
                                 <em class="creationDate">ajouté le <?= $comment->getCreationDate() ?></em><br/>
                                 <p><?= nl2br($comment->getContent()) ?></p>
 
-                                <?php if ($_SESSION['id'] === $comment->getUserId()) { ?>
+                                <?php if ($_SESSION['id'] === $comment->getUserId() OR $link->getStatus() === 'admin') { ?>
                                     <a href="index.php?action=deleteComment&amp;commentId=<?= $comment->getId() ?>">Supprimer</a>
                                 <?php } elseif ($report[$comment->getId()] != 'none' AND in_array($_SESSION['id'], $report[$comment->getId()])) { ?>
                                         <a href="index.php?action=deleteReport&amp;id=<?= $comment->getId()?>">Ne plus signaler</a>

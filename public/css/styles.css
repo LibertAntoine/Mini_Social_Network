@@ -1,0 +1,160 @@
+
+a {
+	color: black;
+}
+
+a:hover {
+	color: black;
+	text-decoration: none
+}
+
+#contents h2 {
+	padding-top : 50px;
+}
+
+#logo-teller {
+	margin-top: -7px;
+	height: 27px;
+	width: 27px;
+}
+
+
+
+
+#teller {
+	border: black solid 1.2px;
+	border-radius: 8px;
+	height: 35px;
+	padding-left: 8px;
+	padding-right: 12px;
+
+
+}
+
+
+#teller a {
+	color: black;
+	font-family: 'Pacifico', cursive;
+	
+}
+
+#teller a:hover {
+	color: black;
+	text-decoration: none;
+
+}
+
+.navbar-text {
+	font-size: 15px;
+	font-family: 'Pacifico', cursive;
+}
+
+
+
+
+
+#groupBar {
+	width: 180px;
+	height: 100%;
+	background-color: #3ECD64;
+	position: fixed;
+	padding: 10px;
+	padding-top: 30px;
+}
+
+#groupBar a {
+	color: black;
+}
+
+#groupBar h4, #memberBar h4 {
+	margin-bottom: 40px;
+}
+
+#groupBar div {
+	width: 100%;
+	height: 50px;
+	font-size: 20px;
+}
+
+
+header {
+	position: fixed;
+	top: 0px;
+	height: 40px;
+	width: 100%;
+	background-color: #1C9A3E;
+	z-index: 10;
+}
+
+.loger {
+	display: flex;
+}
+
+.loger a {
+	height: 40px;
+	padding-left: 10px;
+	line-height: 40px;
+	color: black;
+	font-family: 'Pacifico', cursive;
+	
+}
+
+
+.loger a:hover {
+	color: black;
+
+}
+
+
+
+
+#memberBar {
+	width: 180px;
+	height: 100%;
+	background-color: grey;
+	position: fixed;
+	right: 0px;
+	padding: 5px;
+	padding-top: 30px;
+}
+
+
+
+
+
+#navbar {
+	margin-left: 180px;
+	padding-top : 0px;
+
+}
+
+#navbar a {
+
+}
+
+
+#contents {
+	margin-top: 40px;
+}
+
+#nav-option a {
+	color: green;
+}
+
+
+#couv-picture {
+	min-height: 250px;
+	width: 100%;
+	position: relative;
+	top: -50%;
+
+}
+
+#couv-picture-block {
+	height: 250px;
+	width: 104.4%;
+	overflow: hidden;
+	margin-left: -24px;
+	margin-right: -26px;
+
+}

@@ -11,7 +11,7 @@ class Frontend extends View {
     
 	public function mainPageView() {
 
-
+		$include = new Includes('groupBar');
 		require('view/frontend/mainPageView.php');
 	}
 
@@ -39,6 +39,8 @@ class Frontend extends View {
 							}					
 						}
 					}
+					$include = new Includes('memberBar');
+					$include = new Includes('groupBar');
 					require('view/frontend/GroupView.php');
 				} else {
 					throw new Exception('Problème d\'accès aux posts');

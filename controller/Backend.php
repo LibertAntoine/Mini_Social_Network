@@ -22,7 +22,7 @@ class Backend extends View {
 	}
 
 	public function backOfficeView() {
-
+		$include = new Includes('groupBar');
 		require('view/backend/backOfficeView.php');
 
 	}
@@ -69,6 +69,7 @@ class Backend extends View {
 				unset($allUsers[$friend->getuserId2()]);
 			}
 			unset($allUsers[$_SESSION['id']]);
+			$include = new Includes('groupBar');
 			require('view/backend/myFriendView.php');
 		} else {
 			throw new Exception('Impossible de récupérer les utilisateurs');
@@ -219,7 +220,7 @@ class Backend extends View {
 				}
 			}
 		}
-
+		$include = new Includes('groupBar');
 		require('view/backend/adminGroupView.php');
 	} 
 

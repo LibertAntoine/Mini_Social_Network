@@ -2,6 +2,7 @@
 
 require_once('controller/Frontend.php');
 require_once('controller/Backend.php');
+require_once('controller/Includes.php');
 require_once('controller/CRUD/UserCRUD.php');
 require_once('controller/CRUD/GroupCRUD.php');
 require_once('controller/CRUD/PostCRUD.php');
@@ -38,10 +39,15 @@ class Action
                     $frontend->setMessage($message);
                 }
                 public function group($message = NULL) {
-                    if (isset($_GET['id'])) {
-                        $frontend = new Frontend('groupView', intval(htmlspecialchars($_GET['id'])));
-                        $frontend->setMessage($message);
-
+                    if (isset($_GET['id'], $_SESSION['id'])) {
+                        $linkGroupCRUD = new LinkGroupCRUD();
+                        if ($linkGroupCRUD->readLink($_SESSION['id'], $_GET['id'])) {
+                            $frontend = new Frontend('groupView', intval(htmlspecialchars($_GET['id'])));
+                            $frontend->setMessage($message);
+                        } else {
+                            $frontend = new Frontend('mainPageView');
+                            $frontend->setMessage($message);
+                        }
                     } else {
                         throw new Exception('Mauvaise référence au groupe lol.');
                     }
@@ -74,7 +80,7 @@ class Action
                 public function myGroup($message = NULL) {
                     if (isset($_SESSION['id'])) {
                         $backend = new Backend('myGroupView');
-                        $backend->setMessage($message);
+                        $backend->setMessage($message); 
                     } else {
                         throw new Exception('Absence de donnée de session.');
                     }
@@ -117,14 +123,14 @@ class Action
                     }
                 }
                 public function adminGroup($message = NULL) {
-                    echo $_GET['id'];
                     if (isset($_SESSION['id'], $_GET['id'])) {
                         $linkGroupCRUD = new LinkGroupCRUD();
                         if ($linkGroupCRUD->readLink($_SESSION['id'], $_GET['id']) === 'admin') {
                             $backend = new Backend('adminGroupView', intval($_GET['id']));
                             $backend->setMessage($message); 
                         } else {
-                            throw new Exception('Accès non authorisé');
+                            $frontend = new Frontend('mainPageView');
+                            $frontend->setMessage($message);
                         }                                                                           
                     } else {
                         throw new Exception('Absence de donnée de session.');
@@ -244,20 +250,19 @@ class Action
                 }
 
                 public function deleteComment() {
-
                     if (isset($_GET['commentId'])) {
-
                     	$commentCRUD = new CommentCRUD();
                         $comment = $commentCRUD->read(intval($_GET['commentId']));
                         if($comment) {                   
-                            $delete = $commentCRUD->delete($_GET['commentId']);
+                            $delete = $commentCRUD->delete(intval($_GET['commentId']));
                             if ($delete) {
+                                echo $delete;
                                 header('Location: index.php?action=group&id=' . $comment->getGroupId());
                             } else {
                                 throw new Exception('Impossible d\'enregister le commentaire');
                             } 
                         } else {
-                            $this->group('Le commentaire n\'existe pas');
+                            throw new Exception('Le commentaire n\'existe pas commentaire');
                         }
                     } else {
                        throw new Exception('Aucun commentaire assigné');

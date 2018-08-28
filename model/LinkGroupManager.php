@@ -42,7 +42,9 @@ class LinkGroupManager extends DBAccess
     $q->execute();
 
     $linkGroup = $q->fetch(PDO::FETCH_ASSOC);
-    return new LinkGroup($linkGroup);
+    if ($linkGroup) {
+      return new LinkGroup($linkGroup);
+    }
   }
 
   public function delete($userId, $groupId)
