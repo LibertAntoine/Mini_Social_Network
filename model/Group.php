@@ -13,6 +13,7 @@ class Group
 	$lastUpdate,
 	$nbPost,
 	$nbMember, 
+	$description,
 	$linkCouvPicture;
 
 
@@ -46,6 +47,11 @@ class Group
   	public function getStatus() 
   	{
  	  	return $this->status;
+  	}
+
+  	public function getDescription() 
+  	{
+ 	  	return $this->description;
   	}
 
   	public function getCreationDate() 
@@ -88,6 +94,14 @@ class Group
 	    if (is_string($title) && strlen($title) < 240) 
 	    {
 	       $this->title = $title;
+	    }
+	}
+
+	public function setDescription($description) 
+	{
+	    if (is_string($description)) 
+	    {
+	       $this->description = $description;
 	    }
 	}
 

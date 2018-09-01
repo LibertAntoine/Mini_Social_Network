@@ -22,6 +22,7 @@ class Action
             $_SESSION['author'] = NULL;
             $_SESSION['commenter'] = NULL;
             $_SESSION['viewer'] = NULL;
+            $_SESSION['description'] = NULL;
             $_SESSION['titleGroup'] = NULL;
             $_SESSION['status'] = NULL;
             if (isset($_SESSION['couvPicture'])) { 
@@ -98,12 +99,15 @@ class Action
                         $_SESSION['titleGroup'] = $_POST['titleGroup'];
                         $_SESSION['status'] = $_POST['status'];
                     }
+                    if (isset($_POST['description'])) {
+                        $_SESSION['description'] = $_POST['description'];
+                    }
                     if (isset($_FILES['couvPicture'])) {
                         if ($_FILES['couvPicture']['size'] > 4000000) {
                             $backend = new Backend('newGroupView', 'La taille du fichier dépasse 4Mo');
                             exit;
                         }
-                        $_SESSION['couvPicture'] = 'public/pictures/couv/'. str_replace(' ', '_', $_POST['titleGroup']) . '.' . substr($_FILES['couvPicture']['type'], 6);
+                        $_SESSION['couvPicture'] = 'public/pictures/couv/'. str_replace(' ', '_', htmlspecialchars($_POST['titleGroup'])) . '.' . substr($_FILES['couvPicture']['type'], 6);
                         move_uploaded_file($_FILES['couvPicture']['tmp_name'], $_SESSION['couvPicture']);
                     }
                     if (isset($_SESSION['id'])) {
@@ -155,7 +159,7 @@ class Action
                                 $memberArray['viewer'] = $_SESSION['viewer'];
                             }
                             if(!$groupCRUD->read($_SESSION['titleGroup'])) { 
-                                $group = $groupCRUD->add($_SESSION['titleGroup'], $_SESSION['status'], $_SESSION['couvPicture'], $_SESSION['id'], $memberArray);
+                                $group = $groupCRUD->add(htmlspecialchars($_SESSION['titleGroup']), $_SESSION['status'], htmlspecialchars($_SESSION['description']), $_SESSION['couvPicture'], $_SESSION['id'], $memberArray);
                                 if ($group) {
                                   $_SESSION['couvPicture'] = NULL;  
                                   header('Location: index.php?action=group&id=' . $group->getId());

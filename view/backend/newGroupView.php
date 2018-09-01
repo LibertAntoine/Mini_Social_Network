@@ -20,6 +20,8 @@ ob_start(); ?>
 				<input type="radio" id="private" name="status" value="private" checked="true">
 				<label for="private">Privé</label>
 				<br/>
+				<label for="description">Description du groupe :  </label>
+				<textarea class="tinymce" id="description" name="description"></textarea>
 				<label for="status">Ajouter une image de couverture :  </label>
 				<input type="file" id="couvPicture" name="couvPicture" accept=".png, .jpg, .jpeg">
 				<br/>

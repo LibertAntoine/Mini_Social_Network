@@ -21,9 +21,9 @@
 
 class GroupCRUD {
 	
-	public function add($title, $status, $linkCouvPicture = '', $adminId, $memberArray)
+	public function add($title, $status, $description = '', $linkCouvPicture = '', $adminId, $memberArray)
 	{
-	    $newGroup = new Group(['title' => $title, 'status' => $status, 'linkCouvPicture' => $linkCouvPicture, 'nbMember' => 1]);	
+	    $newGroup = new Group(['title' => $title, 'status' => $status, 'description' => $description, 'linkCouvPicture' => $linkCouvPicture, 'nbMember' => 1]);	
 	    $groupManager = new GroupManager();
 	    $group = $groupManager->add($newGroup);
 	    if ($group) {

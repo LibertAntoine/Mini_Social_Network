@@ -1,6 +1,6 @@
 
 	<section id="memberBar">
-		<a href="index.php?action=myGroup"><h4>Membres</h4></a>
+		<a href="index.php?action=myGroup"><h3>Membres</h3></a>
 		<div>
 							<?php if (isset($admins)) { ?>
 								<h4>Admin</h4>
@@ -26,9 +26,10 @@
 									<div><p><?= $profils[$viewerId]->getPseudo()  ?></p></div>
 								<?php } 
 							} ?>
-		</div>
 		<?php if (isset($admins[$_SESSION['id']])) { ?>
-            | <a href="index.php?action=adminGroup&amp;id=<?= $group->getId() ?>">Gerer le groupe</a>  
+            <a href="index.php?action=adminGroup&amp;id=<?= $group->getId() ?>">Gerer le groupe</a>  
         <?php } ?>
+		</div>
+
 	</section>					
 
