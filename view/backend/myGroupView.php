@@ -4,20 +4,20 @@ $_SESSION['page'] = "index.php?action=myGroup";
 
 ob_start(); ?>
 
-  <h2>Retrouvez sur cette page mes groupes</h2>
+  <h2>Liste de mes groupes.</h2>
 
   	<div class="row">
-        <div class="col-lg-8 col-md-7">
+        <div class="col-lg-12 col-md-12 col-xs-12">
             <?php if (isset($groups)) { ?>
                 <div class="row">
                     <div class="col-lg-8 col-md-7">
-                         <table class="table">
+                         <table id="list-group" class="table">
                             <tr>
                                 <th>Titre</th>
                                 <th>Status</th>
                                 <th>Fonction</th>
-                                <th>Quitter</th>
-                                <th>Suppression</th>
+                                <th id="link-leave">Quitter</th>
+                                <th>Administration</th>
                             </tr>
                             <?php foreach ($groups as $groupId => $group) { ?>   
                                 <tr>
@@ -25,10 +25,18 @@ ob_start(); ?>
                                     <td><?= htmlspecialchars($group->getStatus()) ?></td>
                                     <td><?= $linkGroups[$groupId]->getStatus() ?></td>
                                     <td><a href="index.php?action=deleteLinkGroup&amp;userId=<?= $_SESSION['id'] ?>&amp;id=<?= $group->getId() ?>">Quitter le groupe</a></td>
-                                    <td>
-                                        <?php if ($linkGroups[$groupId]->getStatus() === "admin") { ?>
-                                        <a href="index.php?action=deleteGroup&amp;groupId=<?= $groupId ?>">Supprimer le groupe</a>
-                                        <?php } ?>
+                                    <td id="admin-option">
+                                        <div>
+                                            <?php if ($linkGroups[$groupId]->getStatus() === "admin") { ?>
+                                                <a href="index.php?action=deleteGroup&amp;groupId=<?= $groupId ?>">Supprimer le groupe</a>
+                                            <?php } ?>
+                                        </div>
+                                        <div id='link-group-gestion'>
+                                            <?php if ($linkGroups[$groupId]->getStatus() === "admin") { ?>
+                                                <a href="index.php?action=adminGroup&amp;id=<?= $groupId ?>">Gérer le groupe</a>
+                                            <?php } ?>
+                                        </div>
+
                                     </td>
 
                                 </tr>

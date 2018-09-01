@@ -3,6 +3,13 @@ body {
 	background-color: #e9ecef;
 }
 
+a {
+	color: black;
+}
+
+h2 {
+ margin-bottom: 40px;
+}
 
 #contents h2 {
 	padding-top : 50px;
@@ -14,7 +21,26 @@ body {
 	width: 27px;
 }
 
+#admin-option {
+	display: flex;
 
+}
+
+#link-leave {
+	min-width: 90px;
+}
+
+#list-group a:hover {
+	color: black;
+
+}
+
+#link-group-gestion {
+	margin-left: 10px;
+	padding-left: 10px;
+	border-left: black solid 1px;
+	min-width: 80px;
+}
 
 
 #teller {
