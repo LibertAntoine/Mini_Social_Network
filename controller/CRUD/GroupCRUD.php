@@ -21,9 +21,22 @@
 
 class GroupCRUD {
 	
-	public function add($title, $status, $description = '', $linkCouvPicture = '', $adminId, $memberArray)
+	public function add($title, $public, $description = '', $linkCouvPicture, $adminId, $memberArray)
 	{
-	    $newGroup = new Group(['title' => $title, 'status' => $status, 'description' => $description, 'linkCouvPicture' => $linkCouvPicture, 'nbMember' => 1]);	
+		if ($linkCouvPicture === NULL) {
+			$linkCouvPicture = 0;
+		} elseif ($linkCouvPicture === "jpeg") {
+			$linkCouvPicture = 1;
+		} elseif ($linkCouvPicture === "png") {
+			$linkCouvPicture = 2;
+		} elseif ($linkCouvPicture === "jpg") {
+			$linkCouvPicture = 3;
+		} else {
+			throw new Exception('Fichier fournit au mauvais format.');
+		}
+		
+	    $newGroup = new Group(['title' => $title, 'public' => $public, 'description' => $description, 'linkCouvPicture' => $linkCouvPicture, 'nbMember' => 0]);
+
 	    $groupManager = new GroupManager();
 	    $group = $groupManager->add($newGroup);
 	    if ($group) {
@@ -35,7 +48,7 @@ class GroupCRUD {
 			    	$linkGroupCRUD->add($member->getId(), $group->getId(), $fonction);
 			    }
 			}
-			$linkGroupCRUD->add($adminId, $group->getId(), 'admin');
+			$linkGroupCRUD->add($adminId, $group->getId(), 1);
 		    return $group;
 	    	} else {
 	    		throw new Exception('Impossible d\'enregister le groupe');

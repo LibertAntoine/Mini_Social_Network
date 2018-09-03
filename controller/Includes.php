@@ -36,13 +36,13 @@ class Includes {
 
 			foreach ($members as $memberId => $member) {
 				$profils[$memberId] = $userCRUD->read($memberId);
-				if ($member->getStatus() === 'admin') {
+				if ($member->getStatusInt() === 1) {
 					$admins[$memberId] = $member;
-				} elseif ($member->getStatus() === 'author') {
+				} elseif ($member->getStatusInt() === 2) {
 					$authors[$memberId] = $member;
-				} elseif ($member->getStatus() === 'commenter') {
+				} elseif ($member->getStatusInt() === 3) {
 					$commenters[$memberId] = $member;
-				} elseif ($member->getStatus() === 'viewer') {
+				} elseif ($member->getStatusInt() === 4) {
 					$viewers[$memberId] = $member;
 				} else {
 					throw new Exception('Erreur de profil utilisateur');

@@ -9,11 +9,13 @@ class LinkGroupManager extends DBAccess
 
 		$q->bindValue(':groupId', $linkGroup->getGroupId());
     $q->bindValue(':userId', $linkGroup->getUserId());
-    $q->bindValue(':status', $linkGroup->getStatus());
+    $q->bindValue(':status', $linkGroup->getStatusInt());
 		$q->execute();
 
     $linkGroup->hydrate([
       'id' => $this->db->lastInsertId()]);
+
+    return $linkGroup;
   }
 
   public function count()
@@ -150,7 +152,7 @@ class LinkGroupManager extends DBAccess
     
     $q->bindValue(':groupId', $linkGroup->getGroupId());
     $q->bindValue(':userId', $linkGroup->getUserId());
-    $q->bindValue(':status', $linkGroup->getStatus());
+    $q->bindValue(':status', $linkGroup->getStatusInt());
     $q->bindValue(':id', $linkGroup->getId());
 
     $q->execute();

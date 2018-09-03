@@ -14,9 +14,9 @@
 
     	<?php require("view/include/navbar.php");?>
         
-        <section id="contents" class="container">
+
             <?= $content ?>
-        </section>
+     
 
 
         <script src="vendor/bootstrap/js/bootstrap.min.js"></script>

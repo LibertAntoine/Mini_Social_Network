@@ -46,9 +46,27 @@ class LinkGroup
     return $this->userId;
   }
 
-  public function getStatus() 
+  public function getStatusInt() 
   {
     return $this->status;
+  }
+
+  public function getStatusString() 
+  {
+    switch ($this->status) {
+      case 1:
+        return "Administrateur";
+        break;
+      case 2:
+        return "Auteur";
+        break;
+      case 3:
+        return "Commenteur";
+        break;
+      case 4:
+        return "Viewer";
+        break;
+    }
   }
   
   public function getLinkDate() 
@@ -86,9 +104,10 @@ class LinkGroup
 
   public function setStatus($status) 
   {
-      if (is_string($status) && strlen($status) < 25) 
+      $status = (int) $status;
+      if ($status >= 0) 
       {
-         $this->status = $status;
+        $this->status = $status;
       }
   }
 

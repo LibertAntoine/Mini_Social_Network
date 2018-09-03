@@ -46,13 +46,11 @@ class Backend extends View {
 		$friendCRUD = new LinkFriendCRUD();
 		$listFriends = $friendCRUD->readFriends();
 		$userCRUD = new UserCRUD();
-		$friends = NULL;
-		$requests = NULL;
 		if ($listFriends !== NULL) {
 			foreach ($listFriends as $friend) {
-				if ($friend->getStatus() === "no") {
+ if ($friend->getLink() === 0) {
 					$requests[$friend->getUserId2()] = $userCRUD->read($friend->getUserId2());
-				} elseif ($friend->getStatus() === "yes") {
+				} elseif ($friend->getLink() === 1) {
 					if ($friendCRUD->readLink($_SESSION['id'], $friend->getUserId2())) {
 						$friends[$friend->getUserId2()] = $userCRUD->read($friend->getUserId2());
 					}
@@ -92,7 +90,7 @@ class Backend extends View {
 		if ($linkFriends != 'none') {
 			$userCRUD = new UserCRUD();
 			foreach ($linkFriends as $friend) {
-				if ($friend->getStatus() === "yes") {
+				if ($friend->getLink() === 1) {
 					if ($friendCRUD->readLink($_SESSION['id'], $friend->getUserId2())) {
 						$friends[$friend->getUserId2()] = $userCRUD->read($friend->getUserId2());
 					}
@@ -125,55 +123,57 @@ class Backend extends View {
 			array_push($_SESSION['viewer'], serialize($userCRUD->read(intval($_POST['viewer']))));
 		}
 		
+		if (isset($friends)) {
+			$listAdmins = $friends;
+			if ($_SESSION['admin'] != NULL) {
+				for ($i=0; $i < count($_SESSION['admin']); $i++) {
+					$admin = unserialize($_SESSION['admin'][$i]);
+					if (isset($listAdmins[$admin->getId()])) {
+						unset($listAdmins[$admin->getId()]);
+					} else {
+						unset($_SESSION['admin'][$i]);
+					}
+				}
+			}		
 
-		$listAdmins = $friends;
-		if ($_SESSION['admin'] != NULL) {
-			for ($i=0; $i < count($_SESSION['admin']); $i++) {
-				$admin = unserialize($_SESSION['admin'][$i]);
-				if (isset($listAdmins[$admin->getId()])) {
-					unset($listAdmins[$admin->getId()]);
-				} else {
-					unset($_SESSION['admin'][$i]);
+			$listAuthors = $listAdmins;
+			if ($_SESSION['author'] != NULL) {
+				for ($i=0; $i < count($_SESSION['author']); $i++) {
+					$author = unserialize($_SESSION['author'][$i]);
+					if (isset($listAuthors[$author->getId()])) {
+						unset($listAuthors[$author->getId()]);
+					} else {
+						unset($_SESSION['author'][$i]);
+					}
 				}
 			}
-		}		
 
-		$listAuthors = $listAdmins;
-		if ($_SESSION['author'] != NULL) {
-			for ($i=0; $i < count($_SESSION['author']); $i++) {
-				$author = unserialize($_SESSION['author'][$i]);
-				if (isset($listAuthors[$author->getId()])) {
-					unset($listAuthors[$author->getId()]);
-				} else {
-					unset($_SESSION['author'][$i]);
+			$listCommenters = $listAuthors;
+			if ($_SESSION['commenter'] != NULL) {
+				for ($i=0; $i < count($_SESSION['commenter']); $i++) {
+					$commenter = unserialize($_SESSION['commenter'][$i]);
+					if (isset($listCommenters[$commenter->getId()])) {
+						unset($listCommenters[$commenter->getId()]);
+					} else {
+						unset($_SESSION['commenter'][$i]);
+					}	
+				}
+			}
+
+			$listViewers = $listCommenters;
+			if ($_SESSION['viewer'] != NULL) {
+
+				for ($i=0; $i < count($_SESSION['viewer']); $i++) {
+					$viewer = unserialize($_SESSION['viewer'][$i]);
+					if (isset($listViewers[$viewer->getId()])) {
+						unset($listViewers[$viewer->getId()]);
+					} else {
+						unset($_SESSION['viewer'][$i]);
+					}	
 				}
 			}
 		}
 
-		$listCommenters = $listAuthors;
-		if ($_SESSION['commenter'] != NULL) {
-			for ($i=0; $i < count($_SESSION['commenter']); $i++) {
-				$commenter = unserialize($_SESSION['commenter'][$i]);
-				if (isset($listCommenters[$commenter->getId()])) {
-					unset($listCommenters[$commenter->getId()]);
-				} else {
-					unset($_SESSION['commenter'][$i]);
-				}	
-			}
-		}
-
-		$listViewers = $listCommenters;
-		if ($_SESSION['viewer'] != NULL) {
-
-			for ($i=0; $i < count($_SESSION['viewer']); $i++) {
-				$viewer = unserialize($_SESSION['viewer'][$i]);
-				if (isset($listViewers[$viewer->getId()])) {
-					unset($listViewers[$viewer->getId()]);
-				} else {
-					unset($_SESSION['viewer'][$i]);
-				}	
-			}
-		}
 
 		require('view/backend/newGroupMemberView.php');
 	}
@@ -191,13 +191,13 @@ class Backend extends View {
 
 		foreach ($members as $memberId => $member) {
 			$profils[$memberId] = $userCRUD->read($memberId);
-			if ($member->getStatus() === 'admin') {
+			if ($member->getStatusInt() === 1) {
 				$admins[$memberId] = $member;
-			} elseif ($member->getStatus() === 'author') {
+			} elseif ($member->getStatusInt() === 2) {
 				$authors[$memberId] = $member;
-			} elseif ($member->getStatus() === 'commenter') {
+			} elseif ($member->getStatusInt() === 3) {
 				$commenters[$memberId] = $member;
-			} elseif ($member->getStatus() === 'viewer') {
+			} elseif ($member->getStatusInt() === 4) {
 				$viewers[$memberId] = $member;
 			} else {
 				throw new Exception('Erreur de profil utilisateur');
@@ -210,7 +210,7 @@ class Backend extends View {
 		if ($linkFriends != 'none') {
 			$userCRUD = new UserCRUD();
 			foreach ($linkFriends as $friend) {
-				if ($friend->getStatus() === "yes") {
+				if ($friend->getLink() === 1) {
 					if ($friendCRUD->readLink($_SESSION['id'], $friend->getUserId2())) {
 						$friendId = $friend->getUserId2();
 						if (!isset($members[$friendId])) {

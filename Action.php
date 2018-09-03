@@ -24,7 +24,7 @@ class Action
             $_SESSION['viewer'] = NULL;
             $_SESSION['description'] = NULL;
             $_SESSION['titleGroup'] = NULL;
-            $_SESSION['status'] = NULL;
+            $_SESSION['public'] = NULL;
             if (isset($_SESSION['couvPicture'])) { 
                 unlink($_SESSION['couvPicture']);
                 $_SESSION['couvPicture'] = NULL;
@@ -95,20 +95,20 @@ class Action
                     }
                 }
                 public function newGroupMember($message = NULL) {
-                    if (isset($_POST['titleGroup'], $_POST['status'])) {
+                    if (isset($_POST['titleGroup'], $_POST['public'])) {
                         $_SESSION['titleGroup'] = $_POST['titleGroup'];
-                        $_SESSION['status'] = $_POST['status'];
+                        $_SESSION['public'] = $_POST['public'];
                     }
                     if (isset($_POST['description'])) {
                         $_SESSION['description'] = $_POST['description'];
                     }
-                    if (isset($_FILES['couvPicture'])) {
+                    if (isset($_FILES['couvPicture']) AND $_FILES['couvPicture']['size'] !== 0) {
                         if ($_FILES['couvPicture']['size'] > 4000000) {
                             $backend = new Backend('newGroupView', 'La taille du fichier dépasse 4Mo');
                             exit;
                         }
-                        $_SESSION['couvPicture'] = 'public/pictures/couv/'. str_replace(' ', '_', htmlspecialchars($_POST['titleGroup'])) . '.' . substr($_FILES['couvPicture']['type'], 6);
-                        move_uploaded_file($_FILES['couvPicture']['tmp_name'], $_SESSION['couvPicture']);
+                        $_SESSION['couvPicture'] = substr($_FILES['couvPicture']['type'], 6);
+                        move_uploaded_file($_FILES['couvPicture']['tmp_name'], 'public/pictures/couv/'. str_replace(' ', '_', htmlspecialchars($_POST['titleGroup'])) . '.' . substr($_FILES['couvPicture']['type'], 6));
                     }
                     if (isset($_SESSION['id'])) {
                         $backend = new Backend('newGroupMemberView');
@@ -129,7 +129,7 @@ class Action
                 public function adminGroup($message = NULL) {
                     if (isset($_SESSION['id'], $_GET['id'])) {
                         $linkGroupCRUD = new LinkGroupCRUD();
-                        if ($linkGroupCRUD->readLink($_SESSION['id'], $_GET['id']) === 'admin') {
+                        if ($linkGroupCRUD->readLink($_SESSION['id'], $_GET['id']) === 1) {
                             $backend = new Backend('adminGroupView', intval($_GET['id']));
                             $backend->setMessage($message); 
                         } else {
@@ -142,24 +142,24 @@ class Action
                 }
 
                 public function addGroup() {
-                    if (isset($_SESSION['id'], $_SESSION['titleGroup'], $_SESSION['status'])) {
+                    if (isset($_SESSION['id'], $_SESSION['titleGroup'], $_SESSION['public'])) {
                         if(strlen($_SESSION['titleGroup']) <= 240 && strlen($_SESSION['titleGroup']) >= 4) {
                             $groupCRUD = new GroupCRUD();
                             $memberArray = [];
                             if ($_SESSION['admin'] != NULL) {
-                                $memberArray['admin'] = $_SESSION['admin'];
+                                $memberArray[1] = $_SESSION['admin'];
                             }
                             if ($_SESSION['author'] != NULL) {
-                                $memberArray['author'] = $_SESSION['author'];
+                                $memberArray[2] = $_SESSION['author'];
                             }
                             if ($_SESSION['commenter'] != NULL) {
-                                $memberArray['commenter'] = $_SESSION['commenter'];
+                                $memberArray[3] = $_SESSION['commenter'];
                             }
                             if ($_SESSION['viewer'] != NULL) {
-                                $memberArray['viewer'] = $_SESSION['viewer'];
+                                $memberArray[4] = $_SESSION['viewer'];
                             }
                             if(!$groupCRUD->read($_SESSION['titleGroup'])) { 
-                                $group = $groupCRUD->add(htmlspecialchars($_SESSION['titleGroup']), $_SESSION['status'], htmlspecialchars($_SESSION['description']), $_SESSION['couvPicture'], $_SESSION['id'], $memberArray);
+                                $group = $groupCRUD->add(htmlspecialchars($_SESSION['titleGroup']), intval($_SESSION['public']), htmlspecialchars($_SESSION['description']), $_SESSION['couvPicture'], $_SESSION['id'], $memberArray);
                                 if ($group) {
                                   $_SESSION['couvPicture'] = NULL;  
                                   header('Location: index.php?action=group&id=' . $group->getId());
@@ -362,8 +362,8 @@ class Action
                 public function addLinkGroup() {
                     if (isset($_SESSION['id'], $_POST['friend'], $_POST['groupId'], $_POST['status'])) {
                         $linkGroupCRUD = new LinkGroupCRUD();
-                        if ($linkGroupCRUD->readLink(intval($_SESSION['id']), intval($_POST['groupId'])) === 'admin') {
-                            $linkGroupCRUD->add(intval($_POST['friend']), intval($_POST['groupId']), $_POST['status']);
+                        if ($linkGroupCRUD->readLink(intval($_SESSION['id']), intval($_POST['groupId'])) === 'administrateur') {
+                            $linkGroupCRUD->add(intval($_POST['friend']), intval($_POST['groupId']), intval($_POST['status']));
                             header('Location: '. $_SESSION['page']);
                         } else {
                             throw new Exception('Accès non authorisé');
@@ -376,11 +376,11 @@ class Action
                 public function updateLinkGroup() {
                     if (isset($_SESSION['id'], $_GET['id'])) {
                         $linkGroupCRUD = new LinkGroupCRUD();
-                        if ($linkGroupCRUD->readLink(intval($_SESSION['id']), intval($_GET['id'])) === 'admin') {
+                        if ($linkGroupCRUD->readLink(intval($_SESSION['id']), intval($_GET['id'])) === 1) {
                             $members = $linkGroupCRUD->readMembers(intval($_GET['id']));
                             foreach ($members as $memberId => $member) {
                                 $newMember = $_POST[$memberId];
-                                if ($newMember != $member->getStatus()) {
+                                if ($newMember != $member->getStatusInt()) {
                                     $linkGroupCRUD->update($member, $newMember);
                                 }
                                 header('Location: index.php?action=group&id='. $_GET['id']);
@@ -458,7 +458,7 @@ class Action
                                 $userCRUD = new UserCRUD();
                                 $user = $userCRUD->read(htmlspecialchars($_POST['pseudo']), htmlspecialchars($_POST['mdp']));
                                 if ($user) {
-                                	if ($user->getAcompte() === 'on') {
+                                	if ($user->getActif() == "1") {
                                     	$_SESSION['pseudo'] = $user->getPseudo();
                                     	$_SESSION['id'] = $user->getId();
                                     	header('Location: index.php?action=mainPage');

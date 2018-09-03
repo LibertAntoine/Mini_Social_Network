@@ -4,6 +4,8 @@ $_SESSION['page'] = "index.php?action=myGroup";
 
 ob_start(); ?>
 
+<section  id="mygroup-page">
+<div id="contents" class="container">    
   <h2>Liste de mes groupes.</h2>
 
   	<div class="row">
@@ -22,21 +24,20 @@ ob_start(); ?>
                             <?php foreach ($groups as $groupId => $group) { ?>   
                                 <tr>
                                     <td><a href="index.php?action=group&amp;id=<?= $groupId ?>"><h3><?= htmlspecialchars($group->getTitle()) ?></h3></a></td>
-                                    <td><?= htmlspecialchars($group->getStatus()) ?></td>
-                                    <td><?= $linkGroups[$groupId]->getStatus() ?></td>
+                                    <td><?= htmlspecialchars($group->getPublicString()) ?></td>
+                                    <td><?= $linkGroups[$groupId]->getStatusString() ?></td>
                                     <td><a href="index.php?action=deleteLinkGroup&amp;userId=<?= $_SESSION['id'] ?>&amp;id=<?= $group->getId() ?>">Quitter le groupe</a></td>
                                     <td id="admin-option">
+                                        <?php if ($linkGroups[$groupId]->getStatusInt() === 1) { ?>
                                         <div>
-                                            <?php if ($linkGroups[$groupId]->getStatus() === "admin") { ?>
+                                            
                                                 <a href="index.php?action=deleteGroup&amp;groupId=<?= $groupId ?>">Supprimer le groupe</a>
-                                            <?php } ?>
+                                            
                                         </div>
                                         <div id='link-group-gestion'>
-                                            <?php if ($linkGroups[$groupId]->getStatus() === "admin") { ?>
                                                 <a href="index.php?action=adminGroup&amp;id=<?= $groupId ?>">Gérer le groupe</a>
-                                            <?php } ?>
                                         </div>
-
+                                        <?php } ?>
                                     </td>
 
                                 </tr>
@@ -49,7 +50,8 @@ ob_start(); ?>
             <?php } ?>
         </div>
     </div>
-
+</div>
+</section>
 <?php $content = ob_get_clean(); ?>
 
 <?php require('view/template.php'); ?>

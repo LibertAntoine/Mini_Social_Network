@@ -39,6 +39,8 @@ class Frontend extends View {
 							}					
 						}
 					}
+					
+					$userCRUD = new UserCRUD();
 					$include = new Includes('memberBar');
 					$include = new Includes('groupBar');
 					require('view/frontend/GroupView.php');

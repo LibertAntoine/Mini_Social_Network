@@ -9,7 +9,7 @@ class LinkFriend
 	protected $id,
 	$userId1,
 	$userId2,
-	$status,
+	$link,
 	$linkDate;
 
 
@@ -45,9 +45,9 @@ class LinkFriend
     return $this->userId2;
   }
 
-  public function getStatus() 
+  public function getLink() 
   {
-    return $this->status;
+    return $this->link;
   }
   
   public function getLinkDate() 
@@ -83,11 +83,12 @@ class LinkFriend
   }
 
 
-  public function setStatus($status) 
+  public function setLink($link) 
   {
-      if (is_string($status) && strlen($status) < 25) 
+      $link = (int) $link;
+      if ($link >= 0) 
       {
-         $this->status = $status;
+        $this->link = $link;
       }
   }
 

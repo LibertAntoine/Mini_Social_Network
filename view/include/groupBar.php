@@ -1,4 +1,4 @@
-
+	<?php if (isset($groups)) { ?>
 	<section id="groupBarSection">
 		<div id="groupBar">
 			<a href="index.php?action=myGroup"><h3>Mes groupes</h3></a>
@@ -7,4 +7,5 @@
 			<?php } ?>
 		</div>
 	</section>
+	<?php } ?>
 

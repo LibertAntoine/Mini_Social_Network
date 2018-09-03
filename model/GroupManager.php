@@ -5,10 +5,10 @@ class GroupManager extends DBAccess {
 
 	public function add(Group $group) 
   {
-		$q = $this->db->prepare("INSERT INTO `projet5_groups` (`title`, `status`, `description`, `creationDate`, `lastUpdate`, `nbPost`, `nbMember`, `linkCouvPicture`) VALUES (:title , :status, :description, NOW(), NOW(), :nbPost, :nbMember, :linkCouvPicture);");
+		$q = $this->db->prepare("INSERT INTO `projet5_groups` (`title`, `public`, `description`, `creationDate`, `lastUpdate`, `nbPost`, `nbMember`, `linkCouvPicture`) VALUES (:title , :public, :description, NOW(), NOW(), :nbPost, :nbMember, :linkCouvPicture);");
 
     $q->bindValue(':title', $group->getTitle());
-    $q->bindValue(':status', $group->getStatus());
+    $q->bindValue(':public', $group->getPublic());
     $q->bindValue(':description', $group->getDescription());
     $q->bindValue(':linkCouvPicture', $group->getLinkCouvPicture());
     $q->bindValue(':nbPost', '0');
@@ -49,11 +49,11 @@ class GroupManager extends DBAccess {
   {
     if (is_int($info))
     {
-      $q = $this->db->query('SELECT id, title, status, description, DATE_FORMAT(creationDate, \'%d/%m/%Y à %Hh%i\') AS creationDate, DATE_FORMAT(lastUpdate, \'%d/%m/%Y à %Hh%i\') AS lastUpdate, nbPost, nbMember, linkCouvPicture FROM projet5_groups WHERE id = '.$info);
+      $q = $this->db->query('SELECT id, title, public, description, DATE_FORMAT(creationDate, \'%d/%m/%Y à %Hh%i\') AS creationDate, DATE_FORMAT(lastUpdate, \'%d/%m/%Y à %Hh%i\') AS lastUpdate, nbPost, nbMember, linkCouvPicture FROM projet5_groups WHERE id = '.$info);
       $group = $q->fetch(PDO::FETCH_ASSOC);
     } else 
     {
-      $q = $this->db->query('SELECT id, title, status, description, DATE_FORMAT(creationDate, \'%d/%m/%Y à %Hh%i\') AS creationDate, DATE_FORMAT(lastUpdate, \'%d/%m/%Y à %Hh%i\') AS lastUpdate, nbPost, nbMember, linkCouvPicture FROM projet5_groups WHERE title ='. $info);
+      $q = $this->db->query('SELECT id, title, public, description, DATE_FORMAT(creationDate, \'%d/%m/%Y à %Hh%i\') AS creationDate, DATE_FORMAT(lastUpdate, \'%d/%m/%Y à %Hh%i\') AS lastUpdate, nbPost, nbMember, linkCouvPicture FROM projet5_groups WHERE title ='. $info);
       $group = $q->fetch(PDO::FETCH_ASSOC);
     }
     return new Group($group);
@@ -63,7 +63,7 @@ class GroupManager extends DBAccess {
   {
     $groups = [];
     
-    $q = $this->db->query('SELECT id, title, status, description, DATE_FORMAT(creationDate, \'%d/%m/%Y à %Hh%i\') AS creationDate, DATE_FORMAT(lastUpdate, \'%d/%m/%Y à %Hh%i\'), nbPost, nbMember, linkCouvPicture AS lastUpdate FROM projet5_groups ORDER BY lastUpdate DESC');
+    $q = $this->db->query('SELECT id, title, public, description, DATE_FORMAT(creationDate, \'%d/%m/%Y à %Hh%i\') AS creationDate, DATE_FORMAT(lastUpdate, \'%d/%m/%Y à %Hh%i\'), nbPost, nbMember, linkCouvPicture AS lastUpdate FROM projet5_groups ORDER BY lastUpdate DESC');
 
     while ($data = $q->fetch(PDO::FETCH_ASSOC))
     {
@@ -76,7 +76,7 @@ class GroupManager extends DBAccess {
   {
     $groups = [];
     
-    $q = $this->db->query('SELECT id, title, status, description, DATE_FORMAT(creationDate, \'%d/%m/%Y à %Hh%i\') AS creationDate, DATE_FORMAT(lastUpdate, \'%d/%m/%Y à %Hh%i\'), nbPost, nbMember, linkCouvPicture AS lastUpdate, nbPost FROM projet5_groups ORDER BY lastUpdate DESC LIMIT 0, 5');
+    $q = $this->db->query('SELECT id, title, public, description, DATE_FORMAT(creationDate, \'%d/%m/%Y à %Hh%i\') AS creationDate, DATE_FORMAT(lastUpdate, \'%d/%m/%Y à %Hh%i\'), nbPost, nbMember, linkCouvPicture AS lastUpdate, nbPost FROM projet5_groups ORDER BY lastUpdate DESC LIMIT 0, 5');
 
     while ($data = $q->fetch(PDO::FETCH_ASSOC))
     {
@@ -89,7 +89,7 @@ class GroupManager extends DBAccess {
   {
     $groups = [];
     
-    $q = $this->db->query('SELECT id, title, status, description, DATE_FORMAT(creationDate, \'%d/%m/%Y à %Hh%i\') AS creationDate, DATE_FORMAT(lastUpdate, \'%d/%m/%Y à %Hh%i\'), nbPost, nbMember, linkCouvPicture AS lastUpdate FROM projet5_groups ORDER BY nbPost DESC LIMIT 0, 5');
+    $q = $this->db->query('SELECT id, title, public, description, DATE_FORMAT(creationDate, \'%d/%m/%Y à %Hh%i\') AS creationDate, DATE_FORMAT(lastUpdate, \'%d/%m/%Y à %Hh%i\'), nbPost, nbMember, linkCouvPicture AS lastUpdate FROM projet5_groups ORDER BY nbPost DESC LIMIT 0, 5');
 
     while ($data = $q->fetch(PDO::FETCH_ASSOC))
     {
@@ -132,10 +132,10 @@ class GroupManager extends DBAccess {
 
   public function update(Group $group)
   {
-    $q = $this->db->prepare('UPDATE projet5_groups SET title = :title, status = :status, description = :description, lastUpdate = NOW(), nbPost = :nbPost, nbMember = :nbMember, linkCouvPicture = :linkCouvPicture WHERE id = :id');
+    $q = $this->db->prepare('UPDATE projet5_groups SET title = :title, public = :public, description = :description, lastUpdate = NOW(), nbPost = :nbPost, nbMember = :nbMember, linkCouvPicture = :linkCouvPicture WHERE id = :id');
     
     $q->bindValue(':title', $group->getTitle());
-    $q->bindValue(':status', $group->getStatus());
+    $q->bindValue(':public', $group->getPublic());
     $q->bindValue(':description', $group->getDescription());
     $q->bindValue(':nbPost', $group->getNbPost());
     $q->bindValue(':nbMember', $group->getNbMember());

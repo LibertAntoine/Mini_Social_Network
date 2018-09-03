@@ -1,12 +1,12 @@
 <?php $title = 'Mon compte - création d\'un nouveau groupe';
 
 ob_start(); ?>
-
-	<h2>Création d'un nouveau groupe</h2>
+	<section id="contents" class="container">
+	<h2>Création d'un nouveau groupe.</h2>
 
 	<p><a class="indexLink" href="index.php?action=mainPage">-> Retour à l'acceuil du site</a></p>
 
-	<div class="row">
+	<div id='add-member-group'class="row">
 		<div class="col-md-12 col-sm-12 jumbotron">
 					<h3>Ajoutez d'autres membres.</h3>
 					<?php if (isset($friends)) { ?>
@@ -81,6 +81,7 @@ ob_start(); ?>
 					</a>
 				</div>
 			</div>
+		</section>
 
 <?php $content = ob_get_clean(); ?>
 

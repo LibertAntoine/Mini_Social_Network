@@ -66,7 +66,7 @@ class LinkGroupCRUD {
 		$linkGroupManager = new LinkGroupManager();
 		$link = $linkGroupManager->existLink($userId, $groupId);
 		if (isset($link)) {
-			return $link->getStatus();
+			return $link->getStatusInt();
 		}
 	}
 

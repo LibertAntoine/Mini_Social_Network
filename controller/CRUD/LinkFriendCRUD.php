@@ -28,8 +28,8 @@ class LinkFriendCRUD {
 		if (!$linkFriendManager->existLink($newFriend, $userApplicant)) {
 
 			if (!$linkFriendManager->existLink($userApplicant, $newFriend)) {
-			    $Applicant = new LinkFriend(['userId1' => $userApplicant, 'userId2' => $newFriend, 'status' => "yes"]);	
-				$Friend = new LinkFriend(['userId1' => $newFriend, 'userId2' => $userApplicant, 'status' => "no"]);	
+			    $Applicant = new LinkFriend(['userId1' => $userApplicant, 'userId2' => $newFriend, 'link' => 1]);	
+				$Friend = new LinkFriend(['userId1' => $newFriend, 'userId2' => $userApplicant, 'link' => 0]);	
 			    
 			    $user1 = $linkFriendManager->add($Applicant);
 			    $user2 = $linkFriendManager->add($Friend);
@@ -37,7 +37,7 @@ class LinkFriendCRUD {
 				    return $user1;
 				}
 			} else {
-	    		$Applicant = new LinkFriend(['userId1' => $userApplicant, 'userId2' => $newFriend, 'status' => "yes"]);	
+	    		$Applicant = new LinkFriend(['userId1' => $userApplicant, 'userId2' => $newFriend, 'link' => 1]);	
 	    		$user1 = $linkFriendManager->update($Applicant);
 	    		if ($user1 === 'ok') {
 	    			return $user1;

@@ -23,7 +23,8 @@ class UserCRUD {
 	
 	public function add($pseudo, $mdp)
 	{
-	    $user = new User(['pseudo' => $pseudo, 'mdp' => $mdp]);	
+		$pass_hache = password_hash($mdp, PASSWORD_DEFAULT);
+	    $user = new User(['pseudo' => $pseudo, 'mdp' => $pass_hache]);	
 
 	    $userManager = new UserManager();
 	    if ($userManager->exists($pseudo)){
@@ -69,7 +70,8 @@ class UserCRUD {
 		if ($userManager->exists($info)) {
 			$user = $userManager->get($info);
 			if ($mdp !== NULL) {
-				if ($user->getMdp() == $mdp) {
+				$verif = password_verify($mdp, $user->getMdp());
+				if ($verif) {
 					return $user;
 				}
 			} else {
@@ -83,18 +85,30 @@ class UserCRUD {
 		$userManager = new UserManager();
 		$usersList = $userManager->getAll();
 		foreach ($usersList as $user) {
-			if ($user->getAcompte() == 'on') {
+			if ($user->getActif() == 1) {
 				$allUsers[$user->getId()] = $user;
 			}
 		}
 		return $allUsers;
 	}
 
+	public function readName($userId) {
+		$userManager = new UserManager();
+		if ($userManager->exists($userId)) {
+			$user = $userManager->get($userId);
+			$pseudo = $user->getPseudo();
+			if ($pseudo != NULL) {
+				return $pseudo;
+			}
+		}	
+	}
+
+
 	public function delete() {
 		$userManager = new UserManager();
 		$delete1 = $userManager->delete($_SESSION['id']);
 		$linkGroupCRUD = new LinkGroupCRUD();
-		$delete2 = $linkGroupCRUD->deleteAll();
+		$delete2 = $linkGroupCRUD->deleteAllGroups();
 		$linkFriendCRUD = new LinkFriendCRUD();
 		$delete3 = $linkFriendCRUD->deleteAll();
 		$this->logOut();

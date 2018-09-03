@@ -2,11 +2,15 @@
 
 $_SESSION['page'] = 'index.php?action=group&id='. $group->getId();
 
-ob_start(); 
-  
-if (explode('.',$group->getLinkCouvPicture(), 2)[1] != NULL) {?>
+ob_start(); ?>
+<section  id="group-page">
+<div id="contents" class="container">
+
+
+<?php 
+if ($group->getLinkCouvPicture() === 1) {?>
     <div id="couv-picture-block">
-        <img id="couv-picture" src="<?= $group->getLinkCouvPicture() ?>" alt="image de couverture de <?= $group->getTitle()?>">
+        <img id="couv-picture" src="public/pictures/couv/<?= str_replace(' ', '_', $group->getTitle()) ?>.<?= $group->getLinkCouvPictureString() ?>" alt="image de couverture de <?= $group->getTitle()?>">
     </div>
 <?php } ?>
 
@@ -15,7 +19,7 @@ if (explode('.',$group->getLinkCouvPicture(), 2)[1] != NULL) {?>
     <a href="index.php?action=deleteGroup&amp;groupId=<?= $group->getId() ?>">Supprimer le groupe</a> | 
     <a href="index.php?action=deleteLinkGroup&amp;userId=<?= $_SESSION['id'] ?>&amp;id=<?= $group->getId() ?>">Quitter le groupe</a> | 
     <a href="index.php?action=myStatus&amp;id=<?= $groupId ?> ?>">Changer de statut</a>
-        <?php if ($link->getStatus() === 'admin') { ?>
+        <?php if ($link->getStatusInt() === 1) { ?>
             | <a href="index.php?action=adminGroup&amp;id=<?= $group->getId() ?>">Gerer le groupe</a> 
         <?php } ?>
   </p>
@@ -33,24 +37,27 @@ if (explode('.',$group->getLinkCouvPicture(), 2)[1] != NULL) {?>
         <div class="col-sm-11">
             <?php if ($posts !== 'none') { 
                 foreach ($posts as $data) { ?>
-                    <div id="post-content" class="row">
+                    <div class="row post-content">
                     <div class="col-sm-9">
                     <div class="postBox jumbotron">
-                        <?php if ($_SESSION['id'] === $data->getUserId()) { ?>
-                                    <a class="delete-post" href="index.php?action=deletePost&amp;postId=<?= $data->getId() ?>">Supprimer</a>
-                        <?php } ?>
+                        <div class="slide"></div>
+
                         <h3><?= htmlspecialchars($data->getTitle()) ?></h3><br/>
                         
                         <p><?= nl2br($data->getContent()) ?></p>
-                        <em class="creationDate"><?= $data->getCreationDate() ?></em><br/>
+                        <?php if ($_SESSION['id'] === $data->getUserId()) { ?>
+                                    <a class="delete-post" href="index.php?action=deletePost&amp;postId=<?= $data->getId() ?>">Supprimer</a>
+                        <?php } ?>
+                        <em class="creationDate"><?= $userCRUD->readName($data->getUserId())?> - <?= $data->getCreationDate() ?></em><br/>
+
 
                     </div>
                     </div>
-                    <?php if ($comments[$data->getId()] !== 'none') { ?>
-                        <div class="comment-content jumbotron col-sm-3">
+                    <div class="comment-content jumbotron col-sm-3 ">
+                    <?php if ($comments[$data->getId()] !== 'none') { ?>  
                         <?php foreach ($comments[$data->getId()] as $comment) { ?>
                             <div class="commentBox jumbotron">
-                                <?php if ($_SESSION['id'] === $comment->getUserId() OR $link->getStatus() === 'admin') { ?>
+                                <?php if ($_SESSION['id'] === $comment->getUserId() OR $link->getStatusInt() === 1) { ?>
                                     <a class="comment-option" href="index.php?action=deleteComment&amp;commentId=<?= $comment->getId() ?>">x</a>
                                 <?php } elseif ($report[$comment->getId()] != 'none' AND in_array($_SESSION['id'], $report[$comment->getId()])) { ?>
                                     <a class="comment-option" href="index.php?action=deleteReport&amp;id=<?= $comment->getId()?>">Ne plus signaler</a>
@@ -58,15 +65,15 @@ if (explode('.',$group->getLinkCouvPicture(), 2)[1] != NULL) {?>
                                     <a class="comment-option" href="index.php?action=addReport&amp;id=<?= $comment->getId()?>">Signaler</a>
                                 <?php } ?>
                                 <p><?= nl2br($comment->getContent()) ?></p>
-                                <em class="creationDate"><?= $comment->getCreationDate() ?></em><br/>
+                                <em class="creationDate"><?= substr($comment->getCreationDate(), 0, 19) ?></em><br/>
                             </div>
                         <?php } ?>
-                         
+   
                     <?php } else { ?>
                         <p>Le post ne compte aucun commentaire. Lancez-vous !</p> 
                     <?php } 
-                    if ($link->getStatus() !== 'viewer') { ?>
-                        <div class="jumbotron">
+                    if ($link->getStatusInt() !== 4) { ?>
+                        <div>
                             <form action="index.php?action=addComment" method="post">
                                 <textarea id="content" name="content"></textarea>
                                 <input class="btn btn-success  add-comment" type="submit" value="Ajouter"/>
@@ -74,8 +81,8 @@ if (explode('.',$group->getLinkCouvPicture(), 2)[1] != NULL) {?>
                                 <input type="hidden" name="groupId" value=<?= $data->getGroupId() ?> />
                             </form>
                         </div>
-                    </div>
                     <?php } ?>
+                     </div>
                 
             </div>
             <?php   }
@@ -84,15 +91,15 @@ if (explode('.',$group->getLinkCouvPicture(), 2)[1] != NULL) {?>
             <?php } ?>                     
         </div>
     </div>
-    <?php if ($link->getStatus() === 'admin' OR $link->getStatus() === 'author') { ?>
+    <?php if ($link->getStatusInt() <= 2) { ?>
     <div id="create-post" class="row">
         <div class="col-sm-11">
             <div class="jumbotron">
                 <p><?php  if ($this->getMessage() != NULL) {echo $this->getMessage();} ?></p>
                 <h3>Ajouter un post au groupe</h3>
                 <form action="index.php?action=addPost" method="post">
-                    <label for="title">Titre :</label><br />
-                    <input type="text" id="title" name="title" />
+                    <label for="title">Titre :</label>
+                    <input type="text" id="title" name="title" /><br />
                     <label for="content">Contenu :</label><br />
                     <textarea class="tinymce" id="content" name="content"></textarea>
                     <input class="btn btn-success" type="submit" value="Publier"/>
@@ -102,9 +109,12 @@ if (explode('.',$group->getLinkCouvPicture(), 2)[1] != NULL) {?>
         </div>
     </div>        
     <?php } ?>
+    </div>
+</section>
 
-    <script src="puclic/js/group.js"></script>
-    <script src="puclic/js/Slide.js"></script>
+    <script src="public/js/Slide.js"></script>
+    <script src="public/js/main.js"></script>
+
 
 
 <?php $content = ob_get_clean(); ?>

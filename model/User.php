@@ -1,6 +1,7 @@
 <?php
 
 class User {
+
 	protected $id,
 	$pseudo,
 	$mdp,
@@ -8,7 +9,10 @@ class User {
 	$status,
   $nbPublication,
   $nbComment,
-  $acompte;
+  $actif,
+  $admin;
+
+
 
 
 	public function __construct(array $data)
@@ -63,9 +67,14 @@ class User {
     return $this->nbComment;
   }
 
-  public function getAcompte() 
+  public function getActif() 
   {
-    return $this->acompte;
+    return $this->actif;
+  }
+
+  public function getAdmin() 
+  {
+    return $this->admin;
   }
 
 	public function setId($id) 
@@ -97,7 +106,7 @@ class User {
 
  	public function setMdp($mdp) 
   {
-  	if (is_string($mdp) && strlen($mdp) < 26) 
+  	if (is_string($mdp) && strlen($mdp) < 255) 
     {
  		 $this->mdp = $mdp;
  	  }
@@ -130,11 +139,21 @@ class User {
     }
   }
 
-  public function setAcompte($acompte) 
+  public function setActif($actif) 
   {
-    if (is_string($acompte) && strlen($acompte) < 26) 
+    $actif = (int) $actif;
+    if ($actif >= 0) 
     {
-     $this->acompte = $acompte;
+     $this->actif = $actif;
+    }
+  }
+
+  public function setAdmin($admin) 
+  {
+    $admin = (int) $admin;
+    if ($admin >= 0) 
+    {
+     $this->admin = $admin;
     }
   }
 

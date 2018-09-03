@@ -8,7 +8,7 @@ class Group
 
 	protected $id,
 	$title,
-	$status,
+	$public,
 	$creationDate,
 	$lastUpdate,
 	$nbPost,
@@ -44,9 +44,21 @@ class Group
  	 	return $this->title;
  	}
 
-  	public function getStatus() 
+  	public function getPublic() 
   	{
- 	  	return $this->status;
+ 	  	return $this->public;
+  	}
+
+	public function getPublicString() 
+  	{
+ 	 	switch ($this->public) {
+      case 0:
+        return "privé";
+        break;
+      case 1:
+        return "publique";
+        break;
+    	}
   	}
 
   	public function getDescription() 
@@ -56,7 +68,7 @@ class Group
 
   	public function getCreationDate() 
   	{
- 	  	return $this->status;
+ 	  	return $this->creationDate;
   	}
 
   	public function getLastUpdate() 
@@ -67,6 +79,24 @@ class Group
   	public function getLinkCouvPicture() 
   	{
  	  	return $this->linkCouvPicture;
+  	}
+
+  	public function getLinkCouvPictureString() 
+  	{
+ 	 	switch ($this->linkCouvPicture) {
+      case 0:
+        return NULL;
+        break;
+      case 1:
+        return "jpeg";
+        break;
+      case 2:
+        return "png";
+        break;
+      case 3:
+        return "jpg";
+        break;
+    	}
   	}
 
   	  	public function getNbPost() 
@@ -121,17 +151,19 @@ class Group
 	    }
 	}
 
-	public function setStatus($status) 
+	public function setPublic($public) 
 	{
-	    if (is_string($status)) 
+	    $public = (int) $public;
+	    if ($public >= 0) 
 	    {
-	      $this->status = $status;
+	      $this->public = $public;
 	    }
 	}
 
 	public function setLinkCouvPicture($linkCouvPicture) 
 	{
-	    if (is_string($linkCouvPicture)) 
+	    $linkCouvPicture = (int) $linkCouvPicture;
+	    if ($linkCouvPicture >= 0) 
 	    {
 	      $this->linkCouvPicture = $linkCouvPicture;
 	    }
