@@ -246,11 +246,11 @@ header {
 }
 
 #create-post {
-	padding-left: 100px;
-	padding-right: 20px;
+	padding-left: 150px;
+	padding-right: 78px;
 }
 
-#group-page .jumbotron {
+.groupView .jumbotron {
 	background-color: white;
 }
 
@@ -267,11 +267,16 @@ header {
 
 
 
-.delete-post {
+.action-post {
 	clear: both;
 }
 
 .creationDate {
+	float: right;
+}
+
+.comment-creationDate {
+	font-size : 12px;
 	float: right;
 }
 
@@ -286,6 +291,7 @@ header {
 
 
 .comment-option {
+	margin-top : 3px;
 	float: right;
 }
 
@@ -388,8 +394,10 @@ header {
 	margin-bottom: 35px;
 }
 
-.comment-content .jumbotron {
-	border-radius: 10px;
+
+
+.comment-content em {
+	margin-bottom: 1px;
 }
 
 #create-post .jumbotron {
@@ -443,5 +451,42 @@ header {
 }
 
 
+.glyphicon {
+	size: 20px;
+}
+
+.report-checked {
+	color : grey;
+}
+
+.comment-content h4 {
+	display: inline;
+	font-size : 17px;
+	clear: both;
+}
+
+.comment-content p {
+	font-size : 14px;
+	margin-top : 5px;
+}
+
+#commentBox {
+	border-radius: 10px;
+	padding-bottom : 0px;
+	background-color: #f2f4f3;
+	margin-bottom: 9px;
+}
+
+.comment-content {
+		overflow: hidden;
+}
+
+
+.comment-text {
+	overflow-y: scroll;
+	width: 112%;
+	height: 100%;
+	padding-right: 10px;
+}
 
 

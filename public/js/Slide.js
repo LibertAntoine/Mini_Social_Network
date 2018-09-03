@@ -11,10 +11,11 @@ var allPost = document.querySelectorAll(".post-content");
 
 		var slider = allPost[i].querySelector(".slide");
 		var commentBox = allPost[i].querySelector(".comment-content");
-		var postBox = allPost[i].querySelector(".postBox");
 
 		slider.addEventListener("mouseover", function(e) {
+			postBox = this.parentNode;
 			postBox.classList.add("right");
+			commentBox = postBox.parentNode.parentNode.querySelector(".comment-content");
 			commentBox.classList.add("left");
 		})
 

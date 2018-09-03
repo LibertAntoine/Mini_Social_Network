@@ -5,17 +5,24 @@ slide();
 
 	for (var i = 0; i < allPost.length ; i++) {
 
-		var suppBtn = allPost[i].querySelector(".delete-post");
-		var postBox = allPost[i].querySelector(".postBox");
-		suppBtn.style.display = 'none';
 
+		var postBox = allPost[i].querySelector(".postBox");
+
+		allPost[i].querySelector(".action-post").style.display = 'none';
 
 		postBox.addEventListener("mouseover", function(e) {
-			suppBtn.style.display = 'inline'
+			this.querySelector(".action-post").style.display = 'inline';
 		});
 
 		postBox.addEventListener("mouseout", function(e) {
-			suppBtn.style.display = 'none'
+			this.querySelector(".action-post").style.display = 'none';
 		});
+
+
+		var height = allPost[i].querySelector(".postBox").offsetHeight;
+		allPost[i].querySelector(".comment-content").style.height = height;
+
+		var scroler = allPost[i].querySelector(".comment-text");
+		scroler.scrollTop = scroler.scrollHeight;
 
 }

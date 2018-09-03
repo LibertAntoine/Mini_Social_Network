@@ -3,7 +3,7 @@
 $_SESSION['page'] = 'index.php?action=group&id='. $group->getId();
 
 ob_start(); ?>
-<section  id="group-page">
+<section  id="group-page" class="groupView">
 <div id="contents" class="container">
 
 
@@ -38,52 +38,54 @@ if ($group->getLinkCouvPicture() === 1) {?>
             <?php if ($posts !== 'none') { 
                 foreach ($posts as $data) { ?>
                     <div class="row post-content">
-                    <div class="col-sm-9">
-                    <div class="postBox jumbotron">
-                        <div class="slide"></div>
+                        <div class="col-sm-9">
+                            <div class="postBox jumbotron">
+                                <div class="slide"></div>
 
-                        <h3><?= htmlspecialchars($data->getTitle()) ?></h3><br/>
-                        
-                        <p><?= nl2br($data->getContent()) ?></p>
-                        <?php if ($_SESSION['id'] === $data->getUserId()) { ?>
-                                    <a class="delete-post" href="index.php?action=deletePost&amp;postId=<?= $data->getId() ?>">Supprimer</a>
-                        <?php } ?>
-                        <em class="creationDate"><?= $userCRUD->readName($data->getUserId())?> - <?= $data->getCreationDate() ?></em><br/>
+                                <h3><?= htmlspecialchars($data->getTitle()) ?></h3><br/>
 
-
-                    </div>
+                                <p><?= nl2br($data->getContent()) ?></p>
+                                <?php if ($_SESSION['id'] === $data->getUserId()) { ?>
+                                    <a class="action-post" href="index.php?action=deletePost&amp;postId=<?= $data->getId() ?>">Supprimer</a>
+                                <?php } else { ?>
+                                    <a class="action-post" href="#">Signaler</a>
+                                <?php } ?> 
+                                <em class="creationDate"><?= $userCRUD->readName($data->getUserId())?> - <?= $data->getCreationDate() ?></em><br/>
+                                </div>
                     </div>
                     <div class="comment-content jumbotron col-sm-3 ">
-                    <?php if ($comments[$data->getId()] !== 'none') { ?>  
-                        <?php foreach ($comments[$data->getId()] as $comment) { ?>
-                            <div class="commentBox jumbotron">
-                                <?php if ($_SESSION['id'] === $comment->getUserId() OR $link->getStatusInt() === 1) { ?>
-                                    <a class="comment-option" href="index.php?action=deleteComment&amp;commentId=<?= $comment->getId() ?>">x</a>
-                                <?php } elseif ($report[$comment->getId()] != 'none' AND in_array($_SESSION['id'], $report[$comment->getId()])) { ?>
-                                    <a class="comment-option" href="index.php?action=deleteReport&amp;id=<?= $comment->getId()?>">Ne plus signaler</a>
-                                <?php } else { ?>
-                                    <a class="comment-option" href="index.php?action=addReport&amp;id=<?= $comment->getId()?>">Signaler</a>
-                                <?php } ?>
-                                <p><?= nl2br($comment->getContent()) ?></p>
-                                <em class="creationDate"><?= substr($comment->getCreationDate(), 0, 19) ?></em><br/>
+                    <div class="comment-text">   
+                        <?php if ($comments[$data->getId()] !== 'none') { ?>  
+                            <?php foreach ($comments[$data->getId()] as $comment) { ?>
+                                <div id="commentBox" class="jumbotron">
+                                    <h4><?= $userCRUD->readName($comment->getUserId()) ?></h4>
+                                    <?php if ($_SESSION['id'] === $comment->getUserId() OR $link->getStatusInt() === 1) { ?>
+                                        <a class="comment-option" href="index.php?action=deleteComment&amp;commentId=<?= $comment->getId() ?>"><i class="fas fa-times"></i></a>
+                                    <?php } elseif ($report[$comment->getId()] != 'none' AND in_array($_SESSION['id'], $report[$comment->getId()])) { ?>
+                                        <a class="comment-option" href="index.php?action=deleteReport&amp;id=<?= $comment->getId()?>"><i class="fas fa-exclamation-triangle report-checked"></i></a>
+                                    <?php } else { ?>
+                                        <a class="comment-option" href="index.php?action=addReport&amp;id=<?= $comment->getId()?>"><i class="fas fa-exclamation-triangle"></i></a>
+                                    <?php } ?>
+                                    <p><?= nl2br($comment->getContent()) ?></p>
+                                    <em class="comment-creationDate"><?= substr($comment->getCreationDate(), 0, 19) ?></em><br/>
+                                </div>
+                            <?php } ?>
+       
+                        <?php } else { ?>
+                            <p>Le post ne compte aucun commentaire. Lancez-vous !</p> 
+                        <?php } 
+                        if ($link->getStatusInt() !== 4) { ?>
+                            <div class="add-comment">
+                                <form action="index.php?action=addComment" method="post">
+                                    <textarea id="content" name="content"></textarea>
+                                    <input class="btn btn-success  add-comment" type="submit" value="Ajouter"/>
+                                    <input type="hidden" name="postId" value=<?= $data->getId() ?> />
+                                    <input type="hidden" name="groupId" value=<?= $data->getGroupId() ?> />
+                                </form>
                             </div>
                         <?php } ?>
-   
-                    <?php } else { ?>
-                        <p>Le post ne compte aucun commentaire. Lancez-vous !</p> 
-                    <?php } 
-                    if ($link->getStatusInt() !== 4) { ?>
-                        <div>
-                            <form action="index.php?action=addComment" method="post">
-                                <textarea id="content" name="content"></textarea>
-                                <input class="btn btn-success  add-comment" type="submit" value="Ajouter"/>
-                                <input type="hidden" name="postId" value=<?= $data->getId() ?> />
-                                <input type="hidden" name="groupId" value=<?= $data->getGroupId() ?> />
-                            </form>
-                        </div>
-                    <?php } ?>
                      </div>
-                
+                </div>
             </div>
             <?php   }
             } else { ?>
