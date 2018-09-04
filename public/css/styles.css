@@ -129,7 +129,7 @@ h2 {
 	width: 100%;
 	min-height: 35px;
 	font-size: 20px;
-	padding-right: 10px;
+	padding-right: 17px;
 	padding-left: 10px;
 	padding-top: 7px;
 	padding-bottom: 7px;
@@ -500,4 +500,22 @@ header {
 #edit-group .btn-success {
 	margin-top : 15px;
 	float : right;
+}
+
+
+#main-page .jumbotron {
+	background-color: #73f4b3;
+	border : solid #4dcc8c 1px;
+	padding: 20px;
+}
+
+#lastFivePublic .jumbotron {
+	margin-left: 20px;
+	margin-top: 20px;
+	
+	padding-bottom: 15px
+}
+
+.postPreView {
+	margin-bottom: 55px;
 }

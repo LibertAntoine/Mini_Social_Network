@@ -11,6 +11,8 @@ class Frontend extends View {
     
 	public function mainPageView() {
 
+		$groupCRUD = new GroupCRUD();
+		$fiveGroup = $groupCRUD->readFivePublic();
 		$include = new Includes('groupBar');
 		require('view/frontend/mainPageView.php');
 	}

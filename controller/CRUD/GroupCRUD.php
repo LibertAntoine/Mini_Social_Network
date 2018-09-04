@@ -98,6 +98,14 @@ class GroupCRUD {
 		}
 	}
 
+	public function readFivePublic() {
+		$groupManager = new GroupManager();
+		$fiveGroup = $groupManager->getFive();
+		if ($fiveGroup) {
+			return $fiveGroup;
+		}
+	}
+
 
 
 

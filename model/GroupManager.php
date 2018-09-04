@@ -72,11 +72,11 @@ class GroupManager extends DBAccess {
     return $groups;
   }
 
-  public function getRecentList()
+  public function getFive()
   {
     $groups = [];
     
-    $q = $this->db->query('SELECT id, title, public, description, DATE_FORMAT(creationDate, \'%d/%m/%Y à %Hh%i\') AS creationDate, DATE_FORMAT(lastUpdate, \'%d/%m/%Y à %Hh%i\'), nbPost, nbMember, linkCouvPicture AS lastUpdate, nbPost FROM projet5_groups ORDER BY lastUpdate DESC LIMIT 0, 5');
+    $q = $this->db->query('SELECT id, title, public, description, DATE_FORMAT(creationDate, \'%d/%m/%Y à %Hh%i\') AS creationDate, DATE_FORMAT(lastUpdate, \'%d/%m/%Y à %Hh%i\'), nbPost, nbMember, linkCouvPicture AS lastUpdate, nbPost FROM projet5_groups WHERE public = 1 ORDER BY lastUpdate DESC LIMIT 0, 5');
 
     while ($data = $q->fetch(PDO::FETCH_ASSOC))
     {
