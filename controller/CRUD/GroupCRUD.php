@@ -73,6 +73,23 @@ class GroupCRUD {
 		}	
 	}
 
+	public function updatePublic(Group $group)
+	{	
+		$groupManager = new GroupManager();
+		if ($group->getPublic() === 0) {
+			$group->setPublic(1);
+			$linkGroupManager = new LinkGroupManager();
+			$linkGroupManager->deletePublicLink($group->getId());
+			$group->setNbMember($linkGroupManager->countLink($group->getId()));
+		} elseif ($group->getPublic() === 1) {
+			$group->setPublic(0);
+		}
+		$newgroup = $groupManager->update($group);
+		if ($newgroup instanceof Group) {
+			return $newgroup;
+		}	
+	}
+
 	public function read($info) {
 		$groupManager = new GroupManager();
 		if ($groupManager->exists($info)) {

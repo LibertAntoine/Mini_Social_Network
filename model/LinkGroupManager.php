@@ -18,9 +18,9 @@ class LinkGroupManager extends DBAccess
     return $linkGroup;
   }
 
-  public function count()
+  public function countLink($groupId)
   {
-    return $this->db->query('SELECT COUNT(*) FROM projet5_linkgroupuser')->fetchColumn();
+    return $this->db->query('SELECT COUNT(*) FROM projet5_linkgroupuser WHERE groupId ='. $groupId)->fetchColumn();
   }
 
 
@@ -57,6 +57,15 @@ class LinkGroupManager extends DBAccess
     $q->execute();
     return 'ok';
   }
+
+  public function deletePublicLink($groupId)
+  {
+    $q = $this->db->prepare('DELETE FROM projet5_linkgroupuser WHERE groupId = :groupId AND status > 2');
+    $q->bindValue(':groupId', $groupId);
+    $q->execute();
+    return 'ok';
+  }
+
 
   public function deleteAll($userId)
   {

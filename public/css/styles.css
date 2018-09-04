@@ -489,4 +489,15 @@ header {
 	padding-right: 10px;
 }
 
+#change-member a {
+	margin-right: 10px;
+}
 
+#change-member p {
+	margin-top: 10px;
+}
+
+#edit-group .btn-success {
+	margin-top : 15px;
+	float : right;
+}

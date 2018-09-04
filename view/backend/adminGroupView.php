@@ -11,16 +11,16 @@ ob_start(); ?>
 	<p><a class="indexLink" href="index.php?action=group&amp;id=<?= $group->getId() ?>">-> Retour au groupe</a></p>
 
 	<div class="row">
-			<div class="col-md-12 col-sm-12 jumbotron">
+			<div id="edit-group" class="col-md-12 col-sm-12 jumbotron">
 				<div class="row">
 				<div class="col-md-4 col-sm-4">
 					<h3>Paramètres du groupe.</h3>
 					<p>Ce groupe est actuellement <?= $group->getPublicString() ?></p>
 					<?php if ($group->getPublic() == 0) { ?>
-					<a href="index.php?action=deleteUser"><div id="newGroup" class="btn btn-danger">
+					<a href="index.php?action=changePublic&amp;id=<?= $group->getId() ?>"><div id="newGroup" class="btn btn-info">
 					<p>Rendre publique</p></div></a>
 					<?php } else { ?>
-					<a href="index.php?action=deleteUser"><div id="newGroup" class="btn btn-danger">
+					<a href="index.php?action=changePublic&amp;id=<?= $group->getId() ?>"><div id="newGroup" class="btn btn-info">
 					<p>Rendre privé</p></div></a>
 					<?php } ?>
 				</div>
@@ -106,11 +106,9 @@ ob_start(); ?>
 				</form>
 			</div>		
 		</div>
-	</div>
 
 	<div class="row">
-		<div class="col-md-12 col-sm-12 jumbotron">
-				<form action="index.php?action=updateLinkGroup&amp;id=<?= $group->getId()?>" method="post">
+		<div id="change-member" class="col-md-12 col-sm-12 jumbotron">
 				<h3>Gestion des membres.</h3>
 				<h4>Administrateurs</h4>
 						<form action="index.php?action=addLinkGroup" method="post">
@@ -123,11 +121,13 @@ ob_start(); ?>
 							<input class="btn btn-success" type="submit" value="Ajouter"/>
 							<input type="hidden" name="groupId" value=<?= $group->getId() ?> />
 							<input type="hidden" name="status" value="1" />
-							<?php if (isset($admins)) {
-								foreach ($admins as $adminId => $admin) { ?>
-									<p><?= $profils[$adminId]->getPseudo()  ?> <a href="index.php?action=deleteLinkGroup&amp;userId=<?= $adminId ?>&amp;id=<?= $group->getId() ?>">X</a></p>
-								<?php } 
-							} ?>
+							<?php if (isset($admins)) { ?>
+									<p>
+									<?php foreach ($admins as $adminId => $admin) { ?>
+									<?= $profils[$adminId]->getPseudo()  ?> <a href="index.php?action=deleteLinkGroup&amp;userId=<?= $adminId ?>&amp;id=<?= $group->getId() ?>"><i class="fas fa-times"></i></a>
+									<?php } ?>
+									<p>
+								<?php } ?>
 						</form>
 				<h4>Auteurs</h4>
 						<form action="index.php?action=addLinkGroup" method="post">
@@ -140,12 +140,13 @@ ob_start(); ?>
 							<input class="btn btn-success" type="submit" value="Ajouter"/>
 							<input type="hidden" name="groupId" value=<?= $group->getId() ?> />
 							<input type="hidden" name="status" value="2" />
-							<?php if (isset($authors)) {
-								foreach ($authors as $authorId => $author) { ?>
-									<p><?= $profils[$authorId]->getPseudo()  ?> <a href="index.php?action=deleteLinkGroup&amp;userId=<?= $authorId ?>&amp;id=<?= $group->getId() ?>">X</a></p>
-									
-								<?php } 
-							} ?>
+							<?php if (isset($authors)) { ?>
+									<p>
+									<?php foreach ($authors as $authorId => $author) { ?>
+									<?= $profils[$authorId]->getPseudo()  ?> <a href="index.php?action=deleteLinkGroup&amp;userId=<?= $authorId ?>&amp;id=<?= $group->getId() ?>"><i class="fas fa-times"></i></a>
+									<?php } ?>
+									<p>
+								<?php } ?>
 						</form>
 				<?php if ($group->getPublic() == 0) { ?>
 					<h4>Commenteurs</h4>
@@ -159,12 +160,14 @@ ob_start(); ?>
 								<input class="btn btn-success" type="submit" value="Ajouter"/>
 								<input type="hidden" name="groupId" value=<?= $group->getId() ?> />
 								<input type="hidden" name="status" value="3" />
-								<?php if (isset($commenters)) {
-									foreach ($commenters as $commenterId => $commenter) { ?>
-										<p><?= $profils[$commenterId]->getPseudo()  ?> <a href="index.php?action=deleteLinkGroup&amp;userId=<?= $commenterId ?>&amp;id=<?= $group->getId() ?>">X</a></p>
+								<?php if (isset($commenters)) { ?>
+									<p>
+									<?php foreach ($commenters as $commenterId => $commenter) { ?>
+										<?= $profils[$commenterId]->getPseudo()  ?> <a href="index.php?action=deleteLinkGroup&amp;userId=<?= $commenterId ?>&amp;id=<?= $group->getId() ?>"><i class="fas fa-times"></i></a>
 										
-									<?php } 
-								} ?>
+									<?php } ?>
+									<p>
+								<?php } ?>
 							</form>
 					<h4>Viewers</h4>
 							<form action="index.php?action=addLinkGroup" method="post">
@@ -177,15 +180,15 @@ ob_start(); ?>
 								<input class="btn btn-success" type="submit" value="Ajouter"/>
 								<input type="hidden" name="groupId" value=<?= $group->getId() ?> />
 								<input type="hidden" name="status" value="4" />
-								<?php if (isset($viewers)) {
-									foreach ($viewers as $viewerId => $viewer) { ?>
-										<p><?= $profils[$viewerId]->getPseudo()  ?> <a href="index.php?action=deleteLinkGroup&amp;userId=<?= $viewerId ?>&amp;id=<?= $group->getId() ?>">X</a></p>
-										
-									<?php } 
-								} ?>
+								<?php if (isset($viewers)) { ?>
+									<p>
+									<?php foreach ($viewers as $viewerId => $viewer) { ?>
+										<?= $profils[$viewerId]->getPseudo()  ?> <a href="index.php?action=deleteLinkGroup&amp;userId=<?= $viewerId ?>&amp;id=<?= $group->getId() ?>"><i class="fas fa-times"></i></a>
+									<?php } ?>
+									<p>
+								<?php } ?>
 							</form>
 				<?php } ?>
-			</form>
 		</div>
 	</div>
 </div>

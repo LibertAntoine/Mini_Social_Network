@@ -200,6 +200,25 @@ class Action
                     }
                 }
 
+                public function changePublic() {
+                    if (isset($_SESSION['id'], $_GET['id'])) {
+                            $groupCRUD = new GroupCRUD();
+                            $group = $groupCRUD->read(intval($_GET['id']));
+                            if($group instanceof Group) { 
+                                $newGroup = $groupCRUD->updatePublic($group);
+                                if ($newGroup instanceof Group) {  
+                                  header('Location: '. $_SESSION['page']);
+                                } else {
+                                    throw new Exception('Impossible d\'enregister le groupe');
+                                } 
+                            } else {
+                                throw new Exception('Impossible d\'enregister le groupe2');
+                            }
+                    } else {
+                       throw new Exception('Aucune information fournit');
+                    }
+                }
+
                 public function deleteGroup() {
                     if (isset($_GET['groupId'])) {
                         $groupCRUD = new GroupCRUD();
@@ -385,7 +404,7 @@ class Action
                 public function addLinkGroup() {
                     if (isset($_SESSION['id'], $_POST['friend'], $_POST['groupId'], $_POST['status'])) {
                         $linkGroupCRUD = new LinkGroupCRUD();
-                        if ($linkGroupCRUD->readLink(intval($_SESSION['id']), intval($_POST['groupId'])) === 'administrateur') {
+                        if ($linkGroupCRUD->readLink(intval($_SESSION['id']), intval($_POST['groupId'])) === 1) {
                             $linkGroupCRUD->add(intval($_POST['friend']), intval($_POST['groupId']), intval($_POST['status']));
                             header('Location: '. $_SESSION['page']);
                         } else {
