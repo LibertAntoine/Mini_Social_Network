@@ -56,6 +56,23 @@ class GroupCRUD {
 		}	
 	}
 
+	public function update($groupId, $title, $description = '')
+	{	
+		$group = $this->read($groupId);
+			if ($group instanceof Group) {
+			if ($group->getLinkCouvPicture() != 0) {
+				rename ("public/pictures/couv/" . str_replace(' ', '_', $group->getTitle()) . "." . $group->getLinkCouvPictureString(), "public/pictures/couv/" . str_replace(' ', '_', $title) . "." . $group->getLinkCouvPictureString());
+			}
+			$group->setTitle($title);
+			$group->setDescription($description);
+			$groupManager = new GroupManager();
+			$newgroup = $groupManager->update($group);
+			if ($newgroup instanceof Group) {
+				return $newgroup;
+			}
+		}	
+	}
+
 	public function read($info) {
 		$groupManager = new GroupManager();
 		if ($groupManager->exists($info)) {

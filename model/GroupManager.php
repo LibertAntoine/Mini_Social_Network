@@ -142,5 +142,7 @@ class GroupManager extends DBAccess {
     $q->bindValue(':linkCouvPicture', $group->getLinkCouvPicture());
     $q->bindValue(':id', $group->getId());
     $q->execute();
+
+    return $group;
   }
 }

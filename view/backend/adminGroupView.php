@@ -11,6 +11,34 @@ ob_start(); ?>
 	<p><a class="indexLink" href="index.php?action=group&amp;id=<?= $group->getId() ?>">-> Retour au groupe</a></p>
 
 	<div class="row">
+			<div class="col-md-12 col-sm-12 jumbotron">
+				<div class="row">
+				<div class="col-md-4 col-sm-4">
+					<h3>Paramètres du groupe.</h3>
+					<p>Ce groupe est actuellement <?= $group->getPublicString() ?></p>
+					<?php if ($group->getPublic() == 0) { ?>
+					<a href="index.php?action=deleteUser"><div id="newGroup" class="btn btn-danger">
+					<p>Rendre publique</p></div></a>
+					<?php } else { ?>
+					<a href="index.php?action=deleteUser"><div id="newGroup" class="btn btn-danger">
+					<p>Rendre privé</p></div></a>
+					<?php } ?>
+				</div>
+				<div class="col-md-8 col-sm-8">
+					<form action="index.php?action=updateGroup" method="post">
+							<label>Titre du groupe :</label>
+							<input type="text" id="titleGroup" name="titleGroup" value="<?= $group->getTitle() ?>"><br/>
+							<label>Description du groupe :</label>
+							<textarea class="tinymce" id="description" name="description"><?= $group->getDescription() ?></textarea>
+							<input class="btn btn-success" type="submit" value="Valider la modification"/>
+							<input type="hidden" name="groupId" value="<?= $group->getId()?>" />
+					</form>
+				</div>
+				</div>
+			</div>
+	</div>
+
+	<div class="row">
 		<div class="col-md-12 col-sm-12 jumbotron">
 				<form action="index.php?action=updateLinkGroup&amp;id=<?= $group->getId()?>" method="post">
 					<h3>Gestions des droits utilisateurs.</h3>
@@ -21,8 +49,10 @@ ob_start(); ?>
 							<select name="<?= $adminId ?>">
 								<option value="1" selected="selected">Administrateur</option>
 								<option value="2">Auteur</option>
-								<option value="3">Commenteur</option>
-								<option value="4">Viewer</option>
+								<?php if ($group->getPublic() == 0) { ?>
+										<option value="3">Commenteur</option>
+										<option value="4">Viewer</option>
+								<?php } ?>
 							</select>
 							<br/>
 						<?php } 
@@ -34,40 +64,47 @@ ob_start(); ?>
 							<select name="<?= $authorId ?>">
 								<option value="1">Administrateur</option>
 								<option value="2" selected="selected">Auteur</option>
-								<option value="3">Commenteur</option>
-								<option value="4">Viewer</option>
+								<?php if ($group->getPublic() == 0) { ?>
+										<option value="3">Commenteur</option>
+										<option value="4">Viewer</option>
+								<?php } ?>
 							</select>
 							<br/>
 						<?php } 
 					} ?>
-					<?php if (isset($commenters)) { ?>
+					<?php if (isset($commenters) AND $group->getPublic() == 0) { ?>
 						<h4>Commenteur</h4>
 						<?php foreach ($commenters as $commenterId => $commenter) { ?>
 							<label for="<?= $commenterId ?>"><?= $profils[$commenterId]->getPseudo() ?></label>
 							<select name="<?= $commenterId ?>">
 								<option value="1">Administrateur</option>
 								<option value="2">Auteur</option>
-								<option value="3" selected="selected">Commenteur</option>
-								<option value="4">Viewer</option>
+								<?php if ($group->getPublic() == 0) { ?>								
+										<option value="3" selected="selected">Commenteur</option>
+										<option value="4">Viewer</option>
+								<?php } ?>								
 							</select>
 							<br/>
 						<?php } 
 					} ?>
-					<?php if (isset($viewers)) { ?>
+					<?php if (isset($viewers) AND $group->getPublic() == 0) { ?>
 						<h4>Viewer</h4>
 						<?php foreach ($viewers as $viewerId => $viewer) { ?>
 							<label for="<?= $viewerId ?>"><?= $profils[$viewerId]->getPseudo() ?></label>
 							<select name="<?= $viewerId ?>">
 								<option value="1">Administrateur</option>
 								<option value="2">Auteur</option>
-								<option value="3" >Commenteur</option>
-								<option value="4" selected="selected">Viewer</option>
+								<?php if ($group->getPublic() == 0) { ?>								
+										<option value="3" >Commenteur</option>
+										<option value="4" selected="selected">Viewer</option>
+								<?php } ?>								
 							</select>
 							<br/>
 						<?php } 
 					} ?>
 					<input id="valid-status" class="btn btn-success" type="submit" value="Valider les modifications"/>
-				</form>			
+				</form>
+			</div>		
 		</div>
 	</div>
 
@@ -110,43 +147,45 @@ ob_start(); ?>
 								<?php } 
 							} ?>
 						</form>
-				<h4>Commenteurs</h4>
-						<form action="index.php?action=addLinkGroup" method="post">
-							<select name="friend">
-								<option value=""></option>
-								<?php foreach ($friends as $friendId => $friend) { ?>
-									<option value="<?= $friendId?>"><?= $friend->getPseudo()?></option>
-								<?php } ?>
-							</select>
-							<input class="btn btn-success" type="submit" value="Ajouter"/>
-							<input type="hidden" name="groupId" value=<?= $group->getId() ?> />
-							<input type="hidden" name="status" value="3" />
-							<?php if (isset($commenters)) {
-								foreach ($commenters as $commenterId => $commenter) { ?>
-									<p><?= $profils[$commenterId]->getPseudo()  ?> <a href="index.php?action=deleteLinkGroup&amp;userId=<?= $commenterId ?>&amp;id=<?= $group->getId() ?>">X</a></p>
-									
-								<?php } 
-							} ?>
-						</form>
-				<h4>Viewers</h4>
-						<form action="index.php?action=addLinkGroup" method="post">
-							<select name="friend">
-								<option value=""></option>
-								<?php foreach ($friends as $friendId => $friend) { ?>
-									<option value="<?= $friendId?>"><?= $friend->getPseudo()?></option>
-								<?php } ?>
-							</select>
-							<input class="btn btn-success" type="submit" value="Ajouter"/>
-							<input type="hidden" name="groupId" value=<?= $group->getId() ?> />
-							<input type="hidden" name="status" value="4" />
-							<?php if (isset($viewers)) {
-								foreach ($viewers as $viewerId => $viewer) { ?>
-									<p><?= $profils[$viewerId]->getPseudo()  ?> <a href="index.php?action=deleteLinkGroup&amp;userId=<?= $viewerId ?>&amp;id=<?= $group->getId() ?>">X</a></p>
-									
-								<?php } 
-							} ?>
-						</form>
-				</form>
+				<?php if ($group->getPublic() == 0) { ?>
+					<h4>Commenteurs</h4>
+							<form action="index.php?action=addLinkGroup" method="post">
+								<select name="friend">
+									<option value=""></option>
+									<?php foreach ($friends as $friendId => $friend) { ?>
+										<option value="<?= $friendId?>"><?= $friend->getPseudo()?></option>
+									<?php } ?>
+								</select>
+								<input class="btn btn-success" type="submit" value="Ajouter"/>
+								<input type="hidden" name="groupId" value=<?= $group->getId() ?> />
+								<input type="hidden" name="status" value="3" />
+								<?php if (isset($commenters)) {
+									foreach ($commenters as $commenterId => $commenter) { ?>
+										<p><?= $profils[$commenterId]->getPseudo()  ?> <a href="index.php?action=deleteLinkGroup&amp;userId=<?= $commenterId ?>&amp;id=<?= $group->getId() ?>">X</a></p>
+										
+									<?php } 
+								} ?>
+							</form>
+					<h4>Viewers</h4>
+							<form action="index.php?action=addLinkGroup" method="post">
+								<select name="friend">
+									<option value=""></option>
+									<?php foreach ($friends as $friendId => $friend) { ?>
+										<option value="<?= $friendId?>"><?= $friend->getPseudo()?></option>
+									<?php } ?>
+								</select>
+								<input class="btn btn-success" type="submit" value="Ajouter"/>
+								<input type="hidden" name="groupId" value=<?= $group->getId() ?> />
+								<input type="hidden" name="status" value="4" />
+								<?php if (isset($viewers)) {
+									foreach ($viewers as $viewerId => $viewer) { ?>
+										<p><?= $profils[$viewerId]->getPseudo()  ?> <a href="index.php?action=deleteLinkGroup&amp;userId=<?= $viewerId ?>&amp;id=<?= $group->getId() ?>">X</a></p>
+										
+									<?php } 
+								} ?>
+							</form>
+				<?php } ?>
+			</form>
 		</div>
 	</div>
 </div>

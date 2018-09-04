@@ -40,37 +40,39 @@ ob_start(); ?>
 								<?php } 
 							} ?>
 						</form>
-						<h4>Ajoutez des commenteurs.</h4>
-						<form action="index.php?action=newGroupMember" method="post">
-							<select name="commenter">
-								<option value=""></option>
-								<?php foreach ($listCommenters as $commenter) { ?>
-									<option value="<?= $commenter->getId()?>"><?= $commenter->getPseudo()?></option>
-								<?php } ?>
-							</select>
-							<input class="btn btn-success" type="submit" value="Ajouter"/>
-							<?php if ($_SESSION['commenter'] != NULL) {
-								foreach ($_SESSION['commenter'] as $commenter) { $user = unserialize($commenter)?>
-									<p><?= $user->getPseudo()  ?></p>
-								<?php } 
-							} ?>
-						</form>
-						<h4>Ajoutez des viewers.</h4>
-						<form action="index.php?action=newGroupMember" method="post">
-							<select name="viewer">
-								<option value=""></option>
-								<?php foreach ($listViewers as $viewer) { ?>
-									<option value="<?= $viewer->getId()?>"><?= $viewer->getPseudo()?></option>
-								<?php } ?>
-							</select>
-							<input class="btn btn-success" type="submit" value="Ajouter"/>
-							<?php if ($_SESSION['viewer'] != NULL) {
-								foreach ($_SESSION['viewer'] as $viewer) { $user = unserialize($viewer)?>
-									<p><?= $user->getPseudo() ?></p>
-								<?php } 
-							} ?>
-						</form>
-					<?php } else {?>
+						<?php if ($_SESSION['public'] == 0) { ?>
+							<h4>Ajoutez des commenteurs.</h4>
+							<form action="index.php?action=newGroupMember" method="post">
+								<select name="commenter">
+									<option value=""></option>
+									<?php foreach ($listCommenters as $commenter) { ?>
+										<option value="<?= $commenter->getId()?>"><?= $commenter->getPseudo()?></option>
+									<?php } ?>
+								</select>
+								<input class="btn btn-success" type="submit" value="Ajouter"/>
+								<?php if ($_SESSION['commenter'] != NULL) {
+									foreach ($_SESSION['commenter'] as $commenter) { $user = unserialize($commenter)?>
+										<p><?= $user->getPseudo()  ?></p>
+									<?php } 
+								} ?>
+							</form>
+							<h4>Ajoutez des viewers.</h4>
+							<form action="index.php?action=newGroupMember" method="post">
+								<select name="viewer">
+									<option value=""></option>
+									<?php foreach ($listViewers as $viewer) { ?>
+										<option value="<?= $viewer->getId()?>"><?= $viewer->getPseudo()?></option>
+									<?php } ?>
+								</select>
+								<input class="btn btn-success" type="submit" value="Ajouter"/>
+								<?php if ($_SESSION['viewer'] != NULL) {
+									foreach ($_SESSION['viewer'] as $viewer) { $user = unserialize($viewer)?>
+										<p><?= $user->getPseudo() ?></p>
+									<?php } 
+								} ?>
+							</form>
+						<?php }	
+					} else {?>
 						<p>Ajoutez des amis pour pouvoir les ajouter au groupe.</p>
 					<?php } ?>
 				

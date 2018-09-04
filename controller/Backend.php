@@ -82,9 +82,6 @@ class Backend extends View {
 	}
 
 	public function newGroupMemberView() {
-
-
-		
 		$friendCRUD = new LinkFriendCRUD();
 		$linkFriends = $friendCRUD->readFriends();
 		if ($linkFriends != 'none') {
@@ -148,28 +145,31 @@ class Backend extends View {
 				}
 			}
 
-			$listCommenters = $listAuthors;
-			if ($_SESSION['commenter'] != NULL) {
-				for ($i=0; $i < count($_SESSION['commenter']); $i++) {
-					$commenter = unserialize($_SESSION['commenter'][$i]);
-					if (isset($listCommenters[$commenter->getId()])) {
-						unset($listCommenters[$commenter->getId()]);
-					} else {
-						unset($_SESSION['commenter'][$i]);
-					}	
+			if ($_SESSION['public'] == 0) {
+				$listCommenters = $listAuthors;
+				if ($_SESSION['commenter'] != NULL) {
+					for ($i=0; $i < count($_SESSION['commenter']); $i++) {
+						$commenter = unserialize($_SESSION['commenter'][$i]);
+						if (isset($listCommenters[$commenter->getId()])) {
+							unset($listCommenters[$commenter->getId()]);
+						} else {
+							unset($_SESSION['commenter'][$i]);
+						}	
+					}
 				}
-			}
 
-			$listViewers = $listCommenters;
-			if ($_SESSION['viewer'] != NULL) {
 
-				for ($i=0; $i < count($_SESSION['viewer']); $i++) {
-					$viewer = unserialize($_SESSION['viewer'][$i]);
-					if (isset($listViewers[$viewer->getId()])) {
-						unset($listViewers[$viewer->getId()]);
-					} else {
-						unset($_SESSION['viewer'][$i]);
-					}	
+				$listViewers = $listCommenters;
+				if ($_SESSION['viewer'] != NULL) {
+
+					for ($i=0; $i < count($_SESSION['viewer']); $i++) {
+						$viewer = unserialize($_SESSION['viewer'][$i]);
+						if (isset($listViewers[$viewer->getId()])) {
+							unset($listViewers[$viewer->getId()]);
+						} else {
+							unset($_SESSION['viewer'][$i]);
+						}	
+					}
 				}
 			}
 		}

@@ -177,6 +177,29 @@ class Action
                     }
                 }
 
+                public function updateGroup() {
+                    if (isset($_SESSION['id'], $_POST['titleGroup'], $_POST['description'], $_POST['groupId']) ) {
+                        if(strlen($_POST['titleGroup']) <= 240 && strlen($_POST['titleGroup']) >= 4) {
+                            $groupCRUD = new GroupCRUD();
+                            $group = $groupCRUD->read($_SESSION['titleGroup']);
+                            if(!$group OR $group->getId() === intval($_POST['groupId'])) { 
+                                $group = $groupCRUD->update(intval($_POST['groupId']), htmlspecialchars($_POST['titleGroup']), htmlspecialchars($_POST['description']));
+                                if ($group) {  
+                                  header('Location: '. $_SESSION['page']);
+                                } else {
+                                    throw new Exception('Impossible d\'enregister le groupe');
+                                } 
+                            } else {
+                                throw new Exception('Impossible d\'enregister le groupe2');
+                            }
+                        } else {
+                            throw new Exception('Impossible d\'enregister le groupe3');
+                        }
+                    } else {
+                       throw new Exception('Aucune information fournit');
+                    }
+                }
+
                 public function deleteGroup() {
                     if (isset($_GET['groupId'])) {
                         $groupCRUD = new GroupCRUD();
