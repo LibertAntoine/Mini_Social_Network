@@ -23,5 +23,8 @@
         <script src="vendor/jQuery/jquery-3.3.1.min.js"></script>
 		<script src="vendor/tinymce/js/tinymce.min.js"></script>
 		<script src="vendor/tinymce/js/themes/init-tinymce.js"></script>
+
+        <script src="public/js/Slide.js"></script>
+        <script src="public/js/main.js"></script>
     </body>
 </html>

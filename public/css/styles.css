@@ -7,6 +7,9 @@
 	margin-bottom: 55px;
 }
 
+body {
+	width: 100%
+}
 
 
 a {
@@ -240,15 +243,6 @@ header {
 }
 
 
-#group-content {
-	padding-left: 100px;
-	padding-right: 20px;
-}
-
-#create-post {
-	padding-left: 150px;
-	padding-right: 78px;
-}
 
 .groupView .jumbotron {
 	background-color: white;
@@ -262,12 +256,15 @@ header {
 }
 
 
-
+.edit-post:hover {
+	text-decoration: underline;
+}
 
 
 
 
 .action-post {
+	padding-top: 40px;
 	clear: both;
 }
 
@@ -282,12 +279,7 @@ header {
 
 
 
-.postBox {
-	padding-top: 20px;
-	padding-left: 30px;
-	padding-right: 30px;
-	padding-bottom: 20px;
-}
+
 
 
 .comment-option {
@@ -378,8 +370,9 @@ header {
 }
 
 #description-bloc {
-	margin-left: 20px;
-	margin-right: 20px;
+	max-width: 1000px;
+	margin: auto;
+	margin-bottom: 40px;
 	padding-left: 20px;
 	padding-right: 20px;
 	padding-top : 7px;
@@ -387,6 +380,7 @@ header {
 }
 
 #group-page h2 {
+	margin-left: 20px;
 	margin-bottom: 10px;
 }
 
@@ -398,6 +392,12 @@ header {
 
 .comment-content em {
 	margin-bottom: 1px;
+}
+
+#create-post {
+	max-width: 900px;
+	margin: auto;
+
 }
 
 #create-post .jumbotron {
@@ -427,27 +427,56 @@ header {
 }
 
 
+
+
+#group-page {
+	margin-top: 40px;
+	margin-left: 180px;
+	margin-right: 180px;
+	padding-bottom: 60px; 
+}
+
+#contents {
+			padding-left: 35px;
+	padding-right: 35px;
+}
+
 .postBox {
- 	position: relative;
-	right: -50px;
-	width: 120%;
+	padding-top: 20px;
+	padding-left: 30px;
+	padding-right: 30px;
+	padding-bottom: 20px;
+}
+
+
+.post-content {
+	display: flex;
+}
+
+.postBox {
+	position: relative;
+	left: 12.5%;
 	z-index: 5;
-	transition: right 1s;
+	transition: left 1s;
 }
 
 .comment-content {
-	position: relative;
-	left: -65px;
-	transition: left 1s;
+	margin-right: 210px;
+	margin-left: 3px;
+	position: absolute;
+	width: 265px;
+	right: 10%;
+	transition: right 1s;
 	z-index: 3;
 }
 
 .right {
-	right: 67px;
+	left: 0%;
 }
 
+
 .left {
-	left: 58px;
+	right:0%;
 }
 
 

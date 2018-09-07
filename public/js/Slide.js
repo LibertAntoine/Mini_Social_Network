@@ -2,43 +2,38 @@
 
 
 
-function slide() {
+
+function Slide(el) {
+
+		this.element = el
+
+		this.activeSlide = function() {
+				var postBox = this.element.querySelector(".postBox")
+				var commentBox = this.element.querySelector(".comment-content");
+				slide = this.element.querySelector(".slide");
+				postBox.classList.add("right");
+				commentBox.classList.add("left");
+				slide.classList.add("actif");
+				widthPost = window.innerWidth - (447 + 265)
+				jQuery(postBox).stop().animate({width: widthPost} , 1000 , function() {commentBox.style.height = postBox.offsetHeight});
+				this.element.addEventListener("mouseleave", (e) => {
+					this.removeSlide()	
+				});			
+		}
 
 
-var allPost = document.querySelectorAll(".post-content");
-
-	for (var i = 0; i < allPost.length ; i++) {
-
-		var slider = allPost[i].querySelector(".slide");
-		var commentBox = allPost[i].querySelector(".comment-content");
-
-		slider.addEventListener("mouseover", function(e) {
-			postBox = this.parentNode;
-			postBox.classList.add("right");
-			commentBox = postBox.parentNode.parentNode.querySelector(".comment-content");
-			commentBox.classList.add("left");
-		})
-
-
-		commentBox.addEventListener("mouseover", function(e) {
-			this.classList.add("left");
-			postBox = this.parentNode.querySelector(".postBox");
-			postBox.classList.add("right");
-		})
-
-
-		slider.addEventListener("mouseout", function(e) {
-			postBox = this.parentNode;
-			postBox.classList.remove("right");
-			commentBox = postBox.parentNode.parentNode.querySelector(".comment-content");
-			commentBox.classList.remove("left");
-
-		})
-
-		commentBox.addEventListener("mouseout", function(e) {
-			this.classList.remove("left");
-			postBox = this.parentNode.querySelector(".postBox");
-			postBox.classList.remove("right");
-		})
-	}
+		this.removeSlide = function() {
+				var postBox = this.element.querySelector(".postBox")
+				var commentBox = this.element.querySelector(".comment-content");
+				slide = this.element.querySelector(".slide");
+				postBox.classList.remove("right");
+				commentBox.classList.remove("left");
+				slide.classList.remove("actif");
+				widthPost = (window.innerWidth - 447)*0.75
+				jQuery(postBox).stop().animate({width: widthPost}, 1000 , function() {commentBox.style.height = postBox.offsetHeight});
+				delete postBox;
+				delete commentBox;
+				delete this;
+		}
 }
+

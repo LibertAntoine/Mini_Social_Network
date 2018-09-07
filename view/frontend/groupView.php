@@ -4,15 +4,16 @@ $_SESSION['page'] = 'index.php?action=group&id='. $group->getId();
 
 ob_start(); ?>
 <section  id="group-page" class="groupView">
-<div id="contents" class="container">
-
-
 <?php 
 if ($group->getLinkCouvPicture() === 1) {?>
     <div id="couv-picture-block">
         <img id="couv-picture" src="public/pictures/couv/<?= str_replace(' ', '_', $group->getTitle()) ?>.<?= $group->getLinkCouvPictureString() ?>" alt="image de couverture de <?= $group->getTitle()?>">
     </div>
-<?php } ?>
+<?php } ?>  
+<div id="contents">
+
+
+
 
   <h2><?= $group->getTitle()?></h2>
   <p id="nav-option">
@@ -31,29 +32,31 @@ if ($group->getLinkCouvPicture() === 1) {?>
   <?php } ?>
 
 
-
-
-  	<div id="group-content" class="row">
-        <div class="col-sm-11">
+  	<div id="group-content">
             <?php if ($posts !== 'none') { 
                 foreach ($posts as $data) { ?>
-                    <div class="row post-content">
-                        <div class="col-sm-9">
+                    <div class="post-content">
+
                             <div class="postBox jumbotron">
                                 <div class="slide"></div>
 
                                 <h3><?= htmlspecialchars($data->getTitle()) ?></h3><br/>
-
-                                <p><?= nl2br($data->getContent()) ?></p>
-                                <?php if ($_SESSION['id'] === $data->getUserId()) { ?>
-                                    <a class="action-post" href="index.php?action=deletePost&amp;postId=<?= $data->getId() ?>">Supprimer</a>
-                                <?php } else { ?>
-                                    <a class="action-post" href="#">Signaler</a>
-                                <?php } ?> 
-                                <em class="creationDate"><?= $userCRUD->readName($data->getUserId())?> - <?= $data->getCreationDate() ?></em><br/>
+                                <div class="post">
+                                <p ><?= nl2br($data->getContent()) ?></p>
                                 </div>
-                    </div>
-                    <div class="comment-content jumbotron col-sm-3 ">
+                                <p class="action-post">
+                                <?php if ($_SESSION['id'] === $data->getUserId() OR $link->getStatusInt() === 1) { ?>
+                                    <a href="index.php?action=deletePost&amp;postId=<?= $data->getId() ?>">Supprimer</a> - <span class="edit-post">Modifier l'article</span>
+                                <?php } else { ?>
+                                    <a href="#">Signaler</a>
+                                <?php } ?>
+                                
+                                </p> 
+                                <em class="creationDate"><?= $userCRUD->readName($data->getUserId())?> - <?= $data->getCreationDate() ?></em><br/>
+
+                            </div>
+ 
+                    <div class="comment-content jumbotron">
                     <div class="comment-text">   
                         <?php if ($comments[$data->getId()] !== 'none') { ?>  
                             <?php foreach ($comments[$data->getId()] as $comment) { ?>
@@ -85,17 +88,16 @@ if ($group->getLinkCouvPicture() === 1) {?>
                             </div>
                         <?php } ?>
                      </div>
-                </div>
+            </div>
             </div>
             <?php   }
             } else { ?>
                <p>Le groupe ne contient encore aucun post. Lancez-vous !</p>  
             <?php } ?>                     
-        </div>
+        
     </div>
     <?php if ($link->getStatusInt() <= 2) { ?>
-    <div id="create-post" class="row">
-        <div class="col-sm-11">
+          <div id="create-post">
             <div class="jumbotron">
                 <p><?php  if ($this->getMessage() != NULL) {echo $this->getMessage();} ?></p>
                 <h3>Ajouter un post au groupe</h3>
@@ -108,14 +110,13 @@ if ($group->getLinkCouvPicture() === 1) {?>
                     <input type="hidden" name="groupId" value=<?= $group->getId() ?> />
                 </form>
             </div>
-        </div>
-    </div>        
+
+    </div> 
     <?php } ?>
     </div>
 </section>
 
-    <script src="public/js/Slide.js"></script>
-    <script src="public/js/main.js"></script>
+
 
 
 
