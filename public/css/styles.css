@@ -548,3 +548,31 @@ header {
 .postPreView {
 	margin-bottom: 55px;
 }
+
+
+
+.navIcon .fas {
+	font-size: 25px;
+	margin-right: 10px;
+	line-height: 40px;
+}
+
+.navIcon .fas:hover {
+	color: #27ce80
+}
+
+
+
+
+@media screen and (max-width: 880px)
+
+{
+
+#navbar {
+margin-left:20px;
+}
+
+
+
+}
+

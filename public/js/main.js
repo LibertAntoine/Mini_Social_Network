@@ -26,12 +26,29 @@ document.querySelectorAll(".post-content").forEach(function(element) {
 				element.querySelector(".comment-content").style.height = height;
 		})}
 
+
+			if (window.innerWidth < 710) {
+				document.querySelectorAll(".navbloc").forEach(function(element) {element.style.display = "none"})
+				document.querySelectorAll(".navIcon").forEach(function(element) {element.style.display = "block"})
+			} else {
+				document.querySelectorAll(".navbloc").forEach(function(element) {element.style.display = "block"})
+				document.querySelectorAll(".navIcon").forEach(function(element) {element.style.display = "none"})
+			}
+
+
+
 		window.onresize = function(){
 			var allPost = document.querySelectorAll(".post-content");
 			allPost.forEach(function(element) {
-
 				element.querySelector(".postBox").style.width = (window.innerWidth - 447)*0.75;
 			});
+			if (window.innerWidth < 710) {
+				document.querySelectorAll(".navbloc").forEach(function(element) {element.style.display = "none"})
+				document.querySelectorAll(".navIcon").forEach(function(element) {element.style.display = "block"})
+			} else {
+				document.querySelectorAll(".navbloc").forEach(function(element) {element.style.display = "block"})
+				document.querySelectorAll(".navIcon").forEach(function(element) {element.style.display = "none"})
+			}
 		}
 
 
