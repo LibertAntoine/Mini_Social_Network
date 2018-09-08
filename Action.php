@@ -257,6 +257,38 @@ class Action
                     } else {
                        $this->group('Merci de renseigner tous les champs obligatoires.');
                     }
+                }             
+
+                public function editPost() {
+                    if (isset($_SESSION['id'], $_POST['content'], $_POST['title'], $_POST['postId'])) {
+                        if(strlen($_POST['title']) <= 240 && strlen($_POST['title']) >= 4) {
+                            $postCRUD = new PostCRUD();
+                            $postId = $postCRUD->read(intval($_POST['postId']));
+                            if($postId) {
+                                if($postId->getUserId() == $_SESSION['id']) {
+                                    $postTitle = $postCRUD->read($_POST['title']);
+                                    if(!$postTitle OR $postTitle == $postId) { 
+                                        $post = $postCRUD->update($_POST['title'], $_POST['content'], intval($_POST['postId']));
+                                        if ($post) {
+                                            echo 'ok';
+                                        } else {
+                                            echo 'Erreur : impossible de modifier l\'article pour le moment';
+                                        } 
+                                    } else {
+                                        echo 'Le nouveau nom de post existe déjà, merci d\'en choisir un autre';
+                                    }
+                                } else {
+                                    echo 'Action non autorisé';
+                                }
+                            } else {
+                                echo 'Le post désigné n\'existe pas ou plus';
+                            }
+                        } else {
+                            echo 'Le titre doit être compris entre 4 et 240 caractères.';
+                        }
+                    } else {
+                       echo 'Merci de renseigner tous les champs obligatoires.';
+                    }
                 }
 
 				public function deletePost() {

@@ -2,7 +2,7 @@
 
 ob_start(); ?>
 	<section id="contents" class="container">
-
+<div id="backOffice-page">
 	<h2>Bienvenue <?= $_SESSION['pseudo'] ?> dans votre espace administrateur.</h2>
 
 	<p><a class="indexLink" href="index.php">-> Retour à l'acceuil du site</a></p>
@@ -33,7 +33,7 @@ ob_start(); ?>
 	</div>
 	<a href="index.php?action=deleteUser"><div id="newGroup" class="btn btn-danger">
 	<p>Supprimer le compte</p></div></a>
-
+</div>
 </section>
 
 

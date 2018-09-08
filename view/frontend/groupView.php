@@ -46,7 +46,7 @@ if ($group->getLinkCouvPicture() === 1) {?>
                                 </div>
                                 <p class="action-post">
                                 <?php if ($_SESSION['id'] === $data->getUserId() OR $link->getStatusInt() === 1) { ?>
-                                    <a href="index.php?action=deletePost&amp;postId=<?= $data->getId() ?>">Supprimer</a> - <span class="edit-post">Modifier l'article</span>
+                                    <a href="index.php?action=deletePost&amp;postId=<?= $data->getId() ?>">Supprimer</a> - <span class="edit-post <?= $data->getId() ?>">Modifier l'article</span>
                                 <?php } else { ?>
                                     <a href="#">Signaler</a>
                                 <?php } ?>

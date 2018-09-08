@@ -57,6 +57,21 @@ class PostCRUD {
 		}
 	}
 
+
+	public function update($title, $content, $postId)
+	{
+	    $newPost = $this->read($postId);
+	    if ($newPost instanceof Post) {
+	    	$newPost->setTitle($title);
+			$newPost->setContent($content);
+	    	$postManager = new PostManager();
+	    	$post = $postManager->update($newPost);
+			if ($post instanceof Post) {
+				return $post;
+			} 
+	    }
+	}
+
 	public function delete($postId) {
 		$post = $this->read($postId);
 		if ($post) {

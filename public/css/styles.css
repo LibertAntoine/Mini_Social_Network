@@ -21,7 +21,7 @@ a:hover {
 }
 
 h2 {
- margin-bottom: 40px;
+ margin-bottom: 20px;
 }
 
 #contents h2 {
@@ -131,7 +131,7 @@ h2 {
 #groupBar div {
 	width: 100%;
 	min-height: 35px;
-	font-size: 20px;
+	font-size: 17px;
 	padding-right: 17px;
 	padding-left: 10px;
 	padding-top: 7px;
@@ -471,7 +471,7 @@ header {
 }
 
 .right {
-	left: 0%;
+	left: 0% !important;
 }
 
 
@@ -561,6 +561,43 @@ header {
 	color: #27ce80
 }
 
+#contents-friend, #admin-group-page, #backOffice-page, #main-page {
+	margin-left: 150px;
+}
+
+
+
+.titleFriend {
+	margin-top: 30px;
+}
+
+#titleGestionFriend {
+	margin-left: 15px;
+}
+
+
+@media screen and (max-width: 1040px) 
+
+{
+
+#memberBar {
+display: none;
+}
+
+#group-page {
+	margin-right: 0px;
+}
+
+.comment-content {
+	margin-right: 30px;
+}
+
+.postBox {
+	left: 10%;
+}
+
+
+}
 
 
 
@@ -574,5 +611,45 @@ margin-left:20px;
 
 
 
+
+
+
 }
 
+@media screen and (max-width: 770px)
+
+{
+
+#groupBarSection {
+	display: none;
+}
+
+.off-responsive {
+	display: none;
+}
+
+#contents-friend, #admin-group-page, #backOffice-page, #main-page, #group-page {
+	margin-left: 0px;
+}
+
+.postBox {
+	left: 0%;
+}
+
+}
+
+
+@media screen and (max-width: 400px)
+
+{
+
+#teller {
+	display:none;
+}
+
+#addGroup {
+	width: 100%;
+	font-size: 14px;
+}
+
+}

@@ -2,8 +2,9 @@
 
 ob_start(); ?>
 
-<section  id="main-page" class="groupView">
+<section  class="groupView">
 <div id="contents" class="container">
+<div id="main-page">
 
   <h2>Bienvenue <?php if (isset($_SESSION['pseudo'])) { echo $_SESSION['pseudo']; } ?> sur Teller !</h2>
 
@@ -32,7 +33,7 @@ ob_start(); ?>
         </div>
      </div>
 
-
+</div>
 </div>
 </section>
 

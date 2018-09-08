@@ -154,6 +154,8 @@ public function getGroup($groupId)
     $q->bindValue(':nbComment', $post->getNbComment());
     $q->bindValue(':id', $post->getId());
     $q->execute();
+    return $post;
+
   }
 }
 

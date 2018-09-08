@@ -1,7 +1,16 @@
 
 
 
-
+if(window.innerWidth > 1040) {
+	var groupSpace = 447;
+	var gradient = 0.75;
+} else if (window.innerWidth > 770) {
+	var groupSpace = 267;
+	var gradient = 0.8;
+} else {
+	var groupSpace = 87;
+	var gradient = 1;
+}
 
 
 document.querySelectorAll(".post-content").forEach(function(element) {
@@ -39,8 +48,22 @@ document.querySelectorAll(".post-content").forEach(function(element) {
 
 		window.onresize = function(){
 			var allPost = document.querySelectorAll(".post-content");
+if(window.innerWidth > 1040) {
+	var groupSpace = 447;
+	var gradient = 0.75;
+} else if (window.innerWidth > 770) {
+	var groupSpace = 267;
+	var gradient = 0.8;
+} else {
+	var groupSpace = 87;
+	var gradient = 1;
+}
+
+
+
 			allPost.forEach(function(element) {
-				element.querySelector(".postBox").style.width = (window.innerWidth - 447)*0.75;
+
+				element.querySelector(".postBox").style.width = (window.innerWidth - groupSpace)* gradient;
 			});
 			if (window.innerWidth < 710) {
 				document.querySelectorAll(".navbloc").forEach(function(element) {element.style.display = "none"})
@@ -49,13 +72,15 @@ document.querySelectorAll(".post-content").forEach(function(element) {
 				document.querySelectorAll(".navbloc").forEach(function(element) {element.style.display = "block"})
 				document.querySelectorAll(".navIcon").forEach(function(element) {element.style.display = "none"})
 			}
+
+
 		}
 
 
 
 	for (var i = 0; i < allPost.length ; i++) {
 		postBox = allPost[i].querySelector(".postBox");
-		postBox.style.width = (window.innerWidth - 447)*0.75;
+		postBox.style.width = (window.innerWidth - groupSpace)*gradient;
 		allPost[i].querySelectorAll(".action-post").forEach(function(el) {
 				el.style.display = 'none';
 			});
@@ -85,31 +110,18 @@ document.querySelectorAll(".post-content").forEach(function(element) {
 		scroler.scrollTop = scroler.scrollHeight;
 
 
-		var editPost = allPost[i].querySelector(".edit-post");
-		editPost.addEventListener("click", function(e) {
-			editContent = this.parentNode.parentNode.querySelector(".post");
-			height = this.parentNode.parentNode.querySelector(".post").offsetHeight;
-			var contentPost = editContent.innerHTML
-			var area = editContent.replaceWith(document.createElement("textarea"));
-			area = this.parentNode.parentNode.querySelector("textarea");
-			area.innerHTML = contentPost
-			area.style.height = height;
-			area.setAttribute("id", "modif" + modif)
-			textarea_to_tinymce("modif" + modif)
-			this.textContent = "Annuler la modification"
-			editPost.addEventListener.off()
-			actionPost = this.parentNode.parentNode.querySelector(".action-post");
-			actionPost.addEventListener.off()
-			this.addEventListener("click", function(e) {
-					area.replaceWith(document.createElement("p"))
-					area.innerHTML = contentPost
-				})
-			modif++; 
-		});
+
+
 
 
 
 }
+
+
+		$(".edit-post").on("click", function(e) {
+						var editArticle = new EditArticle(this, e);
+						editArticle.activeEdit();	
+		});
 
 
 function textarea_to_tinymce(id){
