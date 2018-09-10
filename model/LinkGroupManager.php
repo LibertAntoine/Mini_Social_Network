@@ -82,7 +82,10 @@ class LinkGroupManager extends DBAccess
     $q->bindValue(':groupId', $groupId);
     $q->execute();
       $linkGroup = $q->fetch(PDO::FETCH_ASSOC);
-      return new LinkGroup($linkGroup);
+      if ($linkGroup != 0) {
+        return new LinkGroup($linkGroup);
+      }
+      
   }
 
   public function getGroups($userId)

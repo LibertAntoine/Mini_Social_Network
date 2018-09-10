@@ -55,7 +55,6 @@ if(window.innerWidth > 1040) {
 			}
 
 
-
 		window.onresize = function(){
 			equal()
 			var allPost = document.querySelectorAll(".post-content");

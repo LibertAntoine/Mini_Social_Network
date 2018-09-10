@@ -11,14 +11,12 @@
         <meta name="viewport" content="width=device-width, initial-scale=1">
     </head>
     <body>
-        <div id="overflow">
-            <div id="static">
+
     	       <?php require("view/include/navbar.php");?>
                 <?= $content ?>
      
 
-            </div>
-        </div>
+
         <script src="vendor/jQuery/jquery-3.3.1.min.js"></script>
      <script src="vendor/bootstrap/js/bootstrap.min.js"></script>
 		<script src="vendor/tinymce/js/tinymce.min.js"></script>

@@ -113,7 +113,7 @@ class GroupCRUD {
 	public function delete($groupId) {
 		$group = $this->read($groupId);
 		if ($group)	{
-			$link = $group->getLinkCouvPicture();
+			$link = "public/pictures/couv/". str_replace(' ', '_', $group->getTitle()) . "." .$group->getLinkCouvPictureString();
 			unlink($link);
 			$linkGroupCRUD = new LinkGroupCRUD();
 			$linkGroupCRUD->deleteAllMembers($groupId);

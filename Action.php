@@ -40,17 +40,26 @@ class Action
                     $frontend->setMessage($message);
                 }
                 public function group($message = NULL) {
-                    if (isset($_GET['id'], $_SESSION['id'])) {
-                        $linkGroupCRUD = new LinkGroupCRUD();
-                        if ($linkGroupCRUD->readLink($_SESSION['id'], $_GET['id'])) {
-                            $frontend = new Frontend('groupView', intval(htmlspecialchars($_GET['id'])));
-                            $frontend->setMessage($message);
+                    if (isset($_GET['id'])) {
+                        $groupCRUD = new GroupCRUD();
+                        $group = $groupCRUD->read(intval($_GET['id']));
+                        if($group) {
+                            $linkGroupCRUD = new LinkGroupCRUD();
+                            if ($group->getPublic() == 1) {
+                                $frontend = new Frontend('groupView', intval(htmlspecialchars($_GET['id'])));
+                                $frontend->setMessage($message); 
+                            } elseif ($linkGroupCRUD->readLink($_SESSION['id'], $_GET['id'])) {
+                                    $frontend = new Frontend('groupView', intval(htmlspecialchars($_GET['id'])));
+                                    $frontend->setMessage($message);
+                            } else {
+                                    $frontend = new Frontend('mainPageView');
+                                    $frontend->setMessage($message);
+                            }
                         } else {
-                            $frontend = new Frontend('mainPageView');
-                            $frontend->setMessage($message);
+                            throw new Exception('Groupe inexistant.');
                         }
                     } else {
-                        throw new Exception('Mauvaise référence au groupe lol.');
+                        throw new Exception('Mauvaise référence au groupe.');
                     }
                 }    
 
@@ -225,7 +234,7 @@ class Action
                         if($groupCRUD->read(intval($_GET['groupId']))) {                  
                             $delete = $groupCRUD->delete(intval($_GET['groupId']));
                             if ($delete) {
-                                header('Location: index.php?action=myGroup');
+                                /*header('Location: index.php?action=myGroup');*/
                             } else {
                                 throw new Exception('Impossible de supprimer le groupe');
                             } 
@@ -266,9 +275,9 @@ class Action
                             $postId = $postCRUD->read(intval($_POST['postId']));
                             if($postId) {
                                 if($postId->getUserId() == $_SESSION['id']) {
-                                    $postTitle = $postCRUD->read($_POST['title']);
-                                    if(!$postTitle OR $postTitle == $postId) { 
-                                        $post = $postCRUD->update($_POST['title'], $_POST['content'], intval($_POST['postId']));
+                                    $postTitle = $postCRUD->read(htmlspecialchars($_POST['title']));
+                                    if(!$postTitle OR $postTitle == $postId) {
+                                        $post = $postCRUD->update(htmlspecialchars($_POST['title']), htmlspecialchars($_POST['content']), intval($_POST['postId']));
                                         if ($post) {
                                             echo 'ok';
                                         } else {
@@ -447,6 +456,26 @@ class Action
                     }
                 }
 
+                public function suscribe() {
+                    if (isset($_SESSION['id'], $_GET['groupId'])) {
+                        $groupCRUD = new GroupCRUD();
+                        $group = $groupCRUD->read(intval($_GET['groupId']));
+                        if ($group->getPublic() == 1) {
+                            $linkGroupCRUD = new LinkGroupCRUD();
+                            if (!$linkGroupCRUD->readLink(intval($_SESSION['id']), intval($_GET['groupId']))) {
+                                $linkGroupCRUD->add(intval($_SESSION['id']), intval($_GET['groupId']), 5);
+                                header('Location: '. $_SESSION['page']);
+                            } else {
+                                throw new Exception('Profil déjà lié à ce groupe.');
+                            }                                                          
+                        } else {
+                            throw new Exception('Opération non authorisé');
+                        }                 
+                    } else {
+                        throw new Exception('Absence de donnée de session.');
+                    }
+                }
+
                 public function updateStatus() {
                     if (isset($_SESSION['id'], $_POST['id'], $_POST['status'])) {
                         $linkGroupCRUD = new LinkGroupCRUD();
@@ -500,6 +529,27 @@ class Action
                         throw new Exception('Absence de donnée de session.');
                     }
                 }
+
+                public function unsuscribe() {
+                    if (isset($_SESSION['id'], $_GET['groupId'])) {
+                        $groupCRUD = new GroupCRUD();
+                        $group = $groupCRUD->read(intval($_GET['groupId']));
+                        if ($group->getPublic() == 1) {
+                            $linkGroupCRUD = new LinkGroupCRUD();
+                            if ($linkGroupCRUD->readLink(intval($_SESSION['id']), intval($_GET['groupId']))) {
+                                $linkGroupCRUD->delete(intval($_SESSION['id']), intval($_GET['groupId']));
+                                header('Location: '. $_SESSION['page']);
+                            } else {
+                                throw new Exception('Le profil n\'est pas lié à ce groupe');
+                            }                                                          
+                        } else {
+                            throw new Exception('Opération non authorisé');
+                        }                 
+                    } else {
+                        throw new Exception('Absence de donnée de session.');
+                    }
+                }
+
 
                 public function addReport() {
                     if (isset($_GET['id'], $_SESSION['id'])) {    

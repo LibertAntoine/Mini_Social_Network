@@ -3,7 +3,7 @@
 $_SESSION['page'] = 'index.php?action=group&id='. $group->getId();
 
 ob_start(); ?>
-<section  id="group-page" class="groupView">
+<section  id="group-page" class="groupView overflow">
 <?php 
 if ($group->getLinkCouvPicture() === 1) {?>
     <div id="couv-picture-block">
@@ -12,24 +12,31 @@ if ($group->getLinkCouvPicture() === 1) {?>
 <?php } ?>  
 <div id="contents">
 
-
-
-
   <h2><?= $group->getTitle()?><span id="etat-group" class="<?php if ($group->getPublic() == 1) {echo 'green';} else {echo 'blue';}?>"><?= $group->getPublicString()?></span></h2>
+  
   <p id="nav-option">
-    <?php if ($link->getStatusInt() === 1) { ?>
+ <?php if (isset($_SESSION['id'])) { ?>
+    <?php if ($status === 1) { ?>
     <a href="index.php?action=deleteGroup&amp;groupId=<?= $group->getId() ?>">Supprimer le groupe</a> | 
-    <?php } ?>
+    <?php } 
+    if ($status <= 4) { ?>
     <a href="index.php?action=deleteLinkGroup&amp;userId=<?= $_SESSION['id'] ?>&amp;id=<?= $group->getId() ?>">Quitter le groupe</a>
-     <?php if ($group->getPublic() == 0) { ?>
+     <?php 
+    } elseif ($status <= 5) { ?>
+    <a id="unsuscribe" href="index.php?action=unsuscribe&amp;groupId=<?= $group->getId() ?>">Se désabonner</a>
+ <?php } else { ?>
+    <a id="suscribe" class="btn btn-primary" href="index.php?action=suscribe&amp;groupId=<?= $group->getId() ?>">S'abonner</a> 
+ <?php }
+     if ($group->getPublic() == 0) { ?>
         | <span data-toggle="modal" href="#status">Changer de statut</span>
     <?php }
-        if ($link->getStatusInt() === 1) { ?>
+        if ($status === 1) { ?>
             | <a href="index.php?action=adminGroup&amp;id=<?= $group->getId() ?>">Gerer le groupe</a> 
-        <?php } ?>
-  </p>
-
-
+<?php } 
+} else {?>
+    <a href="index.php?action=login">Connectez-vous</a> pour pouvoir intéragir avec ce groupe.
+<?php } ?>
+</p>
 
 
   <?php if ($group->getDescription()) { ?>
@@ -48,21 +55,23 @@ if ($group->getLinkCouvPicture() === 1) {?>
                                 <div class="slide"></div>
                                 <i class="fas fa-comments"></i>
 
-                                <h3><?= htmlspecialchars($data->getTitle()) ?></h3><br/>
+                                <h3><?= $data->getTitle() ?></h3><br/>
                                 <div class="post">
-                                <p ><?= nl2br($data->getContent()) ?></p>
+                                <p ><?= nl2br(htmlspecialchars_decode($data->getContent())) ?></p>
                                 </div>
-                                <p class="action-post">
-                                <?php if ($_SESSION['id'] === $data->getUserId() OR $link->getStatusInt() === 1) { ?>
-                                    <a href="index.php?action=deletePost&amp;postId=<?= $data->getId() ?>">Supprimer</a>
-                                    <?php if ($_SESSION['id'] === $data->getUserId()) { ?>
-                                     - <span class="edit-post <?= $data->getId() ?>">Modifier l'article</span>
-                                <?php }
-                                } else { ?>
-                                    <a href="#">Signaler</a>
+                                <?php if (isset($_SESSION['id'])) { ?>
+                                    <p class="action-post">
+                                    <?php if ($_SESSION['id'] === $data->getUserId() OR $status === 1) { ?>
+                                        <a href="index.php?action=deletePost&amp;postId=<?= $data->getId() ?>">Supprimer</a>
+                                        <?php if ($_SESSION['id'] === $data->getUserId()) { ?>
+                                         - <span class="edit-post <?= $data->getId() ?>">Modifier l'article</span>
+                                    <?php }
+                                    } else { ?>
+                                        <a href="#">Signaler</a>
+                                    <?php } ?>
+                                    
+                                    </p> 
                                 <?php } ?>
-                                
-                                </p> 
                                 <em class="creationDate"><?= $userCRUD->readName($data->getUserId())?> - <?= $data->getCreationDate() ?></em><br/>
 
                             </div>
@@ -73,13 +82,15 @@ if ($group->getLinkCouvPicture() === 1) {?>
                             <?php foreach ($comments[$data->getId()] as $comment) { ?>
                                 <div id="commentBox" class="jumbotron">
                                     <h4><?= $userCRUD->readName($comment->getUserId()) ?></h4>
-                                    <?php if ($_SESSION['id'] === $comment->getUserId() OR $link->getStatusInt() === 1) { ?>
-                                        <a class="comment-option" href="index.php?action=deleteComment&amp;commentId=<?= $comment->getId() ?>"><i class="fas fa-times"></i></a>
-                                    <?php } elseif ($report[$comment->getId()] != 'none' AND in_array($_SESSION['id'], $report[$comment->getId()])) { ?>
-                                        <a class="comment-option" href="index.php?action=deleteReport&amp;id=<?= $comment->getId()?>"><i class="fas fa-exclamation-triangle report-checked"></i></a>
-                                    <?php } else { ?>
-                                        <a class="comment-option" href="index.php?action=addReport&amp;id=<?= $comment->getId()?>"><i class="fas fa-exclamation-triangle"></i></a>
-                                    <?php } ?>
+                                    <?php if (isset($_SESSION['id'])) { 
+                                        if ($_SESSION['id'] === $comment->getUserId() OR $status === 1) { ?>
+                                            <a class="comment-option" href="index.php?action=deleteComment&amp;commentId=<?= $comment->getId() ?>"><i class="fas fa-times"></i></a>
+                                        <?php } elseif ($report[$comment->getId()] != 'none' AND in_array($_SESSION['id'], $report[$comment->getId()])) { ?>
+                                            <a class="comment-option" href="index.php?action=deleteReport&amp;id=<?= $comment->getId()?>"><i class="fas fa-exclamation-triangle report-checked"></i></a>
+                                        <?php } else { ?>
+                                            <a class="comment-option" href="index.php?action=addReport&amp;id=<?= $comment->getId()?>"><i class="fas fa-exclamation-triangle"></i></a>
+                                        <?php } 
+                                    } ?>
                                     <p><?= nl2br($comment->getContent()) ?></p>
                                     <em class="comment-creationDate"><?= substr($comment->getCreationDate(), 0, 19) ?></em><br/>
                                 </div>
@@ -88,26 +99,28 @@ if ($group->getLinkCouvPicture() === 1) {?>
                         <?php } else { ?>
                             <p id="no-post">Le post ne compte aucun commentaire. Lancez-vous !</p> 
                         <?php } 
-                        if ($link->getStatusInt() !== 4) { ?>
-                            <div class="add-comment">
-                                <form action="index.php?action=addComment" method="post">
-                                    <textarea id="content" name="content"></textarea>
-                                    <input class="btn btn-success  add-comment" type="submit" value="Ajouter"/>
-                                    <input type="hidden" name="postId" value=<?= $data->getId() ?> />
-                                    <input type="hidden" name="groupId" value=<?= $data->getGroupId() ?> />
-                                </form>
-                            </div>
-                        <?php } ?>
+                        if (isset($_SESSION['id'])) { 
+                            if ($status !== 4) { ?>
+                                <div class="add-comment">
+                                    <form action="index.php?action=addComment" method="post">
+                                        <textarea id="content" name="content"></textarea>
+                                        <input class="btn btn-success  add-comment" type="submit" value="Ajouter"/>
+                                        <input type="hidden" name="postId" value=<?= $data->getId() ?> />
+                                        <input type="hidden" name="groupId" value=<?= $data->getGroupId() ?> />
+                                    </form>
+                                </div>
+                            <?php } 
+                        }?>
                      </div>
             </div>
             </div>
             <?php   }
             } else { ?>
-               <p id="no-post-marg">Le groupe ne contient encore aucun post.<?php if ($link->getStatusInt() <= 2) { echo " Lancez-vous !"; } ?></p>  
+               <p id="no-post-marg">Le groupe ne contient encore aucun post.<?php if ($status <= 2) { echo " Lancez-vous !"; } ?></p>  
             <?php } ?>                     
         
     </div>
-    <?php if ($link->getStatusInt() <= 2) { ?>
+    <?php if ($status <= 2) { ?>
           <div id="create-post">
             <div class="jumbotron">
                 <p><?php  if ($this->getMessage() != NULL) {echo $this->getMessage();} ?></p>
@@ -137,21 +150,21 @@ if ($group->getLinkCouvPicture() === 1) {?>
               <button type="button" class="close" data-dismiss="modal">x</button>
             </div>
                 <div id="modal" class="modal-body">
-                        <p id="actual-status">Vous êtes actuellement <strong><?= $link->getStatusString() ?></strong> de ce groupe.</p>
+                        <p id="actual-status">Vous êtes actuellement <strong><?= $statusString ?></strong> de ce groupe.</p>
                         <p>Statut dans ce groupe :  </p>
-                        <?php if ($link->getStatusInt() == 1) { ?>
+                        <?php if ($status == 1) { ?>
                         <input type="radio" id="admin" class="changeStatus" name="status" value="1" checked="true">
                         <label for="admin">Administrateur</label>
                         <?php } 
-                        if ($link->getStatusInt() <= 2) { ?>
-                        <input type="radio" id="author"class="changeStatus" name="status" value="2" <?php if ($link->getStatusInt() == 2) { echo "checked='true'";} ?>>
+                        if ($status <= 2) { ?>
+                        <input type="radio" id="author"class="changeStatus" name="status" value="2" <?php if ($status == 2) { echo "checked='true'";} ?>>
                         <label for="author">Auteur</label>
                         <?php } 
-                        if ($link->getStatusInt() <= 3) { ?>
-                        <input type="radio" id="commenter" class="changeStatus" name="status" value="3" <?php if ($link->getStatusInt() == 3) { echo "checked='true'";} ?>>
+                        if ($status <= 3) { ?>
+                        <input type="radio" id="commenter" class="changeStatus" name="status" value="3" <?php if ($status == 3) { echo "checked='true'";} ?>>
                         <label for="commenter">Commenter</label>
                         <?php } ?>
-                        <input type="radio" id="viewer" class="changeStatus" name="status" value="4" <?php if ($link->getStatusInt() == 4) { echo "checked='true'";}?>>
+                        <input type="radio" id="viewer" class="changeStatus" name="status" value="4" <?php if ($status == 4) { echo "checked='true'";}?>>
                         <label for="viewer">Viewer</label>
                         <input type="radio" id="none" class="changeStatus" name="status" value="5">
                         <input type="hidden" name="group" id="groupId" value="<?= $group->getId() ?>" />

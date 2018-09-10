@@ -10,7 +10,8 @@ function EditArticle(el) {
 			height = editContent.offsetHeight;
 			blocTitle = document.createElement("div")
 			blocTitle.classList.add("blocTitle")
-			blocTitle.innerHTML = "<label for='title'>Titre : </label><input type='text' class='title-edit' value='" + titleContent.innerHTML + "'>"
+			blocTitle.innerHTML = "<label for='title'>Titre : </label><input type='text' class='title-edit'>"
+			blocTitle.querySelector(".title-edit").value = titleContent.innerHTML
 			var area = editContent.replaceWith(document.createElement("textarea"));
 			var area = titleContent.replaceWith(blocTitle);
 			area = this.element.parentNode.parentNode.querySelector("textarea");
@@ -49,6 +50,7 @@ function EditArticle(el) {
 			repost.innerHTML = content
 			this.element.textContent = "Modifier l'article"
 			jQuery(this.element).off();	
+			equal()
 			jQuery(this.element).on("click", () => {
 					this.activeEdit()	
 			});	
@@ -65,7 +67,7 @@ function EditArticle(el) {
 			$.ajax({
        			url : 'index.php?action=editPost',
        			type : 'POST',
-       			data : 'content=' + area.value + '&title=' + inputTitle.value + '&postId=' + this.postId,
+       			data : 'content=' + encodeURIComponent(area.value) + '&title=' + inputTitle.value + '&postId=' + this.postId,
        			dataType : 'html',
        			success : (dat) => {
        				if (dat == 'ok') {

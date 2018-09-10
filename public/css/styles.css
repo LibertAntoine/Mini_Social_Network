@@ -13,7 +13,7 @@ body {
 
 }
 
-#overflow {
+.overflow {
 	margin-top: 40px;
 	overflow-x: hidden;
 	position: relative;
@@ -594,7 +594,7 @@ header {
 
 
 .left {
-	right:0%;
+	right:-180px;
 }
 
 
@@ -703,8 +703,17 @@ header {
 }
 
 
+.post p {
+	margin: 0px;
+}
 
+#nav-option #suscribe {
+	color : black;
+}
 
+#nav-option #unsuscribe {
+	color : red;
+}
 
 
 @media screen and (max-width: 1040px) 
@@ -725,6 +734,10 @@ display: none;
 
 .postBox {
 	left: 10%;
+}
+
+.left {
+	right: 0px;
 }
 
 
@@ -766,6 +779,9 @@ margin-left:20px;
 .postBox {
 	left: 0%;
 }
+
+
+
 
 }
 

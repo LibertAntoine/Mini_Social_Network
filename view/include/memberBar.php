@@ -32,9 +32,11 @@
 									<div><p><?= $profils[$viewerId]->getPseudo()  ?></p></div>
 								<?php } 
 							} ?>
-		<?php if (isset($admins[$_SESSION['id']])) { ?>
-            <p id="member-link"><a  href="index.php?action=adminGroup&amp;id=<?= $group->getId() ?>#access-gestion">Gerer le groupe</a></p>
-        <?php } ?>
+		<?php if (isset($_SESSION['id'])) {
+			if (isset($admins[$_SESSION['id']])) { ?>
+	            <p id="member-link"><a  href="index.php?action=adminGroup&amp;id=<?= $group->getId() ?>#access-gestion">Gerer le groupe</a></p>
+	        <?php } 
+	   	} ?>
 		</div>
 
 	</section>					

@@ -19,20 +19,32 @@ class Frontend extends View {
 
 	public function groupView($groupId) {
 
-		
-		$linkGroupManager = new LinkGroupManager();
-		$link = $linkGroupManager->access($groupId, $_SESSION['id']);
-		if ($link) {
 			$groupCRUD = new GroupCRUD();
 			$group = $groupCRUD->read($groupId);
+
+			if (isset($_SESSION['id'])) {
+				$linkGroupManager = new LinkGroupManager();
+				$link = $linkGroupManager->access($groupId, $_SESSION['id']);			
+			}
+
+			if (isset($link)) {
+			$status = $link->getStatusInt();
+			$statusString = $link->getStatusString();
+			} elseif ($group->getPublic() == 1){
+				$status = 10;
+			}
+
 			if ($group) {
+
 				$postCRUD = new PostCRUD();
 				$posts = $postCRUD->readGroup($groupId);
 				if ($posts) {
+
 					if ($posts !== 'none') {
 						$commentCRUD = new CommentCRUD();
 						$linkReportingCRUD = new LinkReportingCRUD();
 						foreach ($posts as $data) {
+
 							$comments[$data->getId()] = $commentCRUD->readPost($data->getId());
 							if ($comments[$data->getId()] != 'none') {
 								foreach ($comments[$data->getId()] as $comment) {
@@ -52,9 +64,7 @@ class Frontend extends View {
 			} else {
 				throw new Exception('Problème d\'accès au groupe');
 			}	
-		} else {
-			throw new Exception('Accès à cette page non-autorisé');
-		}
+
 	}
 
 	public function allPublicGroupView() {

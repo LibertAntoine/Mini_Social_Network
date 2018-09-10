@@ -31,7 +31,7 @@ class Includes {
 
 	public function memberBar() {
 		
-		if (isset($_GET['id'], $_SESSION['id'])) {
+		if (isset($_GET['id'])) {
 			$groupCRUD = new GroupCRUD();
 			$group = $groupCRUD->read(intval($_GET['id']));
 
@@ -46,12 +46,13 @@ class Includes {
 					$admins[$memberId] = $member;
 				} elseif ($member->getStatusInt() === 2) {
 					$authors[$memberId] = $member;
-				} elseif ($member->getStatusInt() === 3) {
-					$commenters[$memberId] = $member;
-				} elseif ($member->getStatusInt() === 4) {
-					$viewers[$memberId] = $member;
-				} else {
-					throw new Exception('Erreur de profil utilisateur');
+				} 
+				if ($group->getPublic() == 0) {
+					if ($member->getStatusInt() === 3) {
+						$commenters[$memberId] = $member;
+					} elseif ($member->getStatusInt() === 4) {
+						$viewers[$memberId] = $member;
+					}
 				}
 			}
 			require('view/include/memberBar.php');

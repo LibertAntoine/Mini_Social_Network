@@ -66,6 +66,9 @@ class LinkGroup
       case 4:
         return "Viewer";
         break;
+      case 5:
+        return "Membre";
+      break; 
     }
   }
   
