@@ -447,6 +447,21 @@ class Action
                     }
                 }
 
+                public function updateStatus() {
+                    if (isset($_SESSION['id'], $_POST['id'], $_POST['status'])) {
+                        $linkGroupCRUD = new LinkGroupCRUD();
+                        if ($linkGroupCRUD->readLink(intval($_SESSION['id']), intval($_POST['id'])) <= intval($_POST['status'])) {
+                            $member = $linkGroupCRUD->read(intval($_SESSION['id']), intval($_POST['id']));
+                            $linkGroupCRUD->update($member, intval($_POST['status']));
+                            echo 'ok'; 
+                        } else {
+                            echo 'Opération non authorisée.';
+                        }                                                   
+                    } else {
+                        echo 'Mauvaise données transmises.';
+                    }
+                }
+
                 public function updateLinkGroup() {
                     if (isset($_SESSION['id'], $_GET['id'])) {
                         $linkGroupCRUD = new LinkGroupCRUD();
@@ -457,8 +472,8 @@ class Action
                                 if ($newMember != $member->getStatusInt()) {
                                     $linkGroupCRUD->update($member, $newMember);
                                 }
-                                header('Location: index.php?action=group&id='. $_GET['id']);
                             } 
+                            header('Location: index.php?action=group&id='. $_GET['id']);
                         } else {
                             throw new Exception('Accès non authorisé');
                         }                                                                           
@@ -466,6 +481,7 @@ class Action
                         throw new Exception('Absence de donnée de session.');
                     }
                 }
+
 
                 public function deleteLinkGroup() {
                     if (isset( $_SESSION['id'], $_GET['id'], $_GET['userId'])) {    

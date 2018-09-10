@@ -16,11 +16,17 @@ class Includes {
 			if ($linkGroups != 'none') {
 				$groupCRUD = new GroupCRUD();
 				foreach ($linkGroups as $groupId => $link) {
-					$groups[$groupId] = $groupCRUD->read($groupId);
+					$group = $groupCRUD->read($groupId);
+					if ($group->getPublic() == 1) {
+						$groupsPublic[$groupId] = $group;
+					} else {
+						$groupsPrivate[$groupId] = $group;
+					}
+					
 				}
-			}
-			require('view/include/groupBar.php');
-		}
+			}	
+		} 
+		require('view/include/groupBar.php');
 	}
 
 	public function memberBar() {

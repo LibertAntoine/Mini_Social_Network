@@ -12,28 +12,38 @@ if(window.innerWidth > 1040) {
 	var gradient = 1;
 }
 
+			if(window.innerWidth < 500) { 
+				$(".slide").hide()
+				$(".fa-comments").show() 
+			} else {
+				$(".slide").show()
+				$(".fa-comments").hide()
+			}
 
-document.querySelectorAll(".post-content").forEach(function(element) {
 
-		element.querySelector(".slide").addEventListener("mouseenter", function(e) {
+
+
+		$(".slide").on("mouseenter", function() {
+
 				if (this.classList[1] != 'actif') {
-					var slide = new Slide(element);
+					var slide = new Slide(this);
 					slide.activeSlide()
 				}	
 		});
 
-});
+		$(".fa-comments").on("click", function() {
+				if (this.classList[2] != 'actif') {
+					var slide = new Slide(this);
+					slide.activeSlimSlide()
+				}	
+		});
+
 
 	var modif = 1;
 	var allPost = document.querySelectorAll(".post-content");
 		
-		setInterval("equal()", 200)
 
-		function equal() {
-			document.querySelectorAll(".post-content").forEach(function(element) {
-				var height = element.querySelector(".postBox").offsetHeight;
-				element.querySelector(".comment-content").style.height = height;
-		})}
+
 
 
 			if (window.innerWidth < 710) {
@@ -47,6 +57,7 @@ document.querySelectorAll(".post-content").forEach(function(element) {
 
 
 		window.onresize = function(){
+			equal()
 			var allPost = document.querySelectorAll(".post-content");
 if(window.innerWidth > 1040) {
 	var groupSpace = 447;
@@ -59,7 +70,14 @@ if(window.innerWidth > 1040) {
 	var gradient = 1;
 }
 
-
+			if(window.innerWidth < 500) { 
+				$(".slide").hide()
+				$(".fa-comments").show() 
+			} else {
+				$(".slide").show()
+				$(".fa-comments").hide()
+			}
+				
 
 			allPost.forEach(function(element) {
 
@@ -98,28 +116,13 @@ if(window.innerWidth > 1040) {
 		});
 
 
-
-
-
-		
-
-
-
-
-		var scroler = allPost[i].querySelector(".comment-text");
-		scroler.scrollTop = scroler.scrollHeight;
+		}
 
 
 
 
-
-
-
-}
-
-
-		$(".edit-post").on("click", function(e) {
-						var editArticle = new EditArticle(this, e);
+		$(".edit-post").on("click", function() {
+						var editArticle = new EditArticle(this);
 						editArticle.activeEdit();	
 		});
 
@@ -132,4 +135,28 @@ function textarea_to_tinymce(id){
 }
 
 
+		equal()
+		function equal() {
+			document.querySelectorAll(".post-content").forEach(function(element) {
+				var height = element.querySelector(".postBox").offsetHeight;
+				element.querySelector(".comment-content").style.height = height;
+				var scroler = element.querySelector(".comment-text");
+				scroler.scrollTop = scroler.scrollHeight;
+		})}
 
+
+
+$("#valid-status").on("click", function() {
+
+				var value = $('input[type=radio][name=status]:checked').attr('value');
+				groupId = $("#groupId").val()
+
+				var editStatus = new EditStatus(value, groupId);
+				if (value <= 4) {
+					editStatus.validEdit()
+
+				} else if (value == 5) {
+					editStatus.validSupr()
+				}
+
+});

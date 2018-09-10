@@ -35,6 +35,15 @@ class LinkGroupCRUD {
 		}
 	}
 
+
+	public function read($userId, $groupId) {
+		$linkGroupManager = new LinkGroupManager();
+		$link = $linkGroupManager->existLink($userId, $groupId);
+		if (isset($link)) {
+			return $link;
+		}
+	}
+
 	public function readGroups($userId) {
 		$linkGroupManager = new LinkGroupManager();
 		$listGroups = $linkGroupManager->getGroups($userId);
@@ -71,8 +80,8 @@ class LinkGroupCRUD {
 	}
 
 	public function update($linkGroup, $status) {
+
 		$linkGroupManager = new LinkgroupManager();
-		echo $linkGroup->getId();
 		if ($linkGroupManager->exists($linkGroup->getId())) {
 			$linkGroup->setStatus($status);
 			$linkGroupManager->update($linkGroup);

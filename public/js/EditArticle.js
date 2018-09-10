@@ -71,11 +71,12 @@ function EditArticle(el) {
        				if (dat == 'ok') {
        					this.removeEdit(area.value, inputTitle.value)
        					message.classList.add("alert-info");
-       					message.innerHTML = "Le post a bien été modifier";
-       					setTimeout(function(){ $(".alert-info").fadeOut(2000); }, 5000);
+       					message.innerHTML = "Le post a bien été modifié";
+       					setTimeout(() => { $(".alert-info").fadeOut(2000); delete this }, 4000);
        				} else {
        					message.classList.add("alert-warning");
        					message.innerHTML = dat;
+       					setTimeout(() => { $(".alert-info").fadeOut(2000); }, 4000);
        				}
        			},    
        			error : function(){

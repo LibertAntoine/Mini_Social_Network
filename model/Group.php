@@ -56,7 +56,7 @@ class Group
         return "privé";
         break;
       case 1:
-        return "publique";
+        return "public";
         break;
     	}
   	}

@@ -15,15 +15,22 @@ if ($group->getLinkCouvPicture() === 1) {?>
 
 
 
-  <h2><?= $group->getTitle()?></h2>
+  <h2><?= $group->getTitle()?><span id="etat-group" class="<?php if ($group->getPublic() == 1) {echo 'green';} else {echo 'blue';}?>"><?= $group->getPublicString()?></span></h2>
   <p id="nav-option">
+    <?php if ($link->getStatusInt() === 1) { ?>
     <a href="index.php?action=deleteGroup&amp;groupId=<?= $group->getId() ?>">Supprimer le groupe</a> | 
-    <a href="index.php?action=deleteLinkGroup&amp;userId=<?= $_SESSION['id'] ?>&amp;id=<?= $group->getId() ?>">Quitter le groupe</a> | 
-    <a href="index.php?action=myStatus&amp;id=<?= $groupId ?> ?>">Changer de statut</a>
-        <?php if ($link->getStatusInt() === 1) { ?>
+    <?php } ?>
+    <a href="index.php?action=deleteLinkGroup&amp;userId=<?= $_SESSION['id'] ?>&amp;id=<?= $group->getId() ?>">Quitter le groupe</a>
+     <?php if ($group->getPublic() == 0) { ?>
+        | <span data-toggle="modal" href="#status">Changer de statut</span>
+    <?php }
+        if ($link->getStatusInt() === 1) { ?>
             | <a href="index.php?action=adminGroup&amp;id=<?= $group->getId() ?>">Gerer le groupe</a> 
         <?php } ?>
   </p>
+
+
+
 
   <?php if ($group->getDescription()) { ?>
     <div id="description-bloc" class="jumbotron">
@@ -39,6 +46,7 @@ if ($group->getLinkCouvPicture() === 1) {?>
 
                             <div class="postBox jumbotron">
                                 <div class="slide"></div>
+                                <i class="fas fa-comments"></i>
 
                                 <h3><?= htmlspecialchars($data->getTitle()) ?></h3><br/>
                                 <div class="post">
@@ -46,8 +54,11 @@ if ($group->getLinkCouvPicture() === 1) {?>
                                 </div>
                                 <p class="action-post">
                                 <?php if ($_SESSION['id'] === $data->getUserId() OR $link->getStatusInt() === 1) { ?>
-                                    <a href="index.php?action=deletePost&amp;postId=<?= $data->getId() ?>">Supprimer</a> - <span class="edit-post <?= $data->getId() ?>">Modifier l'article</span>
-                                <?php } else { ?>
+                                    <a href="index.php?action=deletePost&amp;postId=<?= $data->getId() ?>">Supprimer</a>
+                                    <?php if ($_SESSION['id'] === $data->getUserId()) { ?>
+                                     - <span class="edit-post <?= $data->getId() ?>">Modifier l'article</span>
+                                <?php }
+                                } else { ?>
                                     <a href="#">Signaler</a>
                                 <?php } ?>
                                 
@@ -75,7 +86,7 @@ if ($group->getLinkCouvPicture() === 1) {?>
                             <?php } ?>
        
                         <?php } else { ?>
-                            <p>Le post ne compte aucun commentaire. Lancez-vous !</p> 
+                            <p id="no-post">Le post ne compte aucun commentaire. Lancez-vous !</p> 
                         <?php } 
                         if ($link->getStatusInt() !== 4) { ?>
                             <div class="add-comment">
@@ -92,7 +103,7 @@ if ($group->getLinkCouvPicture() === 1) {?>
             </div>
             <?php   }
             } else { ?>
-               <p>Le groupe ne contient encore aucun post. Lancez-vous !</p>  
+               <p id="no-post-marg">Le groupe ne contient encore aucun post.<?php if ($link->getStatusInt() <= 2) { echo " Lancez-vous !"; } ?></p>  
             <?php } ?>                     
         
     </div>
@@ -116,6 +127,45 @@ if ($group->getLinkCouvPicture() === 1) {?>
     </div>
 </section>
 
+
+<?php if ($group->getPublic() == 0) { ?>
+ <div class="modal fade" id="status">
+        <div class="modal-dialog">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h4 class="modal-title">Modification de statut</h4>
+              <button type="button" class="close" data-dismiss="modal">x</button>
+            </div>
+                <div id="modal" class="modal-body">
+                        <p id="actual-status">Vous êtes actuellement <strong><?= $link->getStatusString() ?></strong> de ce groupe.</p>
+                        <p>Statut dans ce groupe :  </p>
+                        <?php if ($link->getStatusInt() == 1) { ?>
+                        <input type="radio" id="admin" class="changeStatus" name="status" value="1" checked="true">
+                        <label for="admin">Administrateur</label>
+                        <?php } 
+                        if ($link->getStatusInt() <= 2) { ?>
+                        <input type="radio" id="author"class="changeStatus" name="status" value="2" <?php if ($link->getStatusInt() == 2) { echo "checked='true'";} ?>>
+                        <label for="author">Auteur</label>
+                        <?php } 
+                        if ($link->getStatusInt() <= 3) { ?>
+                        <input type="radio" id="commenter" class="changeStatus" name="status" value="3" <?php if ($link->getStatusInt() == 3) { echo "checked='true'";} ?>>
+                        <label for="commenter">Commenter</label>
+                        <?php } ?>
+                        <input type="radio" id="viewer" class="changeStatus" name="status" value="4" <?php if ($link->getStatusInt() == 4) { echo "checked='true'";}?>>
+                        <label for="viewer">Viewer</label>
+                        <input type="radio" id="none" class="changeStatus" name="status" value="5">
+                        <input type="hidden" name="group" id="groupId" value="<?= $group->getId() ?>" />
+                        <input type="hidden" name="group" id="userId" value="<?= $_SESSION['id'] ?>" />
+                        <label for="none">Aucun</label>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn btn-info" data-dismiss="modal">Fermer</button>
+                    <button id="valid-status" class="btn btn-success">Valider</button>
+                </div>
+          </div>
+        </div>
+    </div>
+<?php } ?>
 
 
 

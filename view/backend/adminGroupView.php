@@ -14,7 +14,7 @@ ob_start(); ?>
 			<div id="edit-group" class="col-md-12 col-sm-12 jumbotron">
 				<div class="row">
 				<div class="col-md-4 col-sm-4">
-					<h3>Paramètres du groupe.</h3>
+					<h3 id='setting-gestion'>Paramètres du groupe.</h3>
 					<p>Ce groupe est actuellement <?= $group->getPublicString() ?></p>
 					<?php if ($group->getPublic() == 0) { ?>
 					<a href="index.php?action=changePublic&amp;id=<?= $group->getId() ?>"><div id="newGroup" class="btn btn-info">
@@ -41,7 +41,7 @@ ob_start(); ?>
 	<div class="row">
 		<div class="col-md-12 col-sm-12 jumbotron">
 				<form action="index.php?action=updateLinkGroup&amp;id=<?= $group->getId()?>" method="post">
-					<h3>Gestions des droits utilisateurs.</h3>
+					<h3 id='access-gestion'>Gestions des droits utilisateurs.</h3>
 					<?php if (isset($admins)) { ?>
 						<h4>Administrateurs</h4>
 						<?php foreach ($admins as $adminId => $admin) { ?>
@@ -109,7 +109,7 @@ ob_start(); ?>
 
 	<div class="row">
 		<div id="change-member" class="col-md-12 col-sm-12 jumbotron">
-				<h3>Gestion des membres.</h3>
+				<h3 id='member-gestion'>Gestion des membres.</h3>
 				<h4>Administrateurs</h4>
 						<form action="index.php?action=addLinkGroup" method="post">
 							<select name="friend">

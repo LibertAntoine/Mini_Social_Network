@@ -10,22 +10,22 @@
         <link href="https://fonts.googleapis.com/css?family=Pacifico" rel="stylesheet">
         <meta name="viewport" content="width=device-width, initial-scale=1">
     </head>
-        
     <body>
-
-    	<?php require("view/include/navbar.php");?>
-        
-
-            <?= $content ?>
+        <div id="overflow">
+            <div id="static">
+    	       <?php require("view/include/navbar.php");?>
+                <?= $content ?>
      
 
-
-        <script src="vendor/bootstrap/js/bootstrap.min.js"></script>
+            </div>
+        </div>
         <script src="vendor/jQuery/jquery-3.3.1.min.js"></script>
+     <script src="vendor/bootstrap/js/bootstrap.min.js"></script>
 		<script src="vendor/tinymce/js/tinymce.min.js"></script>
 		<script src="vendor/tinymce/js/themes/init-tinymce.js"></script>
 
         <script src="public/js/EditArticle.js"></script>
+        <script src="public/js/EditStatus.js"></script>
         <script src="public/js/Slide.js"></script>
         <script src="public/js/main.js"></script>
     </body>

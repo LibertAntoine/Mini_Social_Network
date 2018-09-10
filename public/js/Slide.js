@@ -5,7 +5,7 @@
 
 function Slide(el) {
 
-		this.element = el
+		this.element = el.parentNode.parentNode
 
 		this.activeSlide = function() {
 							if(window.innerWidth > 1040) {
@@ -15,16 +15,36 @@ function Slide(el) {
 			} else {
 				var groupSpace = 87;
 			}
+
 				var postBox = this.element.querySelector(".postBox")
 				var commentBox = this.element.querySelector(".comment-content");
+
 				slide = this.element.querySelector(".slide");
 				postBox.classList.add("right");
 				commentBox.classList.add("left");
 				slide.classList.add("actif");
 				widthPost = window.innerWidth - (groupSpace + 265)
-				jQuery(postBox).stop().animate({width: widthPost} , 1000 , function() {commentBox.style.height = postBox.offsetHeight});
-				this.element.addEventListener("mouseleave", (e) => {
+				var adaptWidth = setInterval("equal()", 200)
+				jQuery(postBox).stop(false, true).animate({width: widthPost} , 650, () => {clearInterval(adaptWidth);});
+				jQuery(this.element).on("mouseleave", (e) => {
 					this.removeSlide()	
+				});			
+		}
+
+
+		this.activeSlimSlide = function() {
+
+				var postBox = this.element.querySelector(".postBox")
+				var commentBox = this.element.querySelector(".comment-content");
+
+				slide = this.element.querySelector(".slide");
+				postBox.classList.add("right");
+				commentBox.classList.add("left");
+				slide.classList.add("actif");
+				equal()
+				jQuery(this.element).on("mouseleave", (e) => {
+					this.removeSlimSlide()	
+
 				});			
 		}
 
@@ -47,9 +67,22 @@ if(window.innerWidth > 1040) {
 				commentBox.classList.remove("left");
 				slide.classList.remove("actif");
 				widthPost = (window.innerWidth - groupSpace)*gradient
-				jQuery(postBox).stop().animate({width: widthPost}, 1000 , function() {commentBox.style.height = postBox.offsetHeight});
-				delete postBox;
-				delete commentBox;
+				var reAdaptWidth = setInterval("equal()", 200)
+				jQuery(this.element).off();
+				jQuery(postBox).stop(false, true).animate({width: widthPost} , 650, () => {clearInterval(reAdaptWidth);});
+				delete this;
+		}
+
+
+				this.removeSlimSlide = function() {
+				var postBox = this.element.querySelector(".postBox")
+				var commentBox = this.element.querySelector(".comment-content");
+				slide = this.element.querySelector(".fa-comments");
+				postBox.classList.remove("right");
+				commentBox.classList.remove("left");
+				slide.classList.remove("actif");
+				jQuery(this.element).off()
+				widthPost = (window.innerWidth - groupSpace)*gradient
 				delete this;
 		}
 }

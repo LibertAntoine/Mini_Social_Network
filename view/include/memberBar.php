@@ -1,7 +1,13 @@
 
 	<section id="memberBar">
-		<a href="index.php?action=myGroup"><h3>Membres</h3></a>
+						<?php if ($group->getPublic() == 1) { ?>
+							<p id='status-group'>Ce groupe est public. Il est visible par tous le monde.</p>
+						<?php } else { ?>
+							<p id='status-group'>Ce groupe est privé. Il n'est visible que par ses membres.</p>
+						<?php }	?>
+		<a href="index.php?action=adminGroup&amp;id=<?= $group->getId() ?>#member-gestion"><h3>Membres</h3></a>
 		<div>
+
 							<?php if (isset($admins)) { ?>
 								<h4>Admin</h4>
 								<?php foreach ($admins as $adminId => $admin) { ?>
@@ -27,7 +33,7 @@
 								<?php } 
 							} ?>
 		<?php if (isset($admins[$_SESSION['id']])) { ?>
-            <a href="index.php?action=adminGroup&amp;id=<?= $group->getId() ?>">Gerer le groupe</a>  
+            <p id="member-link"><a  href="index.php?action=adminGroup&amp;id=<?= $group->getId() ?>#access-gestion">Gerer le groupe</a></p>
         <?php } ?>
 		</div>
 
