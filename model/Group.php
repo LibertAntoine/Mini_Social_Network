@@ -1,10 +1,8 @@
 <?php
 
-/**
- * 
- */
-class Group
-{
+namespace model;
+
+class Group {
 
 	protected $id,
 	$title,
@@ -19,39 +17,33 @@ class Group
 
 	public function __construct(array $data)
   	{
-   		 $this->hydrate($data);
+   		$this->hydrate($data);
   	}
 
 	public function hydrate(array $data)
   	{
-    	foreach ($data as $key => $value)
-    	{
+    	foreach ($data as $key => $value) {
      	 	$method = 'set'.ucfirst($key);
-      		if (method_exists($this, $method))
-      		{
+      		if (method_exists($this, $method)) {
         		$this->$method($value);
       		}
       	}
     }
 
-  	public function getId() 
-  	{
+  	public function getId() {
  	 	return $this->id;
  	}
 
- 	public function getTitle() 
-  	{
+ 	public function getTitle() {
  	 	return $this->title;
  	}
 
-  	public function getPublic() 
-  	{
+  	public function getPublic() {
  	  	return $this->public;
   	}
 
-	public function getPublicString() 
-  	{
- 	 	switch ($this->public) {
+	public function getPublicString() {
+ 	switch ($this->public) {
       case 0:
         return "privé";
         break;
@@ -61,28 +53,23 @@ class Group
     	}
   	}
 
-  	public function getDescription() 
-  	{
+  	public function getDescription() {
  	  	return $this->description;
   	}
 
-  	public function getCreationDate() 
-  	{
+  	public function getCreationDate() {
  	  	return $this->creationDate;
   	}
 
-  	public function getLastUpdate() 
-  	{
+  	public function getLastUpdate() {
  	  	return $this->lastUpdate;
   	}
 
-  	public function getLinkCouvPicture() 
-  	{
+  	public function getLinkCouvPicture() {
  	  	return $this->linkCouvPicture;
   	}
 
-  	public function getLinkCouvPictureString() 
-  	{
+  	public function getLinkCouvPictureString() {
  	 	switch ($this->linkCouvPicture) {
       case 0:
         return NULL;
@@ -99,90 +86,70 @@ class Group
     	}
   	}
 
-  	  	public function getNbPost() 
-  	{
+  	public function getNbPost() {
  	  	return $this->nbPost;
   	}
 
-  	  	public function getNbMember() 
-  	{
+  	public function getNbMember() {
  	  	return $this->nbMember;
   	}
 
 
-	public function setId($id) 
-	{
+	public function setId($id) {
 	    $id = (int) $id;
-	    if ($id >= 0) 
-	    {
+	    if ($id >= 0) {
 	      $this->id = $id;
 	    }
 	}
 
-  	public function setTitle($title) 
-	{
-	    if (is_string($title) && strlen($title) < 240) 
-	    {
+  	public function setTitle($title) {
+	    if (is_string($title) && strlen($title) < 240) {
 	       $this->title = $title;
 	    }
 	}
 
-	public function setDescription($description) 
-	{
-	    if (is_string($description)) 
-	    {
+	public function setDescription($description) {
+	    if (is_string($description)) {
 	       $this->description = $description;
 	    }
 	}
 
-	public function setCreationDate($creationDate) 
-	{
-	    if (is_string($creationDate)) 
-	    {
+	public function setCreationDate($creationDate) {
+	    if (is_string($creationDate)) {
 	      $this->creationDate = $creationDate;
 	    }
 	}
 
-	public function setLastUpdate($lastUpdate) 
-	{
-	    if (is_string($lastUpdate)) 
-	    {
+	public function setLastUpdate($lastUpdate) {
+	    if (is_string($lastUpdate)) {
 	      $this->lastUpdate = $lastUpdate;
 	    }
 	}
 
-	public function setPublic($public) 
-	{
+	public function setPublic($public) {
 	    $public = (int) $public;
-	    if ($public >= 0) 
-	    {
+	    if ($public >= 0) {
 	      $this->public = $public;
 	    }
 	}
 
-	public function setLinkCouvPicture($linkCouvPicture) 
-	{
+	public function setLinkCouvPicture($linkCouvPicture) {
 	    $linkCouvPicture = (int) $linkCouvPicture;
-	    if ($linkCouvPicture >= 0) 
-	    {
+	    if ($linkCouvPicture >= 0) {
 	      $this->linkCouvPicture = $linkCouvPicture;
 	    }
 	}
 
-	public function setNbPost($nbPost) 
-	{
+	public function setNbPost($nbPost) {
 	    $nbPost = (int) $nbPost;
-	    if ($nbPost >= 0) 
-	    {
+	    if ($nbPost >= 0) {
 	      $this->nbPost = $nbPost;
 	    }
 	}
 
-	public function setNbMember($nbMember) 
-	{
+	public function setNbMember($nbMember) {
 	    $nbMember = (int) $nbMember;
-	    if ($nbMember >= 0) 
-	    {
+	    if ($nbMember >= 0) {
 	      $this->nbMember = $nbMember;
 	    }
 	}

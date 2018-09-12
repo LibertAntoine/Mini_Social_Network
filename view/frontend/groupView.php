@@ -106,7 +106,6 @@ if ($group->getLinkCouvPicture() === 1) {?>
                                         <textarea id="content" name="content"></textarea>
                                         <input class="btn btn-success  add-comment" type="submit" value="Ajouter"/>
                                         <input type="hidden" name="postId" value=<?= $data->getId() ?> />
-                                        <input type="hidden" name="groupId" value=<?= $data->getGroupId() ?> />
                                     </form>
                                 </div>
                             <?php } 

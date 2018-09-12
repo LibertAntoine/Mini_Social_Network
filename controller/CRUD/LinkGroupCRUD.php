@@ -1,31 +1,29 @@
 <?php
 
-	require_once('model/TextContent.php');
-	require_once('model/DBAccess.php');
-	require_once('model/Post.php');
-	require_once('model/PostManager.php');
-	require_once('model/Comment.php');
-	require_once('model/CommentManager.php');
-	require_once('model/Group.php');
-	require_once('model/GroupManager.php');	
-	require_once('model/User.php');
-	require_once('model/UserManager.php');
-	require_once('model/LinkGroupManager.php');
-	require_once('model/LinkGroup.php');
-	require_once('model/LinkFriendManager.php');
-	require_once('model/LinkFriend.php');
-	require_once('model/LinkReportingManager.php');
-	require_once('model/LinkReporting.php');
+	namespace controller\CRUD;
 
+	use \model\TextContent;
+    use \model\DBAccess;
+    use \model\Group;
+    use \model\GroupManager;
+    use \model\Post;   
+    use \model\PostManager;
+    use \model\Comment;
+    use \model\CommentManager;
+    use \model\User;
+    use \model\UserManager;
+    use \model\LinkGroup;
+    use \model\LinkGroupManager;
+    use \model\LinkFriend;
+    use \model\LinkFriendManager;
+    use \model\LinkReporting;
+    use \model\LinkReportingManager;
 
 class LinkGroupCRUD {
 	
-	public function add($userId, $groupId, $status)
-	{
-
+	public function add($userId, $groupId, $status) {
 		$linkGroup = new LinkGroup(['groupId' => $groupId, 'userId' => $userId, 'status' => $status]);
 		$linkGroupManager = new LinkGroupManager();	
-		
 		$link = $linkGroupManager->add($linkGroup);
 		if ($link) {
 			$groupManager = new GroupManager();
@@ -34,7 +32,6 @@ class LinkGroupCRUD {
 			$userManager->addGroup($userId);
 		}
 	}
-
 
 	public function read($userId, $groupId) {
 		$linkGroupManager = new LinkGroupManager();
@@ -48,8 +45,7 @@ class LinkGroupCRUD {
 		$linkGroupManager = new LinkGroupManager();
 		$listGroups = $linkGroupManager->getGroups($userId);
 		if ($listGroups != NULL) {
-			foreach ($listGroups as $group) {
-				
+			foreach ($listGroups as $group) {	
 				$linkGroups[$group->getGroupId()] = $group;
 			}
 		    return $linkGroups;
@@ -80,7 +76,6 @@ class LinkGroupCRUD {
 	}
 
 	public function update($linkGroup, $status) {
-
 		$linkGroupManager = new LinkgroupManager();
 		if ($linkGroupManager->exists($linkGroup->getId())) {
 			$linkGroup->setStatus($status);
@@ -88,7 +83,6 @@ class LinkGroupCRUD {
 			return 'ok';
 		}
 	}
-
 
 	public function delete($userId ,$groupId) {	
 		$linkGroupManager = new LinkGroupManager();

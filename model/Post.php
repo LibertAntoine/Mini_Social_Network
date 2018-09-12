@@ -1,5 +1,7 @@
 <?php
 
+namespace model;
+
 class Post extends TextContent {
 
 	protected $title,
@@ -7,44 +9,37 @@ class Post extends TextContent {
   $updateDate,
   $nbComment;
 
-  public function getTitle() 
-  {
+  public function getTitle() {
  	  return $this->title;
  	}
 
-  public function getUpdateDate() 
-  {
+  public function getUpdateDate() {
  	  return $this->updateDate;
   }
 
-  public function getGroupId() 
-  {
+  public function getGroupId() {
     return $this->groupId;
   }
 
-  public function getNbComment() 
-  {
+  public function getNbComment() {
     return $this->nbComment;
   }
 
-  public function setTitle($title) 
-  {
+  public function setTitle($title) {
     if (is_string($title) && strlen($title) < 240) 
     {
        $this->title = $title;
     }
   }
 
-  public function setUpdateDate($updateDate) 
-  {
+  public function setUpdateDate($updateDate) {
     if (is_string($updateDate)) 
     {
       $this->updateDate = $updateDate;
     }
   }
 
-  public function setNbComment($nbComment) 
-  {
+  public function setNbComment($nbComment) {
     $nbComment = (int) $nbComment;
     if ($nbComment >= 0) 
     {
@@ -52,13 +47,11 @@ class Post extends TextContent {
     }
   }
 
-  public function setGroupId($groupId) 
-  {
+  public function setGroupId($groupId) {
     $groupId = (int) $groupId;
     if ($groupId >= 0) 
     {
       $this->groupId = $groupId;
     }
   }
-
 }

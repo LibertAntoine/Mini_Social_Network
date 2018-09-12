@@ -1,37 +1,38 @@
 <?php
 
-require_once('controller/View.php');
+namespace controller;
+
+    use \controller\CRUD\GroupCRUD;
+    use \controller\CRUD\PostCRUD;
+    use \controller\CRUD\CommentCRUD;
+    use \controller\CRUD\UserCRUD;
+    use \controller\CRUD\LinkGroupCRUD;
+    use \controller\CRUD\LinkFriendCRUD;
+    use \controller\CRUD\LinkReportingCRUD;
 
 class Backend extends View {
 
 	function __construct($view, $param = NULL)
     {
-        	$this->$view($param); 
+        $this->$view($param); 
     }
     
 	public function loginView() {
-
 		require('view/backend/loginView.php');
-
 	}
 
 	public function inscriptionView() {
-
 		require('view/backend/inscriptionView.php');
-
 	}
 
 	public function backOfficeView() {
 		$include = new Includes('groupBar');
 		require('view/backend/backOfficeView.php');
-
 	}
 
 	public function myGroupView() {
-
 		$linkGroupCRUD = new LinkGroupCRUD();
 		$linkGroups = $linkGroupCRUD->readGroups($_SESSION['id']);
-
 		if ($linkGroups != 'none') {
 			$groupCRUD = new GroupCRUD();
 			foreach ($linkGroups as $groupId => $link) {
@@ -42,13 +43,12 @@ class Backend extends View {
 	}
 
 	public function myFriendView() {
-
 		$friendCRUD = new LinkFriendCRUD();
 		$listFriends = $friendCRUD->readFriends();
 		$userCRUD = new UserCRUD();
 		if ($listFriends !== NULL) {
 			foreach ($listFriends as $friend) {
- if ($friend->getLink() === 0) {
+ 				if ($friend->getLink() === 0) {
 					$requests[$friend->getUserId2()] = $userCRUD->read($friend->getUserId2());
 				} elseif ($friend->getLink() === 1) {
 					if ($friendCRUD->readLink($_SESSION['id'], $friend->getUserId2())) {
@@ -61,7 +61,6 @@ class Backend extends View {
 		}
 		$userCRUD = new UserCRUD();
 		$allUsers = $userCRUD->readAll();
-
 		if (isset($allUsers)) {
 			foreach ($listFriends as $friend) {
 				unset($allUsers[$friend->getuserId2()]);
@@ -76,9 +75,7 @@ class Backend extends View {
 
 
 	public function newGroupView() {
-
 		require('view/backend/newGroupView.php');
-
 	}
 
 	public function newGroupMemberView() {
@@ -106,7 +103,6 @@ class Backend extends View {
 		if (!isset($_SESSION['commenter'])) {
 			$_SESSION['commenter'] = [];
 		}
-
 		if (isset($_POST['admin'])) {
 			array_push($_SESSION['admin'], serialize($userCRUD->read(intval($_POST['admin']))));
 		}
@@ -118,8 +114,7 @@ class Backend extends View {
 		}
 		if (isset($_POST['viewer'])) {
 			array_push($_SESSION['viewer'], serialize($userCRUD->read(intval($_POST['viewer']))));
-		}
-		
+		}		
 		if (isset($friends)) {
 			$listAdmins = $friends;
 			if ($_SESSION['admin'] != NULL) {
@@ -132,7 +127,6 @@ class Backend extends View {
 					}
 				}
 			}		
-
 			$listAuthors = $listAdmins;
 			if ($_SESSION['author'] != NULL) {
 				for ($i=0; $i < count($_SESSION['author']); $i++) {
@@ -144,7 +138,6 @@ class Backend extends View {
 					}
 				}
 			}
-
 			if ($_SESSION['public'] == 0) {
 				$listCommenters = $listAuthors;
 				if ($_SESSION['commenter'] != NULL) {
@@ -157,11 +150,8 @@ class Backend extends View {
 						}	
 					}
 				}
-
-
 				$listViewers = $listCommenters;
 				if ($_SESSION['viewer'] != NULL) {
-
 					for ($i=0; $i < count($_SESSION['viewer']); $i++) {
 						$viewer = unserialize($_SESSION['viewer'][$i]);
 						if (isset($listViewers[$viewer->getId()])) {
@@ -173,22 +163,15 @@ class Backend extends View {
 				}
 			}
 		}
-
-
 		require('view/backend/newGroupMemberView.php');
 	}
-
-
 
 	public function adminGroupView($groupId) { 
 		$groupCRUD = new GroupCRUD();
 		$group = $groupCRUD->read($groupId);
-
 		$linkGroupCRUD = new LinkGroupCRUD();
-		$members = $linkGroupCRUD->readMembers($groupId);
-		
+		$members = $linkGroupCRUD->readMembers($groupId);	
 		$userCRUD = new UserCRUD();
-
 		foreach ($members as $memberId => $member) {
 			$profils[$memberId] = $userCRUD->read($memberId);
 			if ($member->getStatusInt() === 1) {
@@ -203,8 +186,6 @@ class Backend extends View {
 				throw new Exception('Erreur de profil utilisateur');
 			}
 		}
-
-
 		$friendCRUD = new LinkFriendCRUD();
 		$linkFriends = $friendCRUD->readFriends();
 		if ($linkFriends != 'none') {
@@ -223,6 +204,4 @@ class Backend extends View {
 		$include = new Includes('groupBar');
 		require('view/backend/adminGroupView.php');
 	} 
-
-
 }

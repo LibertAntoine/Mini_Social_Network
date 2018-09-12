@@ -1,5 +1,7 @@
 <?php
 
+namespace model;
+
 abstract class TextContent {
 
 	protected $id, 
@@ -7,80 +9,61 @@ abstract class TextContent {
 	$content,
 	$creationDate;
 
+  public function __construct(array $data) {
+   	$this->hydrate($data);
+  }
 
-
-  	public function __construct(array $data)
-  	{
-   		 $this->hydrate($data);
-  	}
-
-	public function hydrate(array $data)
-  	{
-    	foreach ($data as $key => $value)
-    	{
+	public function hydrate(array $data) {
+    	foreach ($data as $key => $value) {
      	 	$method = 'set'.ucfirst($key);
-      		if (method_exists($this, $method))
-      		{
+      		if (method_exists($this, $method)) {
         		$this->$method($value);
       		}
-      	}
-    }
+      }
+  }
 
- 	public function getId() 
- 	{
+ 	public function getId() {
  		return $this->id;
  	}
 
-	public function getUserId()
-	{
+	public function getUserId() {
  		return $this->userId;
  	}
 
 
-  	public function getContent() 
-  	{
+  public function getContent() {
  		return $this->content;
 	}
 
-  	public function getCreationDate() 
-  	{
+  public function getCreationDate() {
  		return $this->creationDate;
  	}
 
-	public function setId($Id) 
-	{
+	public function setId($Id) {
  		$Id = (int) $Id;
- 		if ($Id > 0) 
- 		{
+ 		if ($Id > 0) {
  			$this->id = $Id;
  		}
 	}
 
- 	public function setUserId($userId) 
- 	{
+ 	public function setUserId($userId) {
  		$userId = (int) $userId;
- 		if ($userId > 0) 
- 		{
+ 		if ($userId > 0) {
  			$this->userId = $userId;
  		}
  	}
 
-  	public function setContent($content) 
-  	{
-  		if (is_string($content)) 
-  		{
+  public function setContent($content) {
+  	if (is_string($content)) {
  			$this->content = $content;
  		}
  	}
 
-      public function setCreationDate($creationDate) 
-    {
-      if (is_string($creationDate)) 
-      {
+  public function setCreationDate($creationDate) {
+    if (is_string($creationDate)) {
       $this->creationDate = $creationDate;
     }
   }
-
 }
 
 

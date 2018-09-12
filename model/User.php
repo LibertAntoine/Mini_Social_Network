@@ -1,5 +1,7 @@
 <?php
 
+namespace model;
+
 class User {
 
 	protected $id,
@@ -12,150 +14,113 @@ class User {
   $actif,
   $admin;
 
-
-
-
-	public function __construct(array $data)
-	{
+	public function __construct(array $data) {
 		$this->hydrate($data);
 	}
 
-	public function hydrate(array $data)
-  {
-    foreach ($data as $key => $value)
-    {
+	public function hydrate(array $data) {
+    foreach ($data as $key => $value) {
      	$method = 'set'.ucfirst($key);
-      if (method_exists($this, $method))
-      {
+      if (method_exists($this, $method)) {
         $this->$method($value);
       }
     }
   }
 
-  public function getId() 
-  {
+  public function getId() {
     return $this->id;
   }
 
-  public function getPseudo() 
-  {
+  public function getPseudo() {
     return $this->pseudo;
   }
 
-  public function getMdp() 
-  {
+  public function getMdp() {
   	return $this->mdp;
   }
 
-  public function getCreationProfil() 
-  {
+  public function getCreationProfil() {
     return $this->creationProfil;
   }
 
-  public function getStatus() 
-  {
+  public function getStatus() {
     return $this->status;
   }
 
-  public function getNbPublication() 
-  {
+  public function getNbPublication() {
     return $this->nbPublication;
   }
 
-  public function getNbComment() 
-  {
+  public function getNbComment() {
     return $this->nbComment;
   }
 
-  public function getActif() 
-  {
+  public function getActif() {
     return $this->actif;
   }
 
-  public function getAdmin() 
-  {
+  public function getAdmin() {
     return $this->admin;
   }
 
-	public function setId($id) 
-  {
+	public function setId($id) {
  	  $id = (int) $id;
- 	  if ($id > 0) 
-    {
+ 	  if ($id > 0) {
  		 $this->id = $id;
  	  }
   }
 
-
-
- 	public function setPseudo($pseudo) 
-  {
-  	if (is_string($pseudo) && strlen($pseudo) < 26) 
-    {
+ 	public function setPseudo($pseudo) {
+  	if (is_string($pseudo) && strlen($pseudo) < 26) {
  		$this->pseudo = $pseudo;
  	  }
   }
 
-  public function setCreationProfil($creationProfil) 
-  {
-    if (is_string($creationProfil) && strlen($creationProfil) < 26) 
-    {
+  public function setCreationProfil($creationProfil) {
+    if (is_string($creationProfil) && strlen($creationProfil) < 26) {
      $this->creationProfil = $creationProfil;
     }
   }
 
- 	public function setMdp($mdp) 
-  {
-  	if (is_string($mdp) && strlen($mdp) < 255) 
-    {
+ 	public function setMdp($mdp) {
+  	if (is_string($mdp) && strlen($mdp) < 255) {
  		 $this->mdp = $mdp;
  	  }
   }
 
- 	public function setStatus($status) 
-  {
-  	if (is_string($status) && strlen($status) < 26) 
-    {
+ 	public function setStatus($status) {
+  	if (is_string($status) && strlen($status) < 26) {
  		 $this->status = $status;
  	  }
   }
 
 
-  public function setNbPublication($nbPublication) 
-  {
+  public function setNbPublication($nbPublication) {
     $nbPublication = (int) $nbPublication;
-    if ($nbPublication >= 0) 
-    {
+    if ($nbPublication >= 0) {
      $this->nbPublication = $nbPublication;
     }
   }
 
-  public function setNbComment($nbComment) 
-  {
+  public function setNbComment($nbComment) {
     $nbComment = (int) $nbComment;
-    if ($nbComment >= 0) 
-    {
+    if ($nbComment >= 0) {
      $this->nbComment = $nbComment;
     }
   }
 
-  public function setActif($actif) 
-  {
+  public function setActif($actif) {
     $actif = (int) $actif;
-    if ($actif >= 0) 
-    {
+    if ($actif >= 0) {
      $this->actif = $actif;
     }
   }
 
-  public function setAdmin($admin) 
-  {
+  public function setAdmin($admin) {
     $admin = (int) $admin;
-    if ($admin >= 0) 
-    {
+    if ($admin >= 0) {
      $this->admin = $admin;
     }
   }
-
 }
 

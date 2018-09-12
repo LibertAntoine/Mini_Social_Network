@@ -1,28 +1,42 @@
 <?php
 
-	require_once('model/TextContent.php');
-	require_once('model/DBAccess.php');
-	require_once('model/Post.php');
-	require_once('model/PostManager.php');
-	require_once('model/Comment.php');
-	require_once('model/CommentManager.php');
-	require_once('model/Group.php');
-	require_once('model/GroupManager.php');	
-	require_once('model/User.php');
-	require_once('model/UserManager.php');
-	require_once('model/LinkGroupManager.php');
-	require_once('model/LinkGroup.php');
-	require_once('model/LinkFriendManager.php');
-	require_once('model/LinkFriend.php');
-	require_once('model/LinkReportingManager.php');
-	require_once('model/LinkReporting.php');
+	namespace controller\CRUD;
 
-
+	use \model\TextContent;
+    use \model\DBAccess;
+    use \model\Group;
+    use \model\GroupManager;
+    use \model\Post;   
+    use \model\PostManager;
+    use \model\Comment;
+    use \model\CommentManager;
+    use \model\User;
+    use \model\UserManager;
+    use \model\LinkGroup;
+    use \model\LinkGroupManager;
+    use \model\LinkFriend;
+    use \model\LinkFriendManager;
+    use \model\LinkReporting;
+    use \model\LinkReportingManager;
 
 class GroupCRUD {
 	
-	public function add($title, $public, $description = '', $linkCouvPicture, $adminId, $memberArray)
-	{
+	public function add($title, $public, $description = '', $linkCouvPicture, $adminId) {
+		
+        $memberArray = [];
+        if ($_SESSION['admin'] != NULL) {
+           	$memberArray[1] = $_SESSION['admin'];
+        }
+        if ($_SESSION['author'] != NULL) {
+            $memberArray[2] = $_SESSION['author'];
+        }
+        if ($_SESSION['commenter'] != NULL) {
+            $memberArray[3] = $_SESSION['commenter'];
+        }
+        if ($_SESSION['viewer'] != NULL) {
+            $memberArray[4] = $_SESSION['viewer'];
+        }
+
 		if ($linkCouvPicture === NULL) {
 			$linkCouvPicture = 0;
 		} elseif ($linkCouvPicture === "jpeg") {
@@ -44,22 +58,19 @@ class GroupCRUD {
 		    if ($memberArray != NULL) {
 			    foreach ($memberArray as $fonction => $list) {
 			    	foreach ($list as $data) {
-			    	$member = unserialize($data);
-			    	$linkGroupCRUD->add($member->getId(), $group->getId(), $fonction);
-			    }
-			}
-			$linkGroupCRUD->add($adminId, $group->getId(), 1);
-		    return $group;
-	    	} else {
-	    		throw new Exception('Impossible d\'enregister le groupe');
-	    	}
+			    		$member = unserialize($data);
+			    		$linkGroupCRUD->add($member->getId(), $group->getId(), $fonction);
+			    	}
+				}
+				$linkGroupCRUD->add($adminId, $group->getId(), 1);
+		    	return $group;
+		    }
 		}	
 	}
 
-	public function update($groupId, $title, $description = '')
-	{	
+	public function update($groupId, $title, $description = '') {	
 		$group = $this->read($groupId);
-			if ($group instanceof Group) {
+		if ($group instanceof Group) {
 			if ($group->getLinkCouvPicture() != 0) {
 				rename ("public/pictures/couv/" . str_replace(' ', '_', $group->getTitle()) . "." . $group->getLinkCouvPictureString(), "public/pictures/couv/" . str_replace(' ', '_', $title) . "." . $group->getLinkCouvPictureString());
 			}
@@ -73,8 +84,7 @@ class GroupCRUD {
 		}	
 	}
 
-	public function updatePublic(Group $group)
-	{	
+	public function updatePublic(Group $group) {	
 		$groupManager = new GroupManager();
 		if ($group->getPublic() === 0) {
 			$group->setPublic(1);
@@ -105,10 +115,6 @@ class GroupCRUD {
 			return $fiveGroup;
 		}
 	}
-
-
-
-
 
 	public function delete($groupId) {
 		$group = $this->read($groupId);

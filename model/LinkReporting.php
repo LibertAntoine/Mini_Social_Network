@@ -1,25 +1,20 @@
 <?php
 
 
-/**
- * 
- */
-class LinkReporting
-{
+namespace model;
+
+class LinkReporting {
 
 	protected $id,
 	$userId,
 	$commentId,
 	$reportingDate;
 
-
-	public function __construct(array $data)
-  {
+	public function __construct(array $data) {
    	 $this->hydrate($data);
   }
 
-	public function hydrate(array $data)
-  {
+	public function hydrate(array $data) {
     	foreach ($data as $key => $value)
     	{
      	 	$method = 'set'.ucfirst($key);
@@ -30,59 +25,47 @@ class LinkReporting
       	}
   }
 
-  public function getId() 
-  {
+  public function getId() {
  	 	return $this->id;
   }
  	
 
-    public function getUserId() 
-  {
+  public function getUserId() {
     return $this->userId;
   }
 
-  public function getCommentId() 
-  {
+  public function getCommentId() {
     return $this->commentId;
   }
   
-  public function getReportingData() 
-  {
+  public function getReportingData() {
     return $this->linkDate;
   }
 
-  public function setId($id) 
-  {
+  public function setId($id) {
       $id = (int) $id;
-      if ($id >= 0) 
-      {
+      if ($id >= 0) {
         $this->id = $id;
       }
   }
 
 
-  public function setUserId($userId) 
-  {
+  public function setUserId($userId) {
       $userId = (int) $userId;
-      if ($userId >= 0) 
-      {
+      if ($userId >= 0) {
         $this->userId = $userId;
       }
   }
 
-  public function setCommentId($commentId) 
-  {
+  public function setCommentId($commentId) {
       $commentId = (int) $commentId;
-      if ($commentId >= 0) 
-      {
+      if ($commentId >= 0) {
         $this->commentId = $commentId;
       }
   }
 
-  public function setReportingDate($reportingDate) 
-  {
-      if (is_string($reportingDate)) 
-      {
+  public function setReportingDate($reportingDate) {
+      if (is_string($reportingDate)) {
          $this->reportingDate = $reportingDate;
       }
   } 

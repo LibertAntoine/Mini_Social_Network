@@ -1,21 +1,20 @@
 <?php 
 
-require_once('controller/Frontend.php');
-require_once('controller/Backend.php');
-require_once('controller/Includes.php');
-require_once('controller/CRUD/UserCRUD.php');
-require_once('controller/CRUD/GroupCRUD.php');
-require_once('controller/CRUD/PostCRUD.php');
-require_once('controller/CRUD/CommentCRUD.php');
-require_once('controller/CRUD/LinkFriendCRUD.php');
-require_once('controller/CRUD/LinkGroupCRUD.php');
-require_once('controller/CRUD/LinkReportingCRUD.php');
+    use \controller\Frontend;
+    use \controller\Backend;
+    use \controller\Includes;
+    use \controller\View;
+    use \controller\CRUD\GroupCRUD;
+    use \controller\CRUD\PostCRUD;
+    use \controller\CRUD\CommentCRUD;
+    use \controller\CRUD\UserCRUD;
+    use \controller\CRUD\LinkGroupCRUD;
+    use \controller\CRUD\LinkFriendCRUD;
+    use \controller\CRUD\LinkReportingCRUD;
 
-class Action
-{
-    
-    function __construct($action)
-    {
+class Action {
+ 
+    function __construct($action) {
 
         if ($action != 'addGroup' AND $action != 'newGroupMember') {
             $_SESSION['admin'] = NULL;
@@ -28,599 +27,710 @@ class Action
             if (isset($_SESSION['couvPicture'])) { 
                 unlink($_SESSION['couvPicture']);
                 $_SESSION['couvPicture'] = NULL;
+                $_SESSION['extPicture'] = NULL;
             }
         }
-
         $this->$action(); 
     }
 
+    public function mainPage() {
+        $frontend = new Frontend('mainPageView');
+    }
 
-                public function mainPage($message = NULL) {
-                    $frontend = new Frontend('mainPageView');
-                    $frontend->setMessage($message);
+    public function group() {
+        if (isset($_GET['id'])) {
+            $groupCRUD = new GroupCRUD();
+            $group = $groupCRUD->read(intval($_GET['id']));
+            if($group) {
+                $linkGroupCRUD = new LinkGroupCRUD();
+                if ($group->getPublic() == 1 OR $linkGroupCRUD->readLink($_SESSION['id'], intval($_GET['id']))) {
+                    $frontend = new Frontend('groupView', intval($_GET['id']));
+                } else {
+                    throw new Exception('L\'accès à cette page ne vous est pas authorisé.');
                 }
-                public function group($message = NULL) {
-                    if (isset($_GET['id'])) {
-                        $groupCRUD = new GroupCRUD();
-                        $group = $groupCRUD->read(intval($_GET['id']));
-                        if($group) {
-                            $linkGroupCRUD = new LinkGroupCRUD();
-                            if ($group->getPublic() == 1) {
-                                $frontend = new Frontend('groupView', intval(htmlspecialchars($_GET['id'])));
-                                $frontend->setMessage($message); 
-                            } elseif ($linkGroupCRUD->readLink($_SESSION['id'], $_GET['id'])) {
-                                    $frontend = new Frontend('groupView', intval(htmlspecialchars($_GET['id'])));
-                                    $frontend->setMessage($message);
-                            } else {
-                                    $frontend = new Frontend('mainPageView');
-                                    $frontend->setMessage($message);
-                            }
-                        } else {
-                            throw new Exception('Groupe inexistant.');
-                        }
-                    } else {
-                        throw new Exception('Mauvaise référence au groupe.');
-                    }
-                }    
+            } else {
+                throw new Exception('Le groupe désigné n\'existe pas.');
+            }
+        } else {
+            throw new Exception('Erreur : merci de fournir un identifiant de groupe.');
+        }
+    }    
 
-                public function login($message = NULL) {
-                    if (!isset($_SESSION['id'])) {
-                        $backend = new Backend('loginView');
-                        $backend->setMessage($message);
-                    } else {
-                        header('Location: index.php?action=mainPage');
-                    }
-                }
-                public function inscription($message = NULL) {
-                    if (!isset($_SESSION['id'])) {
-                        $backend = new Backend('inscriptionView');
-                        $backend->setMessage($message);
-                    } else {
-                        header('Location: index.php?action=mainPage');
-                    }
-                }
-                public function backOffice($message = NULL) {
-                    if (isset($_SESSION['id'])) {
-                        $backend = new Backend('backOfficeView');
-                        $backend->setMessage($message);
-                    } else {
-                        throw new Exception('Absence de donnée de session.');
-                    }
-                }
-                public function myGroup($message = NULL) {
-                    if (isset($_SESSION['id'])) {
-                        $backend = new Backend('myGroupView');
-                        $backend->setMessage($message); 
-                    } else {
-                        throw new Exception('Absence de donnée de session.');
-                    }
-                }
-                public function myFriend($message = NULL) {
-                    if (isset($_SESSION['id'])) {
-                        $backend = new Backend('myFriendView');
-                        $backend->setMessage($message);
-                    } else {
-                        throw new Exception('Absence de donnée de session.');
-                    }
-                }
-                public function newGroupMember($message = NULL) {
-                    if (isset($_POST['titleGroup'], $_POST['public'])) {
-                        $_SESSION['titleGroup'] = $_POST['titleGroup'];
-                        $_SESSION['public'] = $_POST['public'];
-                    }
-                    if (isset($_POST['description'])) {
-                        $_SESSION['description'] = $_POST['description'];
-                    }
-                    if (isset($_FILES['couvPicture']) AND $_FILES['couvPicture']['size'] !== 0) {
-                        if ($_FILES['couvPicture']['size'] > 4000000) {
-                            $backend = new Backend('newGroupView', 'La taille du fichier dépasse 4Mo');
-                            exit;
-                        }
-                        $_SESSION['couvPicture'] = substr($_FILES['couvPicture']['type'], 6);
-                        move_uploaded_file($_FILES['couvPicture']['tmp_name'], 'public/pictures/couv/'. str_replace(' ', '_', htmlspecialchars($_POST['titleGroup'])) . '.' . substr($_FILES['couvPicture']['type'], 6));
-                    }
-                    if (isset($_SESSION['id'])) {
-                        $backend = new Backend('newGroupMemberView');
-                        $backend->setMessage($message);
-                    } else {
-                        throw new Exception('Absence de donnée de session.');
-                    }
-                }
+    public function login() {
+        if (!isset($_SESSION['id'])) {
+            $backend = new Backend('loginView');
+        } else {
+            header('Location: index.php?action=mainPage');
+        }
+    }
 
-                public function newGroup($message = NULL) {
-                    if (isset($_SESSION['id'])) {
-                        $backend = new Backend('newGroupView');
-                        $backend->setMessage($message);
-                    } else {
-                        throw new Exception('Absence de donnée de session.');
-                    }
-                }
-                public function adminGroup($message = NULL) {
-                    if (isset($_SESSION['id'], $_GET['id'])) {
-                        $linkGroupCRUD = new LinkGroupCRUD();
-                        if ($linkGroupCRUD->readLink($_SESSION['id'], $_GET['id']) === 1) {
-                            $backend = new Backend('adminGroupView', intval($_GET['id']));
-                            $backend->setMessage($message); 
-                        } else {
-                            $frontend = new Frontend('mainPageView');
-                            $frontend->setMessage($message);
-                        }                                                                           
-                    } else {
-                        throw new Exception('Absence de donnée de session.');
-                    }
-                }
+    public function inscription() {
+        if (!isset($_SESSION['id'])) {
+            $backend = new Backend('inscriptionView');
+        } else {
+            header('Location: index.php?action=mainPage');
+        }
+    }
 
-                public function addGroup() {
-                    if (isset($_SESSION['id'], $_SESSION['titleGroup'], $_SESSION['public'])) {
-                        if(strlen($_SESSION['titleGroup']) <= 240 && strlen($_SESSION['titleGroup']) >= 4) {
-                            $groupCRUD = new GroupCRUD();
-                            $memberArray = [];
-                            if ($_SESSION['admin'] != NULL) {
-                                $memberArray[1] = $_SESSION['admin'];
-                            }
-                            if ($_SESSION['author'] != NULL) {
-                                $memberArray[2] = $_SESSION['author'];
-                            }
-                            if ($_SESSION['commenter'] != NULL) {
-                                $memberArray[3] = $_SESSION['commenter'];
-                            }
-                            if ($_SESSION['viewer'] != NULL) {
-                                $memberArray[4] = $_SESSION['viewer'];
-                            }
-                            if(!$groupCRUD->read($_SESSION['titleGroup'])) { 
-                                $group = $groupCRUD->add(htmlspecialchars($_SESSION['titleGroup']), intval($_SESSION['public']), htmlspecialchars($_SESSION['description']), $_SESSION['couvPicture'], $_SESSION['id'], $memberArray);
-                                if ($group) {
-                                  $_SESSION['couvPicture'] = NULL;  
-                                  header('Location: index.php?action=group&id=' . $group->getId());
+    public function backOffice() {
+        if (isset($_SESSION['id'])) {
+            $backend = new Backend('backOfficeView');
+        } else {
+            throw new Exception('Absence de donnée de session.');
+        }
+    }
+
+    public function myGroup() {
+        if (isset($_SESSION['id'])) {
+            $backend = new Backend('myGroupView'); 
+        } else {
+            throw new Exception('Absence de donnée de session.');
+        }
+    }
+
+    public function myFriend() {
+        if (isset($_SESSION['id'])) {
+            $backend = new Backend('myFriendView');
+        } else {
+            throw new Exception('Absence de donnée de session.');
+        }
+    }
+
+    public function adminGroup() {
+        if (isset($_SESSION['id'])) {
+            if (isset($_GET['id'])) {
+                $groupCRUD = new GroupCRUD();
+                if ($groupCRUD->read(intval($_GET['id']))) {
+                    $linkGroupCRUD = new LinkGroupCRUD();
+                    if ($linkGroupCRUD->readLink($_SESSION['id'], intval($_GET['id'])) === 1) {
+                        $backend = new Backend('adminGroupView', intval($_GET['id']));
+                    } else {
+                        throw new Exception('Accès à cette page non-authorisé.');
+                    }  
+                } else {
+                    throw new Exception('Le groupe désigné n\'existe pas.');
+                }  
+            } else {
+                throw new Exception('Absence de donnée de groupe.');
+            }                                                                     
+        } else {
+            throw new Exception('Absence de donnée de session.');
+        }
+    }
+
+    public function newGroup() {
+        if (isset($_SESSION['id'])) {
+            $backend = new Backend('newGroupView');
+        } else {
+            throw new Exception('Absence de donnée de session.');
+        }
+    }
+
+    public function newGroupMember() {
+        if (isset($_SESSION['id'])) {
+            if (isset($_POST['titleGroup'], $_POST['public'])) {
+                if (strlen($_POST['titleGroup']) >= 4 AND strlen($_POST['titleGroup']) <= 240) {
+                    $_SESSION['titleGroup'] = $_POST['titleGroup'];
+                    $_SESSION['public'] = $_POST['public'];
+                } else {
+                    throw new Exception('Le titre du groupe doit être compris entre 4 et 240 caractères.');
+                }
+            }
+            if (isset($_POST['description'])) {
+                if (strlen($_POST['titleGroup'] <= 2000)) {
+                   $_SESSION['description'] = $_POST['description'];
+                } else {
+                    throw new Exception('La description ne doit pas excéder 2000 caractères.');
+                }
+            }
+            if (isset($_FILES['couvPicture']) AND $_FILES['couvPicture']['size'] !== 0) {
+                if ($_FILES['couvPicture']['size'] < 4000000) {
+                    $_SESSION['extPicture'] = substr($_FILES['couvPicture']['type'], 6);
+                    $_SESSION['couvPicture'] = 'public/pictures/couv/'. str_replace(' ', '_', htmlspecialchars($_POST['titleGroup'])) . '.' . substr($_FILES['couvPicture']['type'], 6);
+                    move_uploaded_file($_FILES['couvPicture']['tmp_name'], $_SESSION['couvPicture']);
+                } else {
+                    throw new Exception('Le fichier de l\'image de couverture ne doit pas excerder 4 Mo.');
+                }
+            }
+            if (isset($_SESSION['titleGroup'], $_SESSION['public'])) {
+                $backend = new Backend('newGroupMemberView');
+            } else {
+                throw new Exception('Absence d\'information de titre et/ou de statut de groupe.');
+            }
+        } else {
+            throw new Exception('Absence de donnée de session.');
+        }
+    }
+
+    public function addGroup() {
+        if (isset($_SESSION['id'], $_SESSION['titleGroup'], $_SESSION['public'])) {
+            $groupCRUD = new GroupCRUD();
+            if(!$groupCRUD->read($_SESSION['titleGroup'])) { 
+                $group = $groupCRUD->add(htmlspecialchars($_SESSION['titleGroup']), intval($_SESSION['public']), htmlspecialchars($_SESSION['description']), $_SESSION['extPicture'], $_SESSION['id']);
+                if ($group) {
+                    header('Location: index.php?action=group&id=' . $group->getId());
+                } else {
+                    throw new Exception('Impossible d\'enregister le groupe');
+                } 
+            } else {
+                throw new Exception('Ce titre de groupe existe déjà, merci d\'en renseigner un autre');
+            }
+        } else {
+           throw new Exception('Absence de donnée de session.');
+        }
+    }
+
+    public function updateGroup() {
+        if (isset($_SESSION['id'])) {
+            if (isset($_POST['titleGroup'], $_POST['description'], $_POST['groupId'])) {
+                $groupCRUD = new GroupCRUD();
+                if ($groupCRUD->read(intval($_POST['groupId']))) {
+                    $linkGroupCRUD = new LinkGroupCRUD();
+                    if ($linkGroupCRUD->readLink($_SESSION['id'], intval($_POST['groupId'])) === 1) {
+                        if(strlen($_POST['titleGroup']) >= 4 && strlen($_POST['titleGroup']) <= 240) {
+                            if(strlen($_POST['description']) <= 2000) {
+                                $groupCRUD = new GroupCRUD();
+                                $group = $groupCRUD->read(htmlspecialchars($_SESSION['titleGroup']));
+                                if(!$group OR $group->getId() === intval($_POST['groupId'])) { 
+                                    $group = $groupCRUD->update(intval($_POST['groupId']), htmlspecialchars($_POST['titleGroup']), htmlspecialchars($_POST['description']));
+                                    header('Location: '. $_SESSION['page']); 
                                 } else {
-                                    throw new Exception('Impossible d\'enregister le groupe');
-                                } 
+                                    throw new Exception('Le titre existe déjà pour un autre groupe.');
+                                }       
                             } else {
-                                throw new Exception('Impossible d\'enregister le groupe2');
-                            }
+                                throw new Exception('La description du groupe ne doit pas excéder 2000 caractères.');
+                            }     
                         } else {
-                            throw new Exception('Impossible d\'enregister le groupe3');
+                            throw new Exception('Le titre du groupe doit être compris entre 4 et 240 caractères.');
                         }
                     } else {
-                       throw new Exception('Impossible d\'enregister le groupe4');
+                        throw new Exception('Opération non-authorisé : niveau d\'accès insuffisant.');
                     }
+                } else {
+                    throw new Exception('Le groupe désigné n\'existe pas.');
                 }
+            } else {
+                throw new Exception('Absence des données liées au formulaire.');
+            }
+        } else {
+           throw new Exception('Absence de donnée de session.');
+        }
+    }
 
-                public function updateGroup() {
-                    if (isset($_SESSION['id'], $_POST['titleGroup'], $_POST['description'], $_POST['groupId']) ) {
-                        if(strlen($_POST['titleGroup']) <= 240 && strlen($_POST['titleGroup']) >= 4) {
-                            $groupCRUD = new GroupCRUD();
-                            $group = $groupCRUD->read($_SESSION['titleGroup']);
-                            if(!$group OR $group->getId() === intval($_POST['groupId'])) { 
-                                $group = $groupCRUD->update(intval($_POST['groupId']), htmlspecialchars($_POST['titleGroup']), htmlspecialchars($_POST['description']));
-                                if ($group) {  
-                                  header('Location: '. $_SESSION['page']);
-                                } else {
-                                    throw new Exception('Impossible d\'enregister le groupe');
-                                } 
-                            } else {
-                                throw new Exception('Impossible d\'enregister le groupe2');
-                            }
-                        } else {
-                            throw new Exception('Impossible d\'enregister le groupe3');
-                        }
+    public function changePublic() {
+        if (isset($_SESSION['id'])) {
+            if (isset($_GET['id'])) {
+                $groupCRUD = new GroupCRUD();
+                $group = $groupCRUD->read(intval($_GET['id']));
+                if($group) { 
+                    $linkGroupCRUD = new LinkGroupCRUD();
+                    if ($linkGroupCRUD->readLink($_SESSION['id'], intval($_GET['id'])) === 1) {
+                        $newGroup = $groupCRUD->updatePublic($group);
+                        header('Location: '. $_SESSION['page']);
                     } else {
-                       throw new Exception('Aucune information fournit');
+                        throw new Exception('Opération non-authorisé : niveau d\'accès insuffisant.');
                     }
+                } else {
+                    throw new Exception('Le groupe désigné n\'existe pas.');
                 }
+            } else {
+                throw new Exception('Absence de donnée de groupe.');
+            }
+        } else {
+           throw new Exception('Absence de données de session.');
+        }
+    }
 
-                public function changePublic() {
-                    if (isset($_SESSION['id'], $_GET['id'])) {
-                            $groupCRUD = new GroupCRUD();
-                            $group = $groupCRUD->read(intval($_GET['id']));
-                            if($group instanceof Group) { 
-                                $newGroup = $groupCRUD->updatePublic($group);
-                                if ($newGroup instanceof Group) {  
-                                  header('Location: '. $_SESSION['page']);
-                                } else {
-                                    throw new Exception('Impossible d\'enregister le groupe');
-                                } 
-                            } else {
-                                throw new Exception('Impossible d\'enregister le groupe2');
-                            }
+    public function deleteGroup() {
+        if (isset($_SESSION['id'])) {
+            if (isset($_GET['groupId'])) {
+                $groupCRUD = new GroupCRUD();
+                if($groupCRUD->read(intval($_GET['groupId']))) { 
+                    $linkGroupCRUD = new LinkGroupCRUD();
+                    if ($linkGroupCRUD->readLink($_SESSION['id'], intval($_GET['groupId'])) === 1) {                 
+                        $delete = $groupCRUD->delete(intval($_GET['groupId']));
+                        header('Location: index.php?action=myGroup');
                     } else {
-                       throw new Exception('Aucune information fournit');
-                    }
+                        throw new Exception('Opération non-authorisé : niveau d\'accès insuffisant.');
+                    } 
+                } else {
+                    throw new Exception('Le groupe désigné n\'existe pas.');
                 }
+            } else {
+               throw new Exception('Absence de donnée de groupe.');
+            }
+        } else {
+           throw new Exception('Absence de données de session.');
+        }
+    }
 
-                public function deleteGroup() {
-                    if (isset($_GET['groupId'])) {
-                        $groupCRUD = new GroupCRUD();
-                        if($groupCRUD->read(intval($_GET['groupId']))) {                  
-                            $delete = $groupCRUD->delete(intval($_GET['groupId']));
-                            if ($delete) {
-                                /*header('Location: index.php?action=myGroup');*/
-                            } else {
-                                throw new Exception('Impossible de supprimer le groupe');
-                            } 
-                        } else {
-                            $this->group('Le groupe n\'existe pas');
-                        }
-                    } else {
-                       throw new Exception('Aucune groupe assignée');
-                    }
-                }
-
-                public function addPost() {
-                    if (isset($_SESSION['id'], $_POST['title'], $_POST['content'], $_POST['groupId'])) {
-                        if(strlen($_POST['title']) <= 240 && strlen($_POST['title']) >= 4) {
-                            $postCRUD = new PostCRUD();
-                            if(!$postCRUD->read($_POST['title'])) { 
+    public function addPost() {
+        if (isset($_SESSION['id'])) {
+            if (isset($_POST['title'], $_POST['content'], $_POST['groupId'])) {
+                $groupCRUD = new GroupCRUD();
+                if($groupCRUD->read(intval($_POST['groupId']))) { 
+                    $linkGroupCRUD = new LinkGroupCRUD();
+                    if ($linkGroupCRUD->readLink($_SESSION['id'], intval($_POST['groupId'])) <= 2) {                 
+                        if(strlen($_POST['title']) >= 4 && strlen($_POST['title']) <= 240) {
+                            if(strlen($_POST['content']) <= 20000) {
+                                $postCRUD = new PostCRUD();
                                 $post = $postCRUD->add($_POST['title'], $_POST['content'], $_POST['groupId'], $_SESSION['id']);
-                                if ($post) {
-                                    header('Location: index.php?action=group&id=' . intval($_POST['groupId']));
-                                } else {
-                                    throw new Exception('Impossible d\'enregister le post');
-                                } 
-                            } else {
-                                $this->group('Le nom de post existe déjà, merci d\'en choisir un autre');
-                            }
-                        } else {
-                            $this->group('Merci de renseigner un titre entre 5 et 240 caractères');
-                        }
-                    } else {
-                       $this->group('Merci de renseigner tous les champs obligatoires.');
-                    }
-                }             
-
-                public function editPost() {
-                    if (isset($_SESSION['id'], $_POST['content'], $_POST['title'], $_POST['postId'])) {
-                        if(strlen($_POST['title']) <= 240 && strlen($_POST['title']) >= 4) {
-                            $postCRUD = new PostCRUD();
-                            $postId = $postCRUD->read(intval($_POST['postId']));
-                            if($postId) {
-                                if($postId->getUserId() == $_SESSION['id']) {
-                                    $postTitle = $postCRUD->read(htmlspecialchars($_POST['title']));
-                                    if(!$postTitle OR $postTitle == $postId) {
-                                        $post = $postCRUD->update(htmlspecialchars($_POST['title']), htmlspecialchars($_POST['content']), intval($_POST['postId']));
-                                        if ($post) {
-                                            echo 'ok';
-                                        } else {
-                                            echo 'Erreur : impossible de modifier l\'article pour le moment';
-                                        } 
-                                    } else {
-                                        echo 'Le nouveau nom de post existe déjà, merci d\'en choisir un autre';
-                                    }
-                                } else {
-                                    echo 'Action non autorisé';
-                                }
-                            } else {
-                                echo 'Le post désigné n\'existe pas ou plus';
-                            }
-                        } else {
-                            echo 'Le titre doit être compris entre 4 et 240 caractères.';
-                        }
-                    } else {
-                       echo 'Merci de renseigner tous les champs obligatoires.';
-                    }
-                }
-
-				public function deletePost() {
-                    if (isset($_GET['postId'])) {
-                    	$postCRUD = new PostCRUD();
-                        if($postCRUD->read(intval($_GET['postId']))) {                  
-                            $delete = $postCRUD->delete(intval($_GET['postId']));
-                            if ($delete) {
-                                header('Location: index.php?action=group&id=' . $delete);
-                            } else {
-                                throw new Exception('Impossible de supprimer la publication');
-                            } 
-                        } else {
-                            $this->group('La publication n\'existe pas');
-                        }
-                    } else {
-                       throw new Exception('Aucune publication assignée');
-                    }
-                }
-
-                public function addComment() {
-                    if (isset($_SESSION['id'], $_POST['content'], $_POST['postId'], $_POST['groupId'])) {
-                        if(strlen($_POST['content']) >= 1) {
-                            $commentCRUD = new CommentCRUD();                          
-                            $comment = $commentCRUD->add($_SESSION['id'], $_POST['postId'], $_POST['groupId'], $_POST['content']);
-                            if ($comment) {
                                 header('Location: index.php?action=group&id=' . intval($_POST['groupId']));
                             } else {
-                                throw new Exception('Impossible d\'enregister le commentaire');
-                            } 
+                                throw new Exception('La contenu du post ne doit pas excéder 20 000 caractères.');
+                            }     
                         } else {
-                            $this->group('Le commentaire est vide');
+                            throw new Exception('Le titre du post doit être compris entre 4 et 240 caractères.');
                         }
                     } else {
-                       $this->group('Merci de renseigner tous les champs obligatoires.');
-                    }
+                        throw new Exception('Opération non-authorisé : niveau d\'accès insuffisant.');
+                    } 
+                } else {
+                    throw new Exception('Le groupe désigné n\'existe pas.');
                 }
+            } else {
+                throw new Exception('Absence des données liées au formulaire.');
+            }
+        } else {
+           throw new Exception('Absence de données de session.');
+        }
+    }             
 
-                public function deleteComment() {
-                    if (isset($_GET['commentId'])) {
-                    	$commentCRUD = new CommentCRUD();
-                        $comment = $commentCRUD->read(intval($_GET['commentId']));
-                        if($comment) {                   
-                            $delete = $commentCRUD->delete(intval($_GET['commentId']));
-                            if ($delete) {
-                                echo $delete;
-                                header('Location: index.php?action=group&id=' . $comment->getGroupId());
+    public function editPost() {
+        if (isset($_SESSION['id'])) {
+            if (isset($_POST['content'], $_POST['title'], $_POST['postId'])) {
+                $postCRUD = new PostCRUD();
+                $postId = $postCRUD->read(intval($_POST['postId']));
+                if($postId) {
+                    if(strlen($_POST['title']) <= 240 && strlen($_POST['title']) >= 4) { 
+                        if($postId->getUserId() == $_SESSION['id']) {
+                            $postTitle = $postCRUD->read(htmlspecialchars($_POST['title']));
+                            if(!$postTitle OR $postTitle == $postId) {
+                                $postCRUD->update(htmlspecialchars($_POST['title']), htmlspecialchars($_POST['content']), intval($_POST['postId']));
+                                return 'ok';
                             } else {
-                                throw new Exception('Impossible d\'enregister le commentaire');
-                            } 
-                        } else {
-                            throw new Exception('Le commentaire n\'existe pas commentaire');
-                        }
-                    } else {
-                       throw new Exception('Aucun commentaire assigné');
-                    }
-                }
-
-                public function addUser() {
-                    if (isset($_POST['pseudo']) && isset($_POST['mdp'])) {    
-                        if (strlen($_POST['pseudo']) < 26 && strlen($_POST['pseudo']) > 7 ) {
-                            if (strlen($_POST['mdp']) < 26 && strlen($_POST['mdp']) > 7 ) {
-                                $userCRUD = new UserCRUD();
-                                if (!$userCRUD->read(htmlspecialchars($_POST['pseudo']))) {
-                                    $user = $userCRUD->add(htmlspecialchars($_POST['pseudo']), htmlspecialchars($_POST['mdp']));
-                                    if ($user) {
-                                    $_SESSION['pseudo'] = $user->getPseudo();
-                                    $_SESSION['id'] = $user->getId();
-                                    header('Location: index.php?action=mainPage');
-                                    } else {
-                                        throw new Exception('Impossible d\'enregister l\'utilisateur');
-                                    }
-                                } else {
-                                   $this->inscription('Le nom d\'utilisateur existe déjà, merci d\'en choisir un autre');
-                                }
-                            } else {
-                                $this->inscription('Le mot de passe renseigné n\'est pas valide.');
+                                return 'Le nouveau nom de post existe déjà, merci d\'en choisir un autre';
                             }
                         } else {
-                            $this->inscription('Le nom d\'utilisateur renseigné n\'est pas valide.');
+                            return 'Action non autorisé';
                         }
                     } else {
-                        $this->inscription('Merci de renseigner tous les champs.');
+                        return 'Le titre doit être compris entre 4 et 240 caractères.';
                     }
+                } else {
+                    return 'Le post que vous cherchez à modifier n\'existe plus, merci d\'actualiser la page.';
                 }
+            } else {
+               return 'Merci de renseigner un titre et un contenu pour le post.';
+            }
+        } else {
+           return 'Absence de données de session.';
+        }
+    }
 
-                public function deleteUser() {
-                    if (isset($_SESSION['id'])) {    
-                    	$userCRUD = new UserCRUD();
-                    	$delete = $userCRUD->delete($_SESSION['id']);
-                    	if ($delete === 'ok') {
-                    		header('Location: index.php?action=MainPage');
-                    	}	
+	public function deletePost() {
+        if (isset($_SESSION['id'])) {
+            if (isset($_GET['postId'])) {
+            	$postCRUD = new PostCRUD();
+                $post = $postCRUD->read(intval($_GET['postId']));
+                if($post) {
+                    $linkGroupCRUD = new LinkGroupCRUD();
+                    if ($post->getUserId() == $_SESSION['id'] OR $linkGroupCRUD->readLink($_SESSION['id'], $post->getGroupId()) == 1) {
+                        $postCRUD->delete($post->getId());
+                        header('Location: index.php?action=group&id=' . $delete);
                     } else {
-                        throw new Exception('Absence de donnée de session.');
+                        throw new Exception('Opération non-authorisé : niveau d\'accès insuffisant.');
                     }
+                } else {
+                    throw new Exception('La post désignée n\'existe pas');
                 }
+            } else {
+               throw new Exception('Aucune publication assignée');
+            }
+        } else {
+           throw new Exception('Absence de données de session.');
+        }
+    }
 
-                public function addFriend() {
-                    if (isset($_GET['id']) && isset($_SESSION['id'])) {    
-                        if ($_GET['id'] != $_SESSION['id']) {
-                                $userCRUD = new UserCRUD();
-                                if ($userCRUD->read(intval($_GET['id']))) {
-                                	$linkFriendCRUD = new LinkFriendCRUD();
-                                    $friend = $linkFriendCRUD->add(intval($_SESSION['id']), intval($_GET['id']));
-                                    if ($friend) {
-                                    header('Location: index.php?action=myFriend');
-                                    } else {
-                                        throw new Exception('Impossible d\'enregister l\'utilisateur');
-                                    }
-                                } else {
-                                   $this->inscription('Le nom d\'utilisateur existe déjà, merci d\'en choisir un autre');
-                                }
-                        } else {
-                            throw new Exception('Mauvaise donnée de session.');
-                        }
-                    } else {
-                        throw new Exception('Absence de donnée de session.');
-                    }
-                }
-
-                public function deleteFriend() {
-                    if (isset($_GET['id']) && isset($_SESSION['id'])) {    
-                        if ($_GET['id'] != $_SESSION['id']) {
-                                $linkFriendCRUD = new LinkFriendCRUD();
-                                if ($linkFriendCRUD->readLink(intval($_SESSION['id']), intval($_GET['id']))) {
-                                   	$friend = $linkFriendCRUD->delete(intval($_GET['id']));
-                                    if ($friend) {
-                                    header('Location: index.php?action=MyFriend');
-                                    } else {
-                                        throw new Exception('Impossible d\'enregister l\'utilisateur');
-                                    }
-                                } else {
-                                   throw new Exception('L\'utilisateur n\'a pas de lien avec cet id');
-                                }
-                        } else {
-                            throw new Exception('Mauvaise donnée de session.');
-                        }
-                    } else {
-                        throw new Exception('Absence de donnée de session.');
-                    }
-                }
-
-
-                public function addLinkGroup() {
-                    if (isset($_SESSION['id'], $_POST['friend'], $_POST['groupId'], $_POST['status'])) {
+    public function addComment() {
+        if (isset($_SESSION['id'])) { 
+            if (isset($_POST['content'], $_POST['postId'])) {
+                $postCRUD = new PostCRUD();
+                $post = $postCRUD->read(intval($_GET['postId']));
+                if($post) {
+                    if(strlen($_POST['content']) >= 1) {
                         $linkGroupCRUD = new LinkGroupCRUD();
-                        if ($linkGroupCRUD->readLink(intval($_SESSION['id']), intval($_POST['groupId'])) === 1) {
-                            $linkGroupCRUD->add(intval($_POST['friend']), intval($_POST['groupId']), intval($_POST['status']));
+                        if ($linkGroupCRUD->readLink($_SESSION['id'], $post->getGroupId()) <= 3) {
+                            $commentCRUD = new CommentCRUD();                          
+                            $commentCRUD->add($_SESSION['id'], intval($_POST['postId']), $post->getGroupId(), htmlspecialchars($_POST['content']));
+                            header('Location: index.php?action=group&id=' . intval($_POST['groupId']));
+                        } else {
+                            throw new Exception('Opération non-authorisé : niveau d\'accès insuffisant.');
+                        }
+                    } else {
+                        throw new Exception('Le commentaire est vide.');
+                    }
+                } else {
+                    throw new Exception('La post n\'existe plus');
+                }
+            } else {
+                throw new Exception('Absence des données liées au formulaire.');
+            }
+        } else {
+            throw new Exception('Absence de données de session.');
+        }
+    }
+
+    public function deleteComment() {
+        if (isset($_SESSION['id'])) {
+            if (isset($_GET['commentId'])) {
+            	$commentCRUD = new CommentCRUD();
+                $comment = $commentCRUD->read(intval($_GET['commentId']));
+                if($comment) {
+                    $linkGroupCRUD = new LinkGroupCRUD();
+                    if($comment->getUserId() == $_SESSION['id'] OR $linkGroupCRUD->readLink($_SESSION['id'], $comment->getGroupId()) == 1)  {
+                        $commentCRUD->delete(intval($_GET['commentId']));
+                        header('Location: index.php?action=group&id=' . $comment->getGroupId());
+                    } else {
+                        throw new Exception('Opération non-authorisé : niveau d\'accès insuffisant.');
+                    }
+                } else {
+                    throw new Exception('Le commentaire n\'existe pas.');
+                }
+            } else {
+               throw new Exception('Aucun commentaire désigné.');
+            }
+        } else {
+           throw new Exception('Absence de données de session.');
+        }
+    }
+
+    public function addUser() {
+        if (isset($_POST['pseudo']) && isset($_POST['mdp'])) {    
+            if (strlen($_POST['pseudo']) < 26 && strlen($_POST['pseudo']) > 7 ) {
+                if (strlen($_POST['mdp']) < 26 && strlen($_POST['mdp']) > 7 ) {
+                    $userCRUD = new UserCRUD();
+                    if (!$userCRUD->read(htmlspecialchars($_POST['pseudo']))) {
+                        $userCRUD->add(htmlspecialchars($_POST['pseudo']), htmlspecialchars($_POST['mdp']));
+                        $_SESSION['pseudo'] = $user->getPseudo();
+                        $_SESSION['id'] = $user->getId();
+                        header('Location: index.php?action=mainPage');
+                    } else {
+                       throw new Exception('Le nom d\'utilisateur existe déjà, merci d\'en choisir un autre');
+                    }
+                } else {
+                    throw new Exception('Le mot de passe renseigné n\'est pas valide.');
+                }
+            } else {
+                throw new Exception('Le nom d\'utilisateur renseigné n\'est pas valide.');
+            }
+        } else {
+            throw new Exception('Absence des données liées au formulaire.');
+        }
+    }
+
+    public function deleteUser() {
+        if (isset($_SESSION['id'])) {    
+        	$userCRUD = new UserCRUD();
+        	$userCRUD->delete($_SESSION['id']);
+        	header('Location: index.php?action=MainPage');
+        } else {
+            throw new Exception('Absence de donnée de session.');
+        }
+    }
+
+    public function addFriend() {
+        if (isset($_SESSION['id'])) {
+            if (isset($_GET['id'])) {    
+                if ($_GET['id'] != $_SESSION['id']) {
+                    $userCRUD = new UserCRUD();
+                    if ($userCRUD->read(intval($_GET['id']))) {
+                    	$linkFriendCRUD = new LinkFriendCRUD();
+                        $linkFriendCRUD->add(intval($_SESSION['id']), intval($_GET['id']));
+                        header('Location: index.php?action=myFriend');
+                    } else {
+                        throw new Exception('L\'ami renseigné ne correspond à aucun profil.');
+                    }
+                } else {
+                    throw new Exception('Mauvaise donnée de session.');
+                }
+            } else {
+                throw new Exception('Ancun ami désigné.');
+            }
+        } else {
+            throw new Exception('Absence de donnée de session.');
+        }
+    }
+
+    public function deleteFriend() {
+        if (isset($_SESSION['id'])) {
+            if (isset($_GET['id'])) {    
+                if ($_GET['id'] != $_SESSION['id']) {
+                    $linkFriendCRUD = new LinkFriendCRUD();
+                    if ($linkFriendCRUD->readLink(intval($_SESSION['id']), intval($_GET['id']))) {
+                       	$friend = $linkFriendCRUD->delete(intval($_GET['id']));
+                        header('Location: index.php?action=MyFriend');
+                    } else {
+                       throw new Exception('L\'utilisateur n\'a pas de lien avec cet id');
+                    }
+                } else {
+                    throw new Exception('Mauvaise donnée de session.');
+                }
+            } else {
+                throw new Exception('Aucun identifiant renseigné.');
+            }
+        } else {
+            throw new Exception('Absence de donnée de session.');
+        }
+    }
+
+
+    public function addLinkGroup() {
+        if (isset($_SESSION['id'])) {
+            if (isset($_POST['friend'], $_POST['groupId'], $_POST['status'])) {
+                if (intval($_POST['status']) <= 5 AND intval($_POST['status']) > 0) {
+                    $linkGroupCRUD = new LinkGroupCRUD();
+                    if ($linkGroupCRUD->readLink(intval($_SESSION['id']), intval($_POST['groupId'])) === 1) {
+                        $linkGroupCRUD->add(intval($_POST['friend']), intval($_POST['groupId']), intval($_POST['status']));
+                        header('Location: '. $_SESSION['page']);
+                    } else {
+                        throw new Exception('Opération non-authorisé : niveau d\'accès insuffisant.');
+                    } 
+                } else {
+                    throw new Exception('Statut renseigné invalide.');
+                }                                                                         
+            } else {
+                throw new Exception('Absence des données liées au formulaire.');
+            }
+        } else {
+            throw new Exception('Absence de donnée de session.');
+        }
+    }
+
+    public function suscribe() {
+        if (isset($_SESSION['id'])) {
+            if (isset($_GET['groupId'])) {
+                $groupCRUD = new GroupCRUD();
+                $group = $groupCRUD->read(intval($_GET['groupId']));
+                if($group) {
+                    if ($group->getPublic() == 1) {
+                        $linkGroupCRUD = new LinkGroupCRUD();
+                        if (!$linkGroupCRUD->readLink(intval($_SESSION['id']), intval($_GET['groupId']))) {
+                            $linkGroupCRUD->add(intval($_SESSION['id']), intval($_GET['groupId']), 5);
                             header('Location: '. $_SESSION['page']);
                         } else {
-                            throw new Exception('Accès non authorisé');
-                        }                                                                           
+                            throw new Exception('Profil déjà lié à ce groupe.');
+                        }                                                          
                     } else {
-                        throw new Exception('Absence de donnée de session.');
-                    }
-                }
+                        throw new Exception('Opération non authorisé : ce groupe n\'est pas publique');
+                    } 
+                } else {
+                    throw new Exception('Le groupe désigné n\'existe pas.');
+                }                
+            } else {
+                throw new Exception('Aucun groupe renseigné.');
+            }
+        } else {
+            throw new Exception('Absence de donnée de session.');
+        }
+    }
 
-                public function suscribe() {
-                    if (isset($_SESSION['id'], $_GET['groupId'])) {
-                        $groupCRUD = new GroupCRUD();
-                        $group = $groupCRUD->read(intval($_GET['groupId']));
-                        if ($group->getPublic() == 1) {
-                            $linkGroupCRUD = new LinkGroupCRUD();
-                            if (!$linkGroupCRUD->readLink(intval($_SESSION['id']), intval($_GET['groupId']))) {
-                                $linkGroupCRUD->add(intval($_SESSION['id']), intval($_GET['groupId']), 5);
-                                header('Location: '. $_SESSION['page']);
-                            } else {
-                                throw new Exception('Profil déjà lié à ce groupe.');
-                            }                                                          
-                        } else {
-                            throw new Exception('Opération non authorisé');
-                        }                 
-                    } else {
-                        throw new Exception('Absence de donnée de session.');
-                    }
-                }
-
-                public function updateStatus() {
-                    if (isset($_SESSION['id'], $_POST['id'], $_POST['status'])) {
+    public function updateStatus() {
+        if (isset($_SESSION['id'])) {
+            if (isset($_POST['id'], $_POST['status'])) {
+                $groupCRUD = new GroupCRUD();
+                $group = $groupCRUD->read(intval($_POST['id']));
+                if ($group) {
+                    if (intval($_POST['status']) > 0) {
                         $linkGroupCRUD = new LinkGroupCRUD();
-                        if ($linkGroupCRUD->readLink(intval($_SESSION['id']), intval($_POST['id'])) <= intval($_POST['status'])) {
+                        if ($linkGroupCRUD->readLink(intval($_SESSION['id']), $group->getId()) <= intval($_POST['status'])) {
                             $member = $linkGroupCRUD->read(intval($_SESSION['id']), intval($_POST['id']));
                             $linkGroupCRUD->update($member, intval($_POST['status']));
-                            echo 'ok'; 
+                            return 'ok'; 
                         } else {
-                            echo 'Opération non authorisée.';
-                        }                                                   
+                            return 'Opération non-authorisé : niveau d\'accès insuffisant.';
+                        } 
                     } else {
-                        echo 'Mauvaise données transmises.';
+                        return 'Statut renseigné invalide.';
                     }
-                }
+                } else {
+                    return 'Le groupe désigné n\'existe plus.';
+                }                                
+            } else {
+                return 'Mauvaise données transmises.';
+            }
+        } else {
+            return 'Absence de donnée de session.';
+        }
+    }
 
-                public function updateLinkGroup() {
-                    if (isset($_SESSION['id'], $_GET['id'])) {
+    public function updateLinkGroup() {
+        if (isset($_SESSION['id'])) {
+            if (isset($_GET['id'])) {
+                $groupCRUD = new GroupCRUD();
+                $group = $groupCRUD->read(intval($_GET['id']));
+                if ($group) {
+                    $linkGroupCRUD = new LinkGroupCRUD();
+                    if ($linkGroupCRUD->readLink(intval($_SESSION['id']), $group->getId()) === 1) {
+                        $members = $linkGroupCRUD->readMembers(intval($_GET['id']));
+                        foreach ($members as $memberId => $member) {
+                            $newMember = $_POST[$memberId];
+                            if ($newMember != $member->getStatusInt()) {
+                                $linkGroupCRUD->update($member, $newMember);
+                            }
+                        } 
+                        header('Location: index.php?action=group&id='. $_GET['id']);
+                    } else {
+                        throw new Exception('Accès non authorisé');
+                    }
+                } else {
+                    throw new Exception('Le groupe renseigné n\'existe pas.');
+                }       
+            } else {
+                throw new Exception('Aucun groupe renseigné.');
+            }
+        } else {
+            throw new Exception('Absence de donnée de session.');
+        }
+    }
+
+
+    public function deleteLinkGroup() {
+        if (isset($_SESSION['id'])) {
+            if (isset($_GET['id'], $_GET['userId'])) { 
+                $groupCRUD = new GroupCRUD();
+                $group = $groupCRUD->read(intval($_GET['id']));
+                if ($group) {
+                    $linkGroupCRUD = new LinkGroupCRUD();
+                    if ($linkGroupCRUD->readLink(intval($_SESSION['id']), $group->getId())) {
+                        $linkGroupCRUD->delete(intval($_GET['userId']), $group->getId());
+                        header('Location: ' . $_SESSION['page']);
+                    } else {
+                       	throw new Exception('L\'utilisateur n\'a pas de lien avec ce groupe');
+                    }
+                } else {
+                    throw new Exception('Le groupe renseigné n\'existe pas.');
+                }
+            } else {
+                throw new Exception('Données renseignés invalides.');
+            }
+        } else {
+            throw new Exception('Absence de donnée de session.');
+        }
+    }
+
+    public function unsuscribe() {
+        if (isset($_SESSION['id'])) {
+            if (isset($_GET['groupId'])) {
+                $groupCRUD = new GroupCRUD();
+                $group = $groupCRUD->read(intval($_GET['groupId']));
+                if($group) {
+                    if ($group->getPublic() == 1) {
                         $linkGroupCRUD = new LinkGroupCRUD();
-                        if ($linkGroupCRUD->readLink(intval($_SESSION['id']), intval($_GET['id'])) === 1) {
-                            $members = $linkGroupCRUD->readMembers(intval($_GET['id']));
-                            foreach ($members as $memberId => $member) {
-                                $newMember = $_POST[$memberId];
-                                if ($newMember != $member->getStatusInt()) {
-                                    $linkGroupCRUD->update($member, $newMember);
-                                }
-                            } 
-                            header('Location: index.php?action=group&id='. $_GET['id']);
+                        if ($linkGroupCRUD->readLink(intval($_SESSION['id']), intval($_GET['groupId'])) == 5) {
+                            $linkGroupCRUD->delete(intval($_SESSION['id']), intval($_GET['groupId']));
+                            header('Location: '. $_SESSION['page']);
                         } else {
-                            throw new Exception('Accès non authorisé');
-                        }                                                                           
+                            throw new Exception('Le profil n\'est pas lié à ce groupe en tant que membre');
+                        }                                                          
                     } else {
-                        throw new Exception('Absence de donnée de session.');
+                        throw new Exception('Opération non authorisé : ce groupe n\'est pas publique');
                     }
-                }
+                } else {
+                    throw new Exception('Le groupe renseigné n\'existe pas.');
+                }                 
+            } else {
+                throw new Exception('Aucun groupe renseigné.');
+            }
+        } else {
+                throw new Exception('Absence de donnée de session.');
+        }
+    }
 
 
-                public function deleteLinkGroup() {
-                    if (isset( $_SESSION['id'], $_GET['id'], $_GET['userId'])) {    
-                            $linkGroupCRUD = new LinkGroupCRUD();
-                            if ($linkGroupCRUD->readLink(intval($_SESSION['id']), intval($_GET['id']))) {
-                                $link = $linkGroupCRUD->delete(intval($_GET['userId']), intval($_GET['id']));
-                                if ($link) {
-                                 	header('Location: ' . $_SESSION['page']);
-                                } else {
-                                    throw new Exception('Impossible de supprimer l\'affiliation au groupe');
-                                }
-                            } else {
-                               	throw new Exception('L\'utilisateur n\'a pas de lien avec ce groupe');
-                            }
-                    } else {
-                        throw new Exception('Absence de donnée de session.');
-                    }
-                }
-
-                public function unsuscribe() {
-                    if (isset($_SESSION['id'], $_GET['groupId'])) {
-                        $groupCRUD = new GroupCRUD();
-                        $group = $groupCRUD->read(intval($_GET['groupId']));
-                        if ($group->getPublic() == 1) {
-                            $linkGroupCRUD = new LinkGroupCRUD();
-                            if ($linkGroupCRUD->readLink(intval($_SESSION['id']), intval($_GET['groupId']))) {
-                                $linkGroupCRUD->delete(intval($_SESSION['id']), intval($_GET['groupId']));
-                                header('Location: '. $_SESSION['page']);
-                            } else {
-                                throw new Exception('Le profil n\'est pas lié à ce groupe');
-                            }                                                          
+    public function addReport() {
+        if (isset($_SESSION['id'])) {
+            if (isset($_GET['id'])) {    
+                $commentCRUD = new CommentCRUD();
+                $comment = $commentCRUD->read(intval($_GET['id']));
+                if ($comment) {
+                    $linkGroupCRUD = new LinkGroupCRUD();
+                    if ($linkGroupCRUD->readLink($_SESSION['id'], $comment->groupId())) {
+                        $linkReportingCRUD = new LinkReportingCRUD();
+                        if (!$linkReportingCRUD->readLink($_SESSION['id'], $comment->getId())) {
+                            $report = $linkReportingCRUD->add(intval($_SESSION['id']), intval($_GET['id']));
                         } else {
-                            throw new Exception('Opération non authorisé');
-                        }                 
-                    } else {
-                        throw new Exception('Absence de donnée de session.');
-                    }
-                }
-
-
-                public function addReport() {
-                    if (isset($_GET['id'], $_SESSION['id'])) {    
-                                $commentCRUD = new CommentCRUD();
-                                $comment = $commentCRUD->read(intval($_GET['id']));
-                                if ($comment) {
-                                    $linkReportingCRUD = new LinkReportingCRUD();
-                                    $report = $linkReportingCRUD->add(intval($_SESSION['id']), intval($_GET['id']));
-                                    if ($report) {
-                                    header('Location: index.php?action=group&id=' . $comment->getGroupId());
-                                    } else {
-                                        throw new Exception('Impossible d\'enregister le signalement');
-                                    }
-                                } else {
-                                    Exception('Le commentaire n\'existe pas');
-                                }
-                    } else {
-                        throw new Exception('Absence de donnée de session.');
-                    }
-                }
-
-                public function deleteReport() {
-                    if (isset($_GET['id'], $_SESSION['id'])) {    
-                                $commentCRUD = new CommentCRUD();
-                                $comment = $commentCRUD->read(intval($_GET['id']));
-                                if ($comment) {
-                                    $linkReportingCRUD = new LinkReportingCRUD();
-                                    $delete = $linkReportingCRUD->delete(intval($_GET['id']));
-                                    if ($delete) {
-                                            header('Location: index.php?action=group&id=' . $comment->getGroupId());
-                                    } else {
-                                        throw new Exception('Impossible d\'enregister le signalement');
-                                    }
-                                } else {
-                                    Exception('Le commentaire n\'existe pas');
-                                }
-                    } else {
-                        throw new Exception('Absence de donnée de session.');
-                    }
-                }
-
-                public function verifUser() {
-                    if (isset($_POST['pseudo']) && isset($_POST['mdp'])) {    
-                        if (strlen($_POST['pseudo']) < 26 && strlen($_POST['pseudo']) > 0 ) {
-                            if (strlen($_POST['mdp']) < 26 && strlen($_POST['mdp']) > 0 ) {
-                                $userCRUD = new UserCRUD();
-                                $user = $userCRUD->read(htmlspecialchars($_POST['pseudo']), htmlspecialchars($_POST['mdp']));
-                                if ($user) {
-                                	if ($user->getActif() == "1") {
-                                    	$_SESSION['pseudo'] = $user->getPseudo();
-                                    	$_SESSION['id'] = $user->getId();
-                                    	header('Location: index.php?action=mainPage');
-                                	} else {
-                                		$this->login('Le compte a été désactivé');
-                                	}                               
-                                } else {
-                                    $this->login('Les identifiants fournis ne correspondent à aucun compte existant.');
-                                }
-                            } else {
-                                $this->login('loginView', 'Le mot de passe renseigné n\'est pas valide.');
-                            }
-                        } else {
-                            $this->login('loginView', 'Le nom d\'utilisateur renseigné n\'est pas valide.');
+                            throw new Exception('Vous avez déjà signalé ce commentaire.');
                         }
                     } else {
-                        $this->login('loginView', 'Merci de renseigner tous les champs.');
+                        throw new Exception('Opération non authorisé : le compte n\'est pas lié au groupe');
+                    }    
+                } else {
+                    throw new Exception('Le commentaire n\'existe pas');
+                }
+            } else {
+                throw new Exception('Aucun commentaire renseigné.');
+            }
+        } else {
+            throw new Exception('Absence de donnée de session.');
+        }
+    }
+
+    public function deleteReport() {
+        if (isset($_SESSION['id'])) {  
+            if (isset($_GET['id'])) {  
+                $commentCRUD = new CommentCRUD();
+                $comment = $commentCRUD->read(intval($_GET['id']));
+                if ($comment) {
+                    $linkReportingCRUD = new LinkReportingCRUD();
+                    if ($linkReportingCRUD->readLink($_SESSION['id'], $comment->getId())) {
+                    $delete = $linkReportingCRUD->delete($comment->getId());
+                        header('Location: index.php?action=group&id=' . $comment->getGroupId());
+                    } else {
+                        throw new Exception('Le commentaire n\'est actuellement pas signalé');
                     }
+                } else {
+                    throw new Exception('Le commentaire n\'existe pas');
                 }
-                public function logOut() {
+            } else {
+                throw new Exception('Absence de donnée de session.');
+            }
+        } else {
+            throw new Exception('Absence de donnée de session.');
+        }
+    }
+
+    public function verifUser() {
+        if (isset($_POST['pseudo']) && isset($_POST['mdp'])) {    
+            if (strlen($_POST['pseudo']) < 26 && strlen($_POST['pseudo']) > 0 ) {
+                if (strlen($_POST['mdp']) < 26 && strlen($_POST['mdp']) > 0 ) {
                     $userCRUD = new UserCRUD();
-                    $userCRUD->logOut();
-                    header('Location: index.php?action=mainPage');
+                    $user = $userCRUD->read(htmlspecialchars($_POST['pseudo']), htmlspecialchars($_POST['mdp']));
+                    if ($user) {
+                    	if ($user->getActif() == "1") {
+                        	$_SESSION['pseudo'] = $user->getPseudo();
+                        	$_SESSION['id'] = $user->getId();
+                        	header('Location: index.php?action=mainPage');
+                    	} else {
+                    		throw new Exception('Le compte a été désactivé');
+                    	}                               
+                    } else {
+                        throw new Exception('Les identifiants fournis ne correspondent à aucun compte existant.');
+                    }
+                } else {
+                    throw new Exception('Le mot de passe doit être compris entre 1 et 26 caractères.');
                 }
+            } else {
+                throw new Exception('Le nom d\'utilisateur doit être compris entre 1 et 26 caractères.');
+            }
+        } else {
+            throw new Exception('Absence des données liées au formulaire.');
+        }
+    }
+
+    public function logOut() {
+        $userCRUD = new UserCRUD();
+        $userCRUD->logOut();
+        header('Location: index.php?action=mainPage');
+    }
 }

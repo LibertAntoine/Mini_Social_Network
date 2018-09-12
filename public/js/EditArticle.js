@@ -76,9 +76,10 @@ function EditArticle(el) {
        					message.innerHTML = "Le post a bien été modifié";
        					setTimeout(() => { $(".alert-info").fadeOut(2000); delete this }, 4000);
        				} else {
+       					alert(dat)
        					message.classList.add("alert-warning");
        					message.innerHTML = dat;
-       					setTimeout(() => { $(".alert-info").fadeOut(2000); }, 4000);
+       					setTimeout(() => { $(".alert-warning").fadeOut(2000); }, 4000);
        				}
        			},    
        			error : function(){

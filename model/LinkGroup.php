@@ -1,11 +1,8 @@
 <?php
 
+namespace model;
 
-/**
- * 
- */
-class LinkGroup
-{
+class LinkGroup {
 
 	protected $id,
 	$groupId,
@@ -13,14 +10,11 @@ class LinkGroup
 	$status,
 	$linkDate;
 
-
-	public function __construct(array $data)
-  {
+	public function __construct(array $data) {
    	 $this->hydrate($data);
   }
 
-	public function hydrate(array $data)
-  {
+	public function hydrate(array $data) {
     	foreach ($data as $key => $value)
     	{
      	 	$method = 'set'.ucfirst($key);
@@ -31,28 +25,23 @@ class LinkGroup
       	}
   }
 
-  public function getId() 
-  {
+  public function getId() {
  	 	return $this->id;
   }
  	
-  public function getGroupId() 
-  {
+  public function getGroupId() {
     return $this->groupId;
   }
 
-    public function getUserId() 
-  {
+    public function getUserId() {
     return $this->userId;
   }
 
-  public function getStatusInt() 
-  {
+  public function getStatusInt() {
     return $this->status;
   }
 
-  public function getStatusString() 
-  {
+  public function getStatusString() {
     switch ($this->status) {
       case 1:
         return "Administrateur";
@@ -72,53 +61,42 @@ class LinkGroup
     }
   }
   
-  public function getLinkDate() 
-  {
+  public function getLinkDate() {
     return $this->linkDate;
   }
 
-  public function setId($id) 
-  {
+  public function setId($id) {
       $id = (int) $id;
-      if ($id >= 0) 
-      {
+      if ($id >= 0) {
         $this->id = $id;
       }
   }
 
-  public function setGroupId($groupId) 
-  {
+  public function setGroupId($groupId) {
       $groupId = (int) $groupId;
-      if ($groupId >= 0) 
-      {
+      if ($groupId >= 0) {
         $this->groupId = $groupId;
       }
   }
 
-  public function setUserId($userId) 
-  {
+  public function setUserId($userId) {
       $userId = (int) $userId;
-      if ($userId >= 0) 
-      {
+      if ($userId >= 0) {
         $this->userId = $userId;
       }
   }
 
 
-  public function setStatus($status) 
-  {
+  public function setStatus($status) {
       $status = (int) $status;
-      if ($status >= 0) 
-      {
+      if ($status >= 0) {
         $this->status = $status;
       }
   }
 
-  public function setLinkDate($linkDate) 
-  {
-      if (is_string($linkDate)) 
-      {
-         $this->linkDate = $linkDate;
-      }
+  public function setLinkDate($linkDate) {
+    if (is_string($linkDate)) {
+      $this->linkDate = $linkDate;
+    }
   } 
 }

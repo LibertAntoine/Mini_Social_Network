@@ -1,5 +1,7 @@
 <?php
 
+namespace model;
+
 class Comment extends TextContent {
 
 	protected $articleId,
@@ -23,17 +25,15 @@ class Comment extends TextContent {
 
  	public function setArticleId($articleId) {
  	  $articleId = (int) $articleId;
- 	  if ($articleId > 0) 
-    {
+ 	  if ($articleId > 0) {
  		 $this->articleId = $articleId;
  	  }
   }
 
     public function setGroupId($groupId) {
     $groupId = (int) $groupId;
-    if ($groupId > 0) 
-    {
-     $this->groupId = $groupId;
+    if ($groupId > 0) {
+      $this->groupId = $groupId;
     }
   }
 
@@ -41,8 +41,7 @@ class Comment extends TextContent {
  	public function setReporting($reporting) 
   {
  	  $reporting = (int) $reporting;
- 	  if ($reporting >= 0) 
-    {
+ 	  if ($reporting >= 0) {
  		 $this->reporting = $reporting;
  	  }
   }
