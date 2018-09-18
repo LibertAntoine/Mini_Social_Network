@@ -45,7 +45,7 @@ class GroupManager extends DBAccess {
       $q = $this->db->query('SELECT id, title, public, description, DATE_FORMAT(creationDate, \'%d/%m/%Y à %Hh%i\') AS creationDate, DATE_FORMAT(lastUpdate, \'%d/%m/%Y à %Hh%i\') AS lastUpdate, nbPost, nbMember, linkCouvPicture FROM projet5_groups WHERE id = '.$info);
       $group = $q->fetch(\PDO::FETCH_ASSOC);
     } else {
-      $q = $this->db->query('SELECT id, title, public, description, DATE_FORMAT(creationDate, \'%d/%m/%Y à %Hh%i\') AS creationDate, DATE_FORMAT(lastUpdate, \'%d/%m/%Y à %Hh%i\') AS lastUpdate, nbPost, nbMember, linkCouvPicture FROM projet5_groups WHERE title ='. $info);
+      $q = $this->db->query('SELECT id, title, public, description, DATE_FORMAT(creationDate, \'%d/%m/%Y à %Hh%i\') AS creationDate, DATE_FORMAT(lastUpdate, \'%d/%m/%Y à %Hh%i\') AS lastUpdate, nbPost, nbMember, linkCouvPicture FROM projet5_groups WHERE title = "'. $info .'"');
       $group = $q->fetch(\PDO::FETCH_ASSOC);
     }
     return new Group($group);

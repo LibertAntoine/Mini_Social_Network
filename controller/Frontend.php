@@ -10,7 +10,7 @@ namespace controller;
     use \controller\CRUD\LinkFriendCRUD;
     use \controller\CRUD\LinkReportingCRUD;
 
-class Frontend extends View {
+class Frontend {
 
 	function __construct($view, $param = NULL)
     {
@@ -20,7 +20,8 @@ class Frontend extends View {
 	public function mainPageView() {
 		$groupCRUD = new GroupCRUD();
 		$fiveGroup = $groupCRUD->readFivePublic();
-		$include = new Includes('groupBar');
+		$includes = new Includes();
+		$groupBar = $includes->groupBar();
 		require('view/frontend/mainPageView.php');
 	}
 
@@ -56,9 +57,10 @@ class Frontend extends View {
 					}
 				}		
 				$userCRUD = new UserCRUD();
-				$include = new Includes('memberBar');
-				$include = new Includes('groupBar');
-				require('view/frontend/GroupView.php');
+				$includes = new Includes();
+				$memberBar = $includes->memberBar();
+				$groupBar = $includes->groupBar();
+				require('view/frontend/groupView.php');
 			} else {
 				throw new Exception('Problème d\'accès aux posts');
 			}

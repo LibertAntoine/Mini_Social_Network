@@ -1,14 +1,12 @@
 <?php $title = 'Mes amis';
 
-ob_start(); ?>
+ob_start(); 
+echo $groupBar;
+?>
 <section id="myfriend-page"></section>
 <div  id="contents" class="container">
 <div id="contents-friend">
   <h2 id="titleGestionFriend">Gestion de mes amis.</h2>
-
-    <p><?php  if ($this->getMessage() != NULL) {
-        echo $this->getMessage();} ?></p>
-
    
         <div class="row">
              <div id="add-friends-lists" class="col-lg-6 col-sm-10 col-xs-12">       

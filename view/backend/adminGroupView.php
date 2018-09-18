@@ -2,7 +2,9 @@
 
 $_SESSION['page'] = 'index.php?action=adminGroup&id='. $group->getId();
 
-ob_start(); ?>
+ob_start(); 
+echo $groupBar;
+?>
 <section id="contents" class="container">
 <div id="admin-group-page">
 	<h2>Gestion des droits du groupe : <?= $group->getTitle() ?>.</h2>
@@ -25,7 +27,7 @@ ob_start(); ?>
 					<?php } ?>
 				</div>
 				<div class="col-md-8 col-sm-8">
-					<form action="index.php?action=updateGroup" method="post">
+					<form id="submitGroup" action="index.php?action=updateGroup" method="post">
 							<label>Titre du groupe :</label>
 							<input type="text" id="titleGroup" name="titleGroup" value="<?= $group->getTitle() ?>"><br/>
 							<label>Description du groupe :</label>
@@ -189,6 +191,36 @@ ob_start(); ?>
 								<?php } ?>
 							</form>
 				<?php } ?>
+		</div>
+	</div>
+	<div class="row table-report">
+        <div class="col-lg-10 col-md-12">
+			<h2>Liste des commentaires signalés</h2>
+			<?php if ($links != NULL) {?>
+				<table class="table">
+				   	<tr>
+				       	<th>Commentaire</th>
+				       	<th class="mega-off-responsive">Personnes ayant signalé</th>
+				       	<th class="off-responsive">Date du signalement</th>
+				       	<th>Action</th>
+				   	</tr>
+					<?php foreach ($links as $link) { 
+						$comment = $commentCRUD->read($link->getCommentId());
+						$user = $userCRUD->read($link->getUserId()); ?>   
+							<tr>
+					       	<td><?= htmlspecialchars($comment->getContent()) ?></td>
+							<td class="mega-off-responsive"><?= $user->getPseudo() ?></td>
+							<td class="off-responsive"><?= $link->getReportingDate() ?></td>
+					       	<td>
+					       		<a href="index.php?action=deleteComment&amp;commentId=<?= $link->getCommentId()?>">Supprimer</a><br>
+					       		<a href="index.php?action=deleteAllReport&amp;id=<?= $link->getCommentId() ?>">Annuler</a>
+					   		</td>
+					   </tr>
+					<?php }?>
+				</table>
+			<?php } else { ?>
+				<p>Aucun commentaire n'a été signalé dans ce groupe.</p>
+			<?php } ?>
 		</div>
 	</div>
 </div>

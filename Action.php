@@ -3,7 +3,6 @@
     use \controller\Frontend;
     use \controller\Backend;
     use \controller\Includes;
-    use \controller\View;
     use \controller\CRUD\GroupCRUD;
     use \controller\CRUD\PostCRUD;
     use \controller\CRUD\CommentCRUD;
@@ -143,6 +142,7 @@ class Action {
                     throw new Exception('La description ne doit pas excéder 2000 caractères.');
                 }
             }
+            $_SESSION['extPicture'] = NULL;
             if (isset($_FILES['couvPicture']) AND $_FILES['couvPicture']['size'] !== 0) {
                 if ($_FILES['couvPicture']['size'] < 4000000) {
                     $_SESSION['extPicture'] = substr($_FILES['couvPicture']['type'], 6);
@@ -166,12 +166,13 @@ class Action {
         if (isset($_SESSION['id'], $_SESSION['titleGroup'], $_SESSION['public'])) {
             $groupCRUD = new GroupCRUD();
             if(!$groupCRUD->read($_SESSION['titleGroup'])) { 
-                $group = $groupCRUD->add(htmlspecialchars($_SESSION['titleGroup']), intval($_SESSION['public']), htmlspecialchars($_SESSION['description']), $_SESSION['extPicture'], $_SESSION['id']);
-                if ($group) {
-                    header('Location: index.php?action=group&id=' . $group->getId());
-                } else {
-                    throw new Exception('Impossible d\'enregister le groupe');
-                } 
+                    $group = $groupCRUD->add(htmlspecialchars($_SESSION['titleGroup']), intval($_SESSION['public']), htmlspecialchars($_SESSION['description']), $_SESSION['extPicture'], $_SESSION['id']);
+                    if ($group) {
+                        $_SESSION['couvPicture'] = NULL;
+                        header('Location: index.php?action=group&id=' . $group->getId());
+                    } else {
+                        throw new Exception('Impossible d\'enregister le groupe');
+                    } 
             } else {
                 throw new Exception('Ce titre de groupe existe déjà, merci d\'en renseigner un autre');
             }
@@ -187,21 +188,25 @@ class Action {
                 if ($groupCRUD->read(intval($_POST['groupId']))) {
                     $linkGroupCRUD = new LinkGroupCRUD();
                     if ($linkGroupCRUD->readLink($_SESSION['id'], intval($_POST['groupId'])) === 1) {
-                        if(strlen($_POST['titleGroup']) >= 4 && strlen($_POST['titleGroup']) <= 240) {
-                            if(strlen($_POST['description']) <= 2000) {
-                                $groupCRUD = new GroupCRUD();
-                                $group = $groupCRUD->read(htmlspecialchars($_SESSION['titleGroup']));
-                                if(!$group OR $group->getId() === intval($_POST['groupId'])) { 
-                                    $group = $groupCRUD->update(intval($_POST['groupId']), htmlspecialchars($_POST['titleGroup']), htmlspecialchars($_POST['description']));
-                                    header('Location: '. $_SESSION['page']); 
+                        if(!$groupCRUD->read($_POST['titleGroup'])) { 
+                            if(strlen($_POST['titleGroup']) >= 4 && strlen($_POST['titleGroup']) <= 240) {
+                                if(strlen($_POST['description']) <= 2000) {
+                                    $groupCRUD = new GroupCRUD();
+                                    $group = $groupCRUD->read(htmlspecialchars($_SESSION['titleGroup']));
+                                    if(!$group OR $group->getId() === intval($_POST['groupId'])) { 
+                                        $group = $groupCRUD->update(intval($_POST['groupId']), htmlspecialchars($_POST['titleGroup']), htmlspecialchars($_POST['description']));
+                                        header('Location: '. $_SESSION['page']); 
+                                    } else {
+                                        throw new Exception('Le titre existe déjà pour un autre groupe.');
+                                    }       
                                 } else {
-                                    throw new Exception('Le titre existe déjà pour un autre groupe.');
-                                }       
+                                    throw new Exception('La description du groupe ne doit pas excéder 2000 caractères.');
+                                }     
                             } else {
-                                throw new Exception('La description du groupe ne doit pas excéder 2000 caractères.');
-                            }     
+                                throw new Exception('Le titre du groupe doit être compris entre 4 et 240 caractères.');
+                            }
                         } else {
-                            throw new Exception('Le titre du groupe doit être compris entre 4 et 240 caractères.');
+                                throw new Exception('Ce titre de groupe existe déjà, merci d\'en renseigner un autre');
                         }
                     } else {
                         throw new Exception('Opération non-authorisé : niveau d\'accès insuffisant.');
@@ -266,18 +271,18 @@ class Action {
 
     public function addPost() {
         if (isset($_SESSION['id'])) {
-            if (isset($_POST['title'], $_POST['content'], $_POST['groupId'])) {
+            if (isset($_POST['titlePost'], $_POST['contentPost'], $_POST['groupId'])) {
                 $groupCRUD = new GroupCRUD();
                 if($groupCRUD->read(intval($_POST['groupId']))) { 
                     $linkGroupCRUD = new LinkGroupCRUD();
                     if ($linkGroupCRUD->readLink($_SESSION['id'], intval($_POST['groupId'])) <= 2) {                 
-                        if(strlen($_POST['title']) >= 4 && strlen($_POST['title']) <= 240) {
-                            if(strlen($_POST['content']) <= 20000) {
+                        if(strlen($_POST['titlePost']) >= 4 && strlen($_POST['titlePost']) <= 240) {
+                            if(strlen($_POST['contentPost']) <= 20000 && strlen($_POST['contentPost']) >= 1) {
                                 $postCRUD = new PostCRUD();
-                                $post = $postCRUD->add($_POST['title'], $_POST['content'], $_POST['groupId'], $_SESSION['id']);
+                                $post = $postCRUD->add($_POST['titlePost'], $_POST['contentPost'], $_POST['groupId'], $_SESSION['id']);
                                 header('Location: index.php?action=group&id=' . intval($_POST['groupId']));
                             } else {
-                                throw new Exception('La contenu du post ne doit pas excéder 20 000 caractères.');
+                                throw new Exception('La contenu du post doit être compris entre 1 et 20 000 caractères.');
                             }     
                         } else {
                             throw new Exception('Le titre du post doit être compris entre 4 et 240 caractères.');
@@ -302,29 +307,33 @@ class Action {
                 $postCRUD = new PostCRUD();
                 $postId = $postCRUD->read(intval($_POST['postId']));
                 if($postId) {
-                    if(strlen($_POST['title']) <= 240 && strlen($_POST['title']) >= 4) { 
-                        if($postId->getUserId() == $_SESSION['id']) {
-                            $postTitle = $postCRUD->read(htmlspecialchars($_POST['title']));
-                            if(!$postTitle OR $postTitle == $postId) {
-                                $postCRUD->update(htmlspecialchars($_POST['title']), htmlspecialchars($_POST['content']), intval($_POST['postId']));
-                                return 'ok';
+                    if(strlen($_POST['title']) <= 240 && strlen($_POST['title']) >= 4) {
+                        if(strlen($_POST['content']) <= 20000 && strlen($_POST['content']) >= 1) {
+                            if($postId->getUserId() == $_SESSION['id']) {
+                                $postTitle = $postCRUD->read(htmlspecialchars($_POST['title']));
+                                if(!$postTitle || $postTitle == $postId) {
+                                    $postCRUD->update(htmlspecialchars($_POST['title']), htmlspecialchars($_POST['content']), intval($_POST['postId']));
+                                    echo 'ok';
+                                } else {
+                                    echo 'Le nouveau nom de post existe déjà, merci d\'en choisir un autre';
+                                }
                             } else {
-                                return 'Le nouveau nom de post existe déjà, merci d\'en choisir un autre';
+                                echo 'Action non autorisé';
                             }
                         } else {
-                            return 'Action non autorisé';
+                            echo 'Le titre du post doit être compris entre 4 et 240 caractères.';
                         }
                     } else {
-                        return 'Le titre doit être compris entre 4 et 240 caractères.';
+                        echo 'Le titre doit être compris entre 4 et 240 caractères.';
                     }
                 } else {
-                    return 'Le post que vous cherchez à modifier n\'existe plus, merci d\'actualiser la page.';
+                    echo 'Le post que vous cherchez à modifier n\'existe plus, merci d\'actualiser la page.';
                 }
             } else {
-               return 'Merci de renseigner un titre et un contenu pour le post.';
+               echo 'Merci de renseigner un titre et un contenu pour le post.';
             }
         } else {
-           return 'Absence de données de session.';
+           echo 'Absence de données de session.';
         }
     }
 
@@ -337,7 +346,7 @@ class Action {
                     $linkGroupCRUD = new LinkGroupCRUD();
                     if ($post->getUserId() == $_SESSION['id'] OR $linkGroupCRUD->readLink($_SESSION['id'], $post->getGroupId()) == 1) {
                         $postCRUD->delete($post->getId());
-                        header('Location: index.php?action=group&id=' . $delete);
+                        header('Location: index.php?action=group&id=' . $post->getGroupId());
                     } else {
                         throw new Exception('Opération non-authorisé : niveau d\'accès insuffisant.');
                     }
@@ -356,19 +365,26 @@ class Action {
         if (isset($_SESSION['id'])) { 
             if (isset($_POST['content'], $_POST['postId'])) {
                 $postCRUD = new PostCRUD();
-                $post = $postCRUD->read(intval($_GET['postId']));
+                $post = $postCRUD->read(intval($_POST['postId']));
                 if($post) {
-                    if(strlen($_POST['content']) >= 1) {
+                    if (strlen($_POST['content']) >= 1 && strlen($_POST['content']) <= 500) {
+                        $groupCRUD = new GroupCRUD();
                         $linkGroupCRUD = new LinkGroupCRUD();
-                        if ($linkGroupCRUD->readLink($_SESSION['id'], $post->getGroupId()) <= 3) {
+                        $group = $groupCRUD->read($post->getGroupId());
+                        if($group->getPublic() == 1 AND $linkGroupCRUD->readLink($_SESSION['id'], $post->getGroupId()) <= 5) {
+                            $commentCRUD = new CommentCRUD();                
+                            $commentCRUD->add($_SESSION['id'], intval($_POST['postId']), $post->getGroupId(), htmlspecialchars($_POST['content']));
+                                header('Location: index.php?action=group&id=' . $post->getGroupId());
+
+                        } elseif ($group->getPublic() == 0 AND $linkGroupCRUD->readLink($_SESSION['id'], $post->getGroupId()) <= 3) {
                             $commentCRUD = new CommentCRUD();                          
                             $commentCRUD->add($_SESSION['id'], intval($_POST['postId']), $post->getGroupId(), htmlspecialchars($_POST['content']));
-                            header('Location: index.php?action=group&id=' . intval($_POST['groupId']));
+                                header('Location: index.php?action=group&id=' . $post->getGroupId());
                         } else {
                             throw new Exception('Opération non-authorisé : niveau d\'accès insuffisant.');
                         }
                     } else {
-                        throw new Exception('Le commentaire est vide.');
+                        throw new Exception('Le commentaire doit être compris entre 1 et 500 caractères.');
                     }
                 } else {
                     throw new Exception('La post n\'existe plus');
@@ -390,7 +406,7 @@ class Action {
                     $linkGroupCRUD = new LinkGroupCRUD();
                     if($comment->getUserId() == $_SESSION['id'] OR $linkGroupCRUD->readLink($_SESSION['id'], $comment->getGroupId()) == 1)  {
                         $commentCRUD->delete(intval($_GET['commentId']));
-                        header('Location: index.php?action=group&id=' . $comment->getGroupId());
+                        header('Location: '. $_SESSION['page']);
                     } else {
                         throw new Exception('Opération non-authorisé : niveau d\'accès insuffisant.');
                     }
@@ -407,11 +423,11 @@ class Action {
 
     public function addUser() {
         if (isset($_POST['pseudo']) && isset($_POST['mdp'])) {    
-            if (strlen($_POST['pseudo']) < 26 && strlen($_POST['pseudo']) > 7 ) {
-                if (strlen($_POST['mdp']) < 26 && strlen($_POST['mdp']) > 7 ) {
+            if (strlen($_POST['pseudo']) <= 24 && strlen($_POST['pseudo']) >= 8 ) {
+                if (strlen($_POST['mdp']) <= 24 && strlen($_POST['mdp']) >= 8 ) {
                     $userCRUD = new UserCRUD();
                     if (!$userCRUD->read(htmlspecialchars($_POST['pseudo']))) {
-                        $userCRUD->add(htmlspecialchars($_POST['pseudo']), htmlspecialchars($_POST['mdp']));
+                        $user = $userCRUD->add(htmlspecialchars($_POST['pseudo']), htmlspecialchars($_POST['mdp']));
                         $_SESSION['pseudo'] = $user->getPseudo();
                         $_SESSION['id'] = $user->getId();
                         header('Location: index.php?action=mainPage');
@@ -428,6 +444,49 @@ class Action {
             throw new Exception('Absence des données liées au formulaire.');
         }
     }
+
+    public function editPseudo() {
+        if (isset($_SESSION['id'])) {
+            if (!empty($_POST['newPseudo'])) {
+                if(strlen($_POST['newPseudo']) <= 24 && strlen($_POST['newPseudo']) >= 8) {
+                    $userCRUD = new UserCRUD();
+                    $newUser = $userCRUD->updatePseudo(htmlspecialchars($_POST['newPseudo']));
+                    $_SESSION['pseudo'] = htmlspecialchars($_POST['newPseudo']);
+                    header('Location: index.php?action=backOffice');
+                } else {
+                    throw new Exception("L'identifiant doit avoir entre 8 et 25 caractères."); 
+                }
+            } else {
+                throw new Exception("Aucun nouvel identifiant fournit.");
+            }
+        } else {
+            throw new Exception('Absence de session utilisateur.');
+        }
+    }
+
+
+    public function editMdp() {
+        if (isset($_SESSION['id'])) {
+            if (!empty($_POST['oldMdp']) AND !empty($_POST['newMdp'])) {
+                if(strlen($_POST['newMdp']) <= 24 && strlen($_POST['newMdp']) >= 8) {
+                    $userCRUD = new UserCRUD();
+                    $user = $userCRUD->read(htmlspecialchars($_SESSION['pseudo']), htmlspecialchars($_POST['oldMdp']));
+                    if ($user != NULL) {
+                        $newUser = $userCRUD->updateMdp(htmlspecialchars($_POST['newMdp']));
+                        header('Location: index.php?action=backOffice');
+                    } else {
+                        throw new Exception('Le mot de passe renseigné ne correspond pas à cet utilisateur.');
+                    }
+                } else {
+                    throw new Exception("Le mot de passe doit avoir entre 8 et 25 caractères.");
+                }
+            } else {
+                throw new Exception("Aucun nouveau mot de passe fournit.");
+            }
+        } else {
+            throw new Exception('Absence de session utilisateur.');
+        }
+    }    
 
     public function deleteUser() {
         if (isset($_SESSION['id'])) {    
@@ -546,21 +605,21 @@ class Action {
                         if ($linkGroupCRUD->readLink(intval($_SESSION['id']), $group->getId()) <= intval($_POST['status'])) {
                             $member = $linkGroupCRUD->read(intval($_SESSION['id']), intval($_POST['id']));
                             $linkGroupCRUD->update($member, intval($_POST['status']));
-                            return 'ok'; 
+                            echo 'ok'; 
                         } else {
-                            return 'Opération non-authorisé : niveau d\'accès insuffisant.';
+                            echo 'Opération non-authorisé : niveau d\'accès insuffisant.';
                         } 
                     } else {
-                        return 'Statut renseigné invalide.';
+                        echo 'Statut renseigné invalide.';
                     }
                 } else {
-                    return 'Le groupe désigné n\'existe plus.';
+                    echo 'Le groupe désigné n\'existe plus.';
                 }                                
             } else {
-                return 'Mauvaise données transmises.';
+                echo 'Mauvaise données transmises.';
             }
         } else {
-            return 'Absence de donnée de session.';
+            echo 'Absence de donnée de session.';
         }
     }
 
@@ -604,7 +663,14 @@ class Action {
                     $linkGroupCRUD = new LinkGroupCRUD();
                     if ($linkGroupCRUD->readLink(intval($_SESSION['id']), $group->getId())) {
                         $linkGroupCRUD->delete(intval($_GET['userId']), $group->getId());
-                        header('Location: ' . $_SESSION['page']);
+                        if($group->getNbMember() == 0) {
+                            $delete = $groupCRUD->delete($group->getId());
+                            header('Location: index.php?action=myGroup');
+                        } else if($_SESSION['id'] != intval($_GET['userId'])) {
+                            header('Location:' . $_SESSION['page']);
+                        } else {
+                            header('Location:index.php?action=myGroup');
+                        }
                     } else {
                        	throw new Exception('L\'utilisateur n\'a pas de lien avec ce groupe');
                     }
@@ -655,10 +721,11 @@ class Action {
                 $comment = $commentCRUD->read(intval($_GET['id']));
                 if ($comment) {
                     $linkGroupCRUD = new LinkGroupCRUD();
-                    if ($linkGroupCRUD->readLink($_SESSION['id'], $comment->groupId())) {
+                    if ($linkGroupCRUD->readLink($_SESSION['id'], $comment->getGroupId())) {
                         $linkReportingCRUD = new LinkReportingCRUD();
                         if (!$linkReportingCRUD->readLink($_SESSION['id'], $comment->getId())) {
                             $report = $linkReportingCRUD->add(intval($_SESSION['id']), intval($_GET['id']));
+                            header('Location: '. $_SESSION['page']);
                         } else {
                             throw new Exception('Vous avez déjà signalé ce commentaire.');
                         }
@@ -684,8 +751,8 @@ class Action {
                 if ($comment) {
                     $linkReportingCRUD = new LinkReportingCRUD();
                     if ($linkReportingCRUD->readLink($_SESSION['id'], $comment->getId())) {
-                    $delete = $linkReportingCRUD->delete($comment->getId());
-                        header('Location: index.php?action=group&id=' . $comment->getGroupId());
+                        $linkReportingCRUD->delete($_SESSION['id'], $comment->getId());
+                        header('Location: '. $_SESSION['page']);
                     } else {
                         throw new Exception('Le commentaire n\'est actuellement pas signalé');
                     }
@@ -700,10 +767,35 @@ class Action {
         }
     }
 
+    public function deleteAllReport() {
+        if (isset($_SESSION['id'])) {  
+            if (isset($_GET['id'])) {  
+                $commentCRUD = new CommentCRUD();
+                $comment = $commentCRUD->read(intval($_GET['id']));
+                if ($comment) {
+                    $linkGroupCRUD = new LinkGroupCRUD();
+                    if ($linkGroupCRUD->readLink($_SESSION['id'], $comment->getGroupId()) == 1) {
+                        $linkReportingCRUD = new LinkReportingCRUD();
+                        $linkReportingCRUD->deleteAll($comment->getId());
+                        header('Location: '. $_SESSION['page']);
+                    } else {
+                        throw new Exception('Opération non authorisé : le compte n\'est pas lié au groupe');
+                    }
+                } else {
+                    throw new Exception('Le commentaire n\'existe pas');
+                }
+            } else {
+                throw new Exception('Absence de donnée de session.');
+            }
+        } else {
+            throw new Exception('Absence de donnée de session.');
+        }
+    }
+
     public function verifUser() {
         if (isset($_POST['pseudo']) && isset($_POST['mdp'])) {    
-            if (strlen($_POST['pseudo']) < 26 && strlen($_POST['pseudo']) > 0 ) {
-                if (strlen($_POST['mdp']) < 26 && strlen($_POST['mdp']) > 0 ) {
+            if (strlen($_POST['pseudo']) <= 24 && strlen($_POST['pseudo']) > 8 ) {
+                if (strlen($_POST['mdp']) <= 24 && strlen($_POST['mdp']) > 8 ) {
                     $userCRUD = new UserCRUD();
                     $user = $userCRUD->read(htmlspecialchars($_POST['pseudo']), htmlspecialchars($_POST['mdp']));
                     if ($user) {
@@ -718,10 +810,10 @@ class Action {
                         throw new Exception('Les identifiants fournis ne correspondent à aucun compte existant.');
                     }
                 } else {
-                    throw new Exception('Le mot de passe doit être compris entre 1 et 26 caractères.');
+                    throw new Exception('Le mot de passe doit être compris entre 8 et 24 caractères.');
                 }
             } else {
-                throw new Exception('Le nom d\'utilisateur doit être compris entre 1 et 26 caractères.');
+                throw new Exception('Le nom d\'utilisateur doit être compris entre 8 et 24 caractères.');
             }
         } else {
             throw new Exception('Absence des données liées au formulaire.');

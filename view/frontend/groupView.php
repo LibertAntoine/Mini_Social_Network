@@ -2,7 +2,11 @@
 
 $_SESSION['page'] = 'index.php?action=group&id='. $group->getId();
 
-ob_start(); ?>
+ob_start();
+echo $groupBar;
+echo $memberBar;
+ ?>
+
 <section  id="group-page" class="groupView overflow">
 <?php 
 if ($group->getLinkCouvPicture() === 1) {?>
@@ -57,7 +61,7 @@ if ($group->getLinkCouvPicture() === 1) {?>
 
                                 <h3><?= $data->getTitle() ?></h3><br/>
                                 <div class="post">
-                                <p ><?= nl2br(htmlspecialchars_decode($data->getContent())) ?></p>
+                                <p ><?= htmlspecialchars_decode($data->getContent()) ?></p>
                                 </div>
                                 <?php if (isset($_SESSION['id'])) { ?>
                                     <p class="action-post">
@@ -66,10 +70,7 @@ if ($group->getLinkCouvPicture() === 1) {?>
                                         <?php if ($_SESSION['id'] === $data->getUserId()) { ?>
                                          - <span class="edit-post <?= $data->getId() ?>">Modifier l'article</span>
                                     <?php }
-                                    } else { ?>
-                                        <a href="#">Signaler</a>
-                                    <?php } ?>
-                                    
+                                    } ?>                                  
                                     </p> 
                                 <?php } ?>
                                 <em class="creationDate"><?= $userCRUD->readName($data->getUserId())?> - <?= $data->getCreationDate() ?></em><br/>
@@ -100,9 +101,9 @@ if ($group->getLinkCouvPicture() === 1) {?>
                             <p id="no-post">Le post ne compte aucun commentaire. Lancez-vous !</p> 
                         <?php } 
                         if (isset($_SESSION['id'])) { 
-                            if ($status !== 4) { ?>
+                            if ($status == 5 OR $status <= 4) { ?>
                                 <div class="add-comment">
-                                    <form action="index.php?action=addComment" method="post">
+                                    <form class="submit-comment" action="index.php?action=addComment" method="post">
                                         <textarea id="content" name="content"></textarea>
                                         <input class="btn btn-success  add-comment" type="submit" value="Ajouter"/>
                                         <input type="hidden" name="postId" value=<?= $data->getId() ?> />
@@ -122,13 +123,12 @@ if ($group->getLinkCouvPicture() === 1) {?>
     <?php if ($status <= 2) { ?>
           <div id="create-post">
             <div class="jumbotron">
-                <p><?php  if ($this->getMessage() != NULL) {echo $this->getMessage();} ?></p>
                 <h3>Ajouter un post au groupe</h3>
-                <form action="index.php?action=addPost" method="post">
-                    <label for="title">Titre :</label>
-                    <input type="text" id="title" name="title" /><br />
+                <form id="submit-post" action="index.php?action=addPost" method="post">
+                    <label for="titlePost">Titre :</label>
+                    <input type="text" id="titlePost" name="titlePost" /><br />
                     <label for="content">Contenu :</label><br />
-                    <textarea class="tinymce" id="content" name="content"></textarea>
+                    <textarea class="tinymce" id="content" name="contentPost"></textarea>
                     <input class="btn btn-success" type="submit" value="Publier"/>
                     <input type="hidden" name="groupId" value=<?= $group->getId() ?> />
                 </form>
@@ -177,11 +177,17 @@ if ($group->getLinkCouvPicture() === 1) {?>
           </div>
         </div>
     </div>
-<?php } ?>
+<?php } 
+
+
+
+?>
 
 
 
 
-<?php $content = ob_get_clean(); ?>
+<?php $content = ob_get_clean(); 
 
-<?php require('view/template.php'); ?>
+
+
+ require('view/template.php'); ?>

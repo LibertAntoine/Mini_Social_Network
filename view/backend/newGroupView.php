@@ -7,12 +7,11 @@ ob_start(); ?>
 	<p><a class="indexLink" href="index.php?action=mainPage">-> Retour à l'acceuil du site</a></p>
 
 	<div id="new-group-form" class="row">
-		<div class="col-md-12 col-sm-12 jumbotron">
-		<p><?php  if ($this->getMessage() != NULL) {echo $this->getMessage();} ?></p>	
-			<form action="index.php?action=newGroupMember" method="post" enctype="multipart/form-data">
+		<div class="col-md-12 col-sm-12 jumbotron">	
+			<form id="submitGroup" action="index.php?action=newGroupMember" method="post" enctype="multipart/form-data">
 				<h3>Informations sur le groupe</h3>
 				<label for="titleGroup">Nom du groupe* :  </label>
-				<input type="text" id="titleGroup" name="titleGroup" required>
+				<input type="text" id="titleGroup" name="titleGroup" maxlength="240" required>
 				<br/>
 				<label for="public">Statut du groupe* :  </label>
 				<input type="radio" id="publique" name="public" value="1">
@@ -21,7 +20,7 @@ ob_start(); ?>
 				<label for="private">Privé</label>
 				<br/>
 				<label for="description">Description du groupe :  </label>
-				<textarea class="tinymce" id="description" name="description"></textarea>
+				<textarea class="tinymce" id="description" name="description" maxlength="2000"></textarea>
 				<label for="couvPicture">Ajouter une image de couverture : </label>
 				<input type="file" id="couvPicture" name="couvPicture" accept=".png, .jpg, .jpeg">
 				<br/>
@@ -32,6 +31,7 @@ ob_start(); ?>
 		</div>
 	</div>
 </section>
-<?php $content = ob_get_clean(); ?>
+<?php $content = ob_get_clean(); 
 
-<?php require('view/template.php'); ?>
+
+ require('view/template.php'); ?>

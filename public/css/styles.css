@@ -1,5 +1,5 @@
 
-#group-page, {
+#group-page {
 	background-color: #e9ecef;
 }
 
@@ -141,7 +141,7 @@ h2 {
 
 
 
-#groupBar h3 {
+#groupBar h2 {
 	text-align: center;
 	font-size: 24px;
 	margin-right:20px;
@@ -277,8 +277,8 @@ header {
  color:black;
 }
 
-#memberbar {
- text-align : center;
+.center {
+	text-align: center;
 }
 
 #navbar {
@@ -517,7 +517,7 @@ header {
 
 #create-post .jumbotron {
 	padding: 20px;
-	padding-bottom: 50px;
+	padding-bottom: 70px;
 	
 }
 
@@ -598,9 +598,6 @@ header {
 }
 
 
-.glyphicon {
-	size: 20px;
-}
 
 .report-checked {
 	color : grey;
@@ -713,6 +710,10 @@ header {
 
 #nav-option #unsuscribe {
 	color : red;
+}
+
+.table-report {
+	padding-bottom: 150px;
 }
 
 

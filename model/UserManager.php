@@ -111,9 +111,10 @@ class UserManager extends DBAccess {
     
     $q->bindValue(':pseudo', $user->getPseudo());
     $q->bindValue(':mdp', $user->getMdp());
-    $q->bindValue(':status', $user->getStatus());
     $q->bindValue(':id', $user->getId());
 
     $q->execute();
+
+    return $user;
   }
 }

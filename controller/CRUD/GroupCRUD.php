@@ -62,9 +62,9 @@ class GroupCRUD {
 			    		$linkGroupCRUD->add($member->getId(), $group->getId(), $fonction);
 			    	}
 				}
-				$linkGroupCRUD->add($adminId, $group->getId(), 1);
-		    	return $group;
 		    }
+		    $linkGroupCRUD->add($adminId, $group->getId(), 1);
+		    return $group;
 		}	
 	}
 

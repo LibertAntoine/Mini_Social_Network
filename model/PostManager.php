@@ -40,8 +40,8 @@ class PostManager extends DBAccess {
 
   public function getGroup($groupId) {
     $posts = [];
-    $q = $this->db->query('SELECT id, userId, groupId, title, content, DATE_FORMAT(creationDate, \'%d/%m/%Y à %Hh%i\') AS creationDate, DATE_FORMAT(updateDate, \'%d/%m/%Y à %Hh%i\') AS updateDate, nbComment FROM projet5_posts WHERE groupId = '.$groupId);
-  
+    $q = $this->db->prepare('SELECT id, userId, groupId, title, content, DATE_FORMAT(creationDate, \'%d/%m/%Y à %Hh%i\') AS creationDate, DATE_FORMAT(updateDate, \'%d/%m/%Y à %Hh%i\') AS updateDate, nbComment FROM projet5_posts WHERE groupId = :groupId ORDER BY updateDate');
+    $q->execute([':groupId' => $groupId]);
     while ($data = $q->fetch(\PDO::FETCH_ASSOC)) {
       $posts[] = new Post($data);
     }
@@ -58,7 +58,7 @@ class PostManager extends DBAccess {
       $q->execute([':title' => $info]);
       $post = $q->fetch(\PDO::FETCH_ASSOC);
     }
-    return new post($post);
+    return new Post($post);
   }
 
   public function getTitle($postId) {

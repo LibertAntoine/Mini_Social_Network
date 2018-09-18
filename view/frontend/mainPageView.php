@@ -1,6 +1,8 @@
-<?php $title = 'Page d\acceuil';
+<?php $title = 'Page d\'acceuil';
 
-ob_start(); ?>
+ob_start(); 
+echo $groupBar;
+?>
 
 <section  class="groupView">
 <div id="contents" class="container">
@@ -13,7 +15,7 @@ ob_start(); ?>
         <p> Saepissime igitur mihi de amicitia cogitanti maxime illud considerandum videri solet, utrum propter imbecillitatem atque inopiam desiderata sit amicitia, ut dandis recipiendisque meritis quod quisque minus per se ipse posset, id acciperet ab alio vicissimque redderet, an esset hoc quidem proprium amicitiae, sed antiquior et pulchrior et magis a natura ipsa profecta alia causa. Amor enim, ex quo amicitia nominata est, princeps est ad benevolentiam coniungendam. Nam utilitates quidem etiam ab iis percipiuntur saepe qui simulatione amicitiae coluntur et observantur temporis causa, in amicitia autem nihil fictum est, nihil simulatum et, quidquid est, id est verum et voluntarium.</p>
   </div>
 
-  <h3>Retrouver les derniers groupes publiques de Teller : </h3>
+  <h3>Retrouver les derniers groupes publics de Teller : </h3>
 
     <div class="row">
         <div id="lastFivePublic" class="col-lg-8 col-md-7 col-xs-12">

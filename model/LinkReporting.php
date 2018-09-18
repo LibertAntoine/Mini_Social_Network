@@ -8,7 +8,8 @@ class LinkReporting {
 	protected $id,
 	$userId,
 	$commentId,
-	$reportingDate;
+	$reportingDate,
+  $groupId;
 
 	public function __construct(array $data) {
    	 $this->hydrate($data);
@@ -38,8 +39,12 @@ class LinkReporting {
     return $this->commentId;
   }
   
-  public function getReportingData() {
-    return $this->linkDate;
+  public function getReportingDate() {
+    return $this->reportingDate;
+  }
+
+  public function getGroupId() {
+    return $this->groupId;
   }
 
   public function setId($id) {
@@ -54,6 +59,13 @@ class LinkReporting {
       $userId = (int) $userId;
       if ($userId >= 0) {
         $this->userId = $userId;
+      }
+  }
+
+  public function setGroupId($groupId) {
+      $groupId = (int) $groupId;
+      if ($groupId >= 0) {
+        $this->groupId = $groupId;
       }
   }
 

@@ -22,7 +22,10 @@
 class LinkReportingCRUD {
 	
 	public function add($userId, $commentId) {
-		$linkReporting = new LinkReporting(['userId' => $userId, 'commentId' => $commentId]);
+		$commentManager = new CommentManager();
+		$comment = $commentManager->get($commentId);
+
+		$linkReporting = new LinkReporting(['userId' => $userId, 'groupId' => $comment->getGroupId(), 'commentId' => $commentId]);
 		$linkReportingManager = new LinkReportingManager();	
 		$link = $linkReportingManager->add($linkReporting);
 		if ($link) {
@@ -48,10 +51,23 @@ class LinkReportingCRUD {
 
 
 	public function readLink($userId, $commentId) {
-		$linkReportingManager = new LinkGroupManager();
+		$linkReportingManager = new LinkReportingManager();
 		$link = $linkReportingManager->existLink($userId, $commentId);
+
 		if (isset($link)) {
 			return $link;
+		}
+	}
+
+	public function readLinkGroup($groupId) {
+		$linkReportingManager = new LinkReportingManager();
+		$links = $linkReportingManager->getLinkGroup($groupId);
+		if ($links != NULL) {
+			$userCRUD = new UserCRUD();
+			return $links;
+		} else {
+			$links = NULL;
+			return $links;
 		}
 	}
 

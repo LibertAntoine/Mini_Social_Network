@@ -57,6 +57,8 @@ class CommentCRUD {
 	public function delete($commentId) {
 		$comment = $this->read($commentId);
 		if ($comment) {
+			$linkReportingManager = new LinkReportingManager();
+			$linkReportingManager->deleteAllComment($commentId);
 			$commentManager = new CommentManager();
 			$commentManager->delete($commentId);
 			$postManager = new PostManager();

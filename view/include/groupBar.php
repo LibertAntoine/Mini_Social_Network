@@ -1,7 +1,7 @@
 <section id="groupBarSection">
 		<div id="groupBar">
 			<?php if (isset($_SESSION['id'])) { ?>
-				<a href="index.php?action=myGroup" class="underline"><h3>Mes groupes</h3></a>
+				<a href="index.php?action=myGroup" class="underline"><h2>Mes groupes</h2></a>
 				
 				<?php if (isset($groupsPrivate)) { ?>
 					<h4>Privé</h4>
@@ -22,18 +22,18 @@
 				<p id='link-newGroup'><a href="index.php?action=newGroup" class="underline">Créer un groupe</a></p>	
 				<?php } 
 			} else { ?>
-			            <form action="index.php?action=verifUser" method="post">
+			            <form id="login" action="index.php?action=verifUser" method="post">
 			                <h3 id="login-title">Connectez-vous</h3>
 	
 			                    <label for="pseudo">Identifiant :</label><br />
-			                    <input type="text" id="pseudo" name="pseudo" />
+			                    <input type="text" id="pseudo" name="pseudo" maxlength="24"/>
 
 
 			                    <label for="mdp">Mot de passe :</label><br />
-			                    <input type="password" id="mdp" name="mdp"></input>
+			                    <input type="password" id="mdp" name="mdp" maxlength="24"/>
 
 
-			                    <input class="btn btn-success" type="submit" value="Valider"/>
+			                    <input class="btn btn-success submit-log" type="submit" value="Valider"/>
 			            </form>
 			    <p id='link-newGroup'>Vous n'avez pas encore de compte ?<br/> <a href="index.php?action=inscription" class="underline">Inscrivez-vous !</a></p>
 			<?php } ?>    

@@ -1,161 +1,124 @@
 
-
-
-if(window.innerWidth > 1040) {
-	var groupSpace = 447;
-	var gradient = 0.75;
-} else if (window.innerWidth > 770) {
-	var groupSpace = 267;
-	var gradient = 0.8;
-} else {
-	var groupSpace = 87;
-	var gradient = 1;
-}
-
-			if(window.innerWidth < 500) { 
-				$(".slide").hide()
-				$(".fa-comments").show() 
-			} else {
-				$(".slide").show()
-				$(".fa-comments").hide()
-			}
+var modif = 1;
+var responsive = new TellerResponsive();
 
 
 
+$(".slide").on("mouseenter", function() {
 
-		$(".slide").on("mouseenter", function() {
+		if (this.classList[1] != 'actif') {
+			var slide = new Slide(this);
+			slide.activeSlide();
+		}	
+});
 
-				if (this.classList[1] != 'actif') {
-					var slide = new Slide(this);
-					slide.activeSlide()
-				}	
-		});
+$(".fa-comments").on("click", function() {
+		if (this.classList[2] != 'actif') {
+			var slide = new Slide(this);
+			slide.activeSlimSlide();
+		}	
+});
 
-		$(".fa-comments").on("click", function() {
-				if (this.classList[2] != 'actif') {
-					var slide = new Slide(this);
-					slide.activeSlimSlide()
-				}	
-		});
+$(".action-post").hide()
 
+$(".postBox").on("mouseover", function(e) {
+	this.querySelectorAll(".action-post").forEach(function(element) {
+		element.style.display = 'inline';
+	});
+})
 
-	var modif = 1;
-	var allPost = document.querySelectorAll(".post-content");
-		
-
-
-
-
-			if (window.innerWidth < 710) {
-				document.querySelectorAll(".navbloc").forEach(function(element) {element.style.display = "none"})
-				document.querySelectorAll(".navIcon").forEach(function(element) {element.style.display = "block"})
-			} else {
-				document.querySelectorAll(".navbloc").forEach(function(element) {element.style.display = "block"})
-				document.querySelectorAll(".navIcon").forEach(function(element) {element.style.display = "none"})
-			}
+$(".postBox").on("mouseout", function(e) {
+	this.querySelectorAll(".action-post").forEach(function(element) {
+		element.style.display = 'none';
+	});
+})
 
 
-		window.onresize = function(){
-			equal()
-			var allPost = document.querySelectorAll(".post-content");
-if(window.innerWidth > 1040) {
-	var groupSpace = 447;
-	var gradient = 0.75;
-} else if (window.innerWidth > 770) {
-	var groupSpace = 267;
-	var gradient = 0.8;
-} else {
-	var groupSpace = 87;
-	var gradient = 1;
-}
-
-			if(window.innerWidth < 500) { 
-				$(".slide").hide()
-				$(".fa-comments").show() 
-			} else {
-				$(".slide").show()
-				$(".fa-comments").hide()
-			}
-				
-
-			allPost.forEach(function(element) {
-
-				element.querySelector(".postBox").style.width = (window.innerWidth - groupSpace)* gradient;
-			});
-			if (window.innerWidth < 710) {
-				document.querySelectorAll(".navbloc").forEach(function(element) {element.style.display = "none"})
-				document.querySelectorAll(".navIcon").forEach(function(element) {element.style.display = "block"})
-			} else {
-				document.querySelectorAll(".navbloc").forEach(function(element) {element.style.display = "block"})
-				document.querySelectorAll(".navIcon").forEach(function(element) {element.style.display = "none"})
-			}
-
-
-		}
-
-
-
-	for (var i = 0; i < allPost.length ; i++) {
-		postBox = allPost[i].querySelector(".postBox");
-		postBox.style.width = (window.innerWidth - groupSpace)*gradient;
-		allPost[i].querySelectorAll(".action-post").forEach(function(el) {
-				el.style.display = 'none';
-			});
-
-		postBox.addEventListener("mouseover", function(e) {
-			this.querySelectorAll(".action-post").forEach(function(el) {
-				el.style.display = 'inline';
-			});
-		});
-
-		postBox.addEventListener("mouseout", function(e) {
-			this.querySelectorAll(".action-post").forEach(function(el) {
-				el.style.display = 'none';
-			});
-		});
-
-
-		}
-
-
-
-
-		$(".edit-post").on("click", function() {
-						var editArticle = new EditArticle(this);
-						editArticle.activeEdit();	
-		});
-
-
-function textarea_to_tinymce(id){
-    if ( typeof( tinyMCE ) == "object" && typeof( tinyMCE.execCommand ) == "function" ) {
-        tinyMCE.execCommand("mceAddEditor", false, id);
-		tinyMCE.execCommand('mceAddControl', false, id);
-    }
-}
-
-
-		equal()
-		function equal() {
-			document.querySelectorAll(".post-content").forEach(function(element) {
-				var height = element.querySelector(".postBox").offsetHeight;
-				element.querySelector(".comment-content").style.height = height;
-				var scroler = element.querySelector(".comment-text");
-				scroler.scrollTop = scroler.scrollHeight;
-		})}
-
-
+$(".edit-post").on("click", function() {
+	var editArticle = new EditArticle(this);
+	editArticle.activeEdit();	
+});
+	
 
 $("#valid-status").on("click", function() {
+	var value = $('input[type=radio][name=status]:checked').attr('value');
+	groupId = $("#groupId").val();
+	var editStatus = new EditStatus(value, groupId);
+	if (value <= 4) {
+		editStatus.validEdit();
 
-				var value = $('input[type=radio][name=status]:checked').attr('value');
-				groupId = $("#groupId").val()
-
-				var editStatus = new EditStatus(value, groupId);
-				if (value <= 4) {
-					editStatus.validEdit()
-
-				} else if (value == 5) {
-					editStatus.validSupr()
-				}
-
+	} else if (value == 5) {
+		editStatus.validSupr();
+	}
 });
+
+
+
+responsive.responsiveNavbar();
+responsive.responsivePostBox();
+responsive.responsiveComment();
+
+window.onresize = function() {
+	responsive.responsiveNavbar();
+	responsive.responsivePostBox();
+	responsive.responsiveComment();
+}
+
+var testForm = new TestForm();
+
+$('input[name=pseudo]').on("blur", function() {
+	testForm.verifString(this, 8, 24);
+})
+
+$('input[name=mdp]').on("blur", function() {
+	testForm.verifString(this, 8, 24);
+})
+
+$('#login').submit(function(e) {
+	return testForm.verifSubmitLogin(this, e);
+})
+
+$('input[name=titleGroup]').on("blur", function() {
+	testForm.verifString(this, 4, 240);
+})
+
+$('#submitGroup').submit(function(e) {
+	return testForm.verifSubmitAddGroup(this, e);
+})
+
+$('input[name=newPseudo]').on("blur", function() {
+	testForm.verifString(this, 8, 24);
+})
+
+$('input[name=oldMdp]').on("blur", function() {
+	testForm.verifString(this, 8, 24);
+})
+
+$('input[name=newMdp]').on("blur", function() {
+	testForm.verifString(this, 8, 24);
+})
+
+$('#submit-edit-pseudo').submit(function(e) {
+	return testForm.verifSubmitEditPseudo(this, e);
+})
+
+$('#submit-edit-mdp').submit(function(e) {
+	return testForm.verifSubmitEditMdp(this, e);
+})
+
+$('input[name=titlePost]').on("blur", function() {
+	testForm.verifString(this, 4, 240);
+})
+
+$('#submit-post').submit(function(e) {
+	return testForm.verifSubmitPost(this, e);
+})
+
+$('.submit-comment').each(
+	function() {
+		$(this).submit(function(e) {
+		return testForm.verifSubmitComment(this, e);
+	})
+})
+
+

@@ -10,7 +10,7 @@ namespace controller;
     use \controller\CRUD\LinkFriendCRUD;
     use \controller\CRUD\LinkReportingCRUD;
 
-class Backend extends View {
+class Backend {
 
 	function __construct($view, $param = NULL)
     {
@@ -26,7 +26,8 @@ class Backend extends View {
 	}
 
 	public function backOfficeView() {
-		$include = new Includes('groupBar');
+		$includes = new Includes();
+		$groupBar = $includes->groupBar();
 		require('view/backend/backOfficeView.php');
 	}
 
@@ -66,7 +67,8 @@ class Backend extends View {
 				unset($allUsers[$friend->getuserId2()]);
 			}
 			unset($allUsers[$_SESSION['id']]);
-			$include = new Includes('groupBar');
+			$includes = new Includes();
+			$groupBar = $includes->groupBar();
 			require('view/backend/myFriendView.php');
 		} else {
 			throw new Exception('Impossible de récupérer les utilisateurs');
@@ -201,7 +203,11 @@ class Backend extends View {
 				}
 			}
 		}
-		$include = new Includes('groupBar');
+		$commentCRUD = new CommentCRUD();
+		$reportingCRUD = new LinkReportingCRUD();
+		$links = $reportingCRUD->readLinkGroup($group->getId());
+		$includes = new Includes();
+		$groupBar = $includes->groupBar();
 		require('view/backend/adminGroupView.php');
 	} 
 }

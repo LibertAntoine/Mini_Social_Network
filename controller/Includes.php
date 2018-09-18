@@ -12,11 +12,6 @@ namespace controller;
 
 class Includes {
 
-	function __construct($view)
-   	{
-        $this->$view(); 
-    }
-
 	public function groupBar() {
 		if (isset($_SESSION['id'])) {
 			$linkGroupCRUD = new LinkGroupCRUD();
@@ -33,7 +28,10 @@ class Includes {
 				}
 			}	
 		} 
+		ob_start();
 		require('view/include/groupBar.php');
+		$groupBar = ob_get_clean();
+		return $groupBar;
 	}
 
 	public function memberBar() {		
@@ -58,7 +56,10 @@ class Includes {
 					}
 				}
 			}
+			ob_start();
 			require('view/include/memberBar.php');
+			$memberBar = ob_get_clean();
+			return $memberBar;
 		}
 	}
 }
