@@ -23,7 +23,7 @@ echo $groupBar;
                 <div class="articleBox jumbotron">
                     <a href="index.php?action=group&amp;id=<?= $data->getId() ?>"><h3><?= $data->getTitle() ?></h3></a>
                     
-                    <p id="postPreView">
+                    <p class="postPreView">
                         <?= nl2br(htmlspecialchars_decode(substr($data->getDescription(), 0, 320).'...')) ?>
                         <a href="index.php?action=article&amp;id=<?= $data->getId() ?>"> lire la suite</a><br />
 
